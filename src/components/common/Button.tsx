@@ -8,6 +8,7 @@ type ButtonProps = {
   variant?: 'primary' | 'secondary'; // 버튼 스타일 종류
   size?: 'sm' | 'md' | 'lg'; // 버튼 크기
   isLoading?: boolean; // 로딩 상태
+  className?: string; // 추가적인 클래스네임(승찬이형 pr 반영)
 } & React.ComponentPropsWithoutRef<'button'>; // 기본 button 속성들 포함
 
 // Button 컴포넌트 정의
@@ -17,14 +18,17 @@ const Button = ({
   variant = 'primary',
   size = 'md',
   isLoading = false,
+  className = '', // className prop의 기본값 설정
   ...rest // 나머지 button 속성들 (onClick, disabled 등)
 }: ButtonProps) => {
-  const baseStyles = 'font-bold py-2 px-4 rounded transition-colors flex items-center justify-center';
+
+  const baseStyles = 'transition-colors flex items-center justify-center'; // 공통 스타일만 남김
 
   const variantStyles = {
-    //primary와 secondary 스타일 정의 -> 와이어프레임 나오면 수정해야 할 것 같습니다.
-    primary: 'bg-yellow-400 hover:bg-blue-700 text-black',
-    secondary: 'bg-yellow-200 hover:bg-gray-700 text-black',
+    // primary와 secondary 스타일 정의 -> 와이어프레임 나오면 그거에 맞게 색상 수정해야 할 것 같습니다.
+    // primary와 secondary에 패딩, 폰트 굵기, 둥근 모서리 스타일 포함 (승찬이형 pr 반영)
+    primary: 'bg-yellow-400 hover:bg-blue-700 text-black font-bold py-2 px-4 rounded',
+    secondary: 'bg-yellow-200 hover:bg-gray-700 text-black font-medium py-1 px-3 rounded-lg',
   };
 
   const sizeStyles = {
@@ -39,7 +43,7 @@ const Button = ({
     variantStyles[variant],
     sizeStyles[size],
     isLoading && 'opacity-50 cursor-not-allowed', 
-    rest.className
+    className
   );
 
   return (
