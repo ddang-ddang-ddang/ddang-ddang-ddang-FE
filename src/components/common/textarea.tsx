@@ -5,6 +5,7 @@ import React, {
   forwardRef,
   ChangeEvent,
 } from "react";
+import clsx from "clsx";
 
 export interface TextareaProps
   extends Omit<React.TextareaHTMLAttributes<HTMLTextAreaElement>, "rows"> {
@@ -22,11 +23,7 @@ export const Textarea = forwardRef<
   HTMLTextAreaElement,
   TextareaProps
 >(function Textarea(
-  { minRows = 1, 
-    maxRows, 
-    onChange, 
-    className = "w-full rounded-md border border-gray-300 p-3 focus:outline-none focus:ring-2 focus:ring-blue-500", 
-    ...props },
+  { minRows = 1, maxRows, onChange, className, ...props },
   ref
 ) {
   const innerRef = useRef<HTMLTextAreaElement | null>(null);
@@ -89,7 +86,14 @@ export const Textarea = forwardRef<
       ref={innerRef}
       rows={minRows}
       onChange={handleChange}
-      className={`resize-none overflow-hidden ${className ?? ""}`}
+      className={clsx(
+        // 항상 적용될 기본 동작
+        "resize-none overflow-hidden",
+        // 기본 스타일 (사용자 지정 className이 있더라도 합쳐짐)
+        "w-full rounded-md border border-gray-300 p-3 focus:outline-none focus:ring-2 focus:ring-blue-500",
+        // 사용자 지정 클래스는 마지막에 두어 Tailwind 우선순위상 덮어쓰기가 가능하게 함
+        className
+      )}
     />
   );
 });
