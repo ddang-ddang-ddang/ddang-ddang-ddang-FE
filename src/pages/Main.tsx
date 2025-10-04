@@ -1,4 +1,9 @@
+import Textarea from "@/components/common/textarea";
+import { useState } from "react";
+
 export default function Main() {
+  const [controlledValue, setControlledValue] = useState("");
+
   return (
     <div>
       {/* 본문 */}
