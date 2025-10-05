@@ -1,11 +1,11 @@
 // src/pages/MainPage.tsx
 
 import React, { useState, useCallback } from 'react';
-import Button from '../components/common/Button';
-import Textarea from '../components/common/textarea';
+import Button from '@/components/common/Button';
+import Textarea from '@/components/common/textarea';
 import HotDebateCard from '@/components/common/DebateCard'; // HotDebateCard 컴포넌트 임포트
-import Left from '../assets/svgs/Left.svg'; // 왼쪽 화살표 이미지 임포트
-import Right from '../assets/svgs/Right.svg'; // 오른쪽 화살표 이미지 임포트
+import Left from '@/assets/svgs/Left.svg'; // 왼쪽 화살표 이미지 임포트
+import Right from '@/assets/svgs/Right.svg'; // 오른쪽 화살표 이미지 임포트
 
 // API로부터 받아올 더미 데이터 (총 7개)
 const hotDebates = [
@@ -93,7 +93,7 @@ const MainPage = () => {
       </section>
 
       {/* 3. 인기 재판 목록 */}
-      <section className="bg-[#DDD] pt-8 pb-34 mt-16 mb-34">
+      <section className="bg-[#DDD] pt-8 pb-20 mt-16 mb-20">
         <div className="flex pl-[120px] pr-[120px] justify-between items-center mb-4">
           <h2 className="text-2xl font-bold">현재 가장 핫한 재판</h2>
           <Button variant="ghost" className="hover:underline">더보기</Button>
