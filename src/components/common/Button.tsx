@@ -5,7 +5,7 @@ import clsx from 'clsx';
 // Button 컴포넌트의 props 타입 정의
 type ButtonProps = {
   children: React.ReactNode;
-  variant?: 'primary' | 'secondary'; // 버튼 스타일 종류
+  variant?: 'primary' | 'secondary' | 'ghost'; // 버튼 스타일 종류 + ghost 추가
   size?: 'sm' | 'md' | 'lg'; // 버튼 크기
   isLoading?: boolean; // 로딩 상태
   className?: string; // 추가적인 클래스네임(승찬이형 pr 반영)
@@ -27,8 +27,10 @@ const Button = ({
   const variantStyles = {
     // primary와 secondary 스타일 정의 -> 와이어프레임 나오면 그거에 맞게 색상 수정해야 할 것 같습니다.
     // primary와 secondary에 패딩, 폰트 굵기, 둥근 모서리 스타일 포함 (승찬이형 pr 반영)
+    // ghost 스타일 추가
     primary: 'bg-yellow-400 hover:bg-blue-700 text-black font-bold py-2 px-4 rounded',
     secondary: 'bg-yellow-200 hover:bg-gray-700 text-black font-medium py-1 px-3 rounded-lg',
+    ghost: 'bg-transparent text-black hover:bg-gray-200 font-bold py-2 px-4 rounded',
   };
 
   const sizeStyles = {
