@@ -28,7 +28,7 @@ const Button = ({
     // primary와 secondary에 패딩, 폰트 굵기, 둥근 모서리 스타일 포함 (승찬이형 pr 반영)
     // ghost 스타일 추가
     primary:
-      "bg-yellow-400 hover:bg-blue-700 text-black font-bold py-2 px-4 rounded",
+      "bg-[#E8E8E8] hover:bg-gray-300 text-black font-bold py-2 px-4 rounded", //bg 일단 회색으로 해놓음
     secondary:
       "bg-yellow-200 hover:bg-gray-700 text-black font-medium py-1 px-3 rounded-lg",
     // Navbar의 LOGIN 버튼
