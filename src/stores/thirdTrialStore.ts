@@ -9,28 +9,11 @@ export type ThirdTrialStep =
 type ThirdTrialState = {
   step: ThirdTrialStep;
   setStep: (step: ThirdTrialStep) => void;
-  next: () => void;
-  prev: () => void;
   reset: () => void;
 };
 
-const order: ThirdTrialStep[] = ["adopt", "waiting", "loading", "verdict"];
-
-export const useThirdTrialStore = create<ThirdTrialState>((set, get) => ({
+export const useThirdTrialStore = create<ThirdTrialState>((set) => ({
   step: "adopt",
   setStep: (step) => set({ step }),
-  next: () => {
-    const current = get().step;
-    const idx = order.indexOf(current);
-    const next = order[Math.min(idx + 1, order.length - 1)];
-    if (next !== current) set({ step: next });
-  },
-  prev: () => {
-    const current = get().step;
-    const idx = order.indexOf(current);
-    const prev = order[Math.max(idx - 1, 0)];
-    if (prev !== current) set({ step: prev });
-  },
   reset: () => set({ step: "adopt" }),
 }));
-

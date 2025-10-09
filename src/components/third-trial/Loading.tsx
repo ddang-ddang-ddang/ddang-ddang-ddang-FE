@@ -3,15 +3,14 @@ import { useThirdTrialStore } from "@/stores/thirdTrialStore";
 import VerdictLoadingGif from "@/assets/gifs/판결 영상.gif";
 
 export default function Loading() {
-  const next = useThirdTrialStore((s) => s.next);
+  const setStep = useThirdTrialStore((s) => s.setStep);
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      console.log("?")
-      next();
+      setStep("verdict");
     }, 3000); // GIF 길이: 3초
     return () => clearTimeout(timer);
-  }, [next]);
+  }, [setStep]);
 
   return (
     <div className="w-full h-[calc(100vh-98px)] flex flex-col items-center justify-center">

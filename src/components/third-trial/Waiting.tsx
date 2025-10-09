@@ -3,8 +3,8 @@ import DownArrow from "@/assets/svgs/DownArrow.svg";
 import { useThirdTrialStore } from "@/stores/thirdTrialStore";
 
 export default function Waiting() {
-  const prev = useThirdTrialStore((s) => s.prev);
-  const next = useThirdTrialStore((s) => s.next);
+  const setStep = useThirdTrialStore((s) => s.setStep);
+  
   return (
     <div className="mx-auto flex flex-col items-center gap-8 p-8">
       <h1 className="text-2xl font-bold">최종심 변론 채택</h1>
@@ -17,8 +17,8 @@ export default function Waiting() {
         </div>
       </div>
       <div className="flex gap-2">
-        <Button variant="secondary" onClick={prev}>다른 의견 채택하기</Button>
-        <Button onClick={next}>최종 재판 가기</Button>
+        <Button variant="secondary" onClick={() => setStep("adopt")}>다른 의견 채택하기</Button>
+        <Button onClick={() => setStep("loading")}>최종 재판 가기</Button>
       </div>
     </div>
   );

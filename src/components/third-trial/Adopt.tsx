@@ -2,7 +2,8 @@ import Button from "@/components/common/Button";
 import { useThirdTrialStore } from "@/stores/thirdTrialStore";
 
 export default function Adopt() {
-  const next = useThirdTrialStore((s) => s.next);
+  const setStep = useThirdTrialStore((s) => s.setStep);
+  
   return (
     <div className="mx-auto flex flex-col items-center gap-8 p-8">
       <h1 className="text-4xl font-bold">최종심 변론 채택</h1>
@@ -17,8 +18,7 @@ export default function Adopt() {
         </div>
       </div>
       <p className="text-gray-700">채택할 변론을 선택해주세요.</p>
-      <Button onClick={next}>다음</Button>
+      <Button onClick={() => setStep("waiting")}>다음</Button>
     </div>
   );
 }
-
