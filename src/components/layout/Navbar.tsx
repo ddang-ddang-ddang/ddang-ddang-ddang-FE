@@ -1,6 +1,6 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import Button from "@/components/common/Button";
-import Logo from "@/assets/svgs/logo.svg"; // 로고는 우선 svg로 받아왔는데 로고 확정되면 수정 예정
+import Logo from "@/assets/svgs/logo.svg"; // svgr 컴포넌트 사용
 import { HIDE_NAV_STEPS_BY_PATH, PATHS } from "@/constants";
 import { useThirdTrialStore } from "@/stores/thirdTrialStore";
 
@@ -30,10 +30,9 @@ export default function Navbar() {
         onClick={() => navigate(PATHS.ROOT)}
         className="inline-flex items-center"
       >
-        <img
-          src={Logo}
-          alt="땅!땅!땅! 로고"
+        <Logo
           className="h-[40px] sm:h-[46.88px] w-auto"
+          title="땅!땅!땅! 로고"
         />
       </button>
 

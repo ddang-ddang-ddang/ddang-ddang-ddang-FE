@@ -1,10 +1,19 @@
-// src/types/assets.d.ts
+// Support importing SVGs as React components (svgr exportAsDefault)
 declare module "*.svg" {
+  import * as React from "react";
+  const ReactComponent: React.FunctionComponent<
+    React.SVGProps<SVGSVGElement> & { title?: string }
+  >;
+  export default ReactComponent;
+}
+
+// Explicit URL import when needed: import url from './icon.svg?url'
+declare module "*.svg?url" {
   const content: string;
   export default content;
 }
 
-// Support importing SVGs as React components via `?react` (vite-plugin-svgr)
+// Backward compatibility: `?react` also returns a component
 declare module "*.svg?react" {
   import * as React from "react";
   const ReactComponent: React.FunctionComponent<

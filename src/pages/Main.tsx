@@ -2,10 +2,9 @@
 
 import React, { useState, useCallback } from 'react';
 import Button from '@/components/common/Button';
-import Textarea from '@/components/common/textarea';
 import HotDebateCard from '@/components/common/DebateCard'; // HotDebateCard 컴포넌트 임포트
-import Left from '@/assets/svgs/Left.svg'; // 왼쪽 화살표 이미지 임포트
-import Right from '@/assets/svgs/Right.svg'; // 오른쪽 화살표 이미지 임포트
+import Left from '@/assets/svgs/Left.svg'; // 왼쪽 화살표 컴포넌트
+import Right from '@/assets/svgs/Right.svg'; // 오른쪽 화살표 컴포넌트
 
 // API로부터 받아올 더미 데이터 (총 7개)
 const hotDebates = [
@@ -109,7 +108,7 @@ const MainPage = () => {
                     variant="ghost" 
                     disabled={startIndex === 0}
                 >
-                    <img src={Left} alt="이전 논쟁" className="w-8 h-8" />
+                    <Left className="w-8 h-8" title="이전 논쟁" />
                 </Button>
             </div>
 
@@ -136,8 +135,7 @@ const MainPage = () => {
                     variant="ghost" 
                     disabled={startIndex >= TOTAL_DEBATES - VISIBLE_COUNT}
                 >
-                    {/* import한 Right 이미지 사용 */}
-                    <img src={Right} alt="다음 논쟁" className="w-8 h-8"/>
+                    <Right className="w-8 h-8" title="다음 논쟁"/>
                 </Button>
             </div>
             

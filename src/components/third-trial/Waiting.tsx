@@ -1,5 +1,5 @@
 import Button from "@/components/common/Button";
-import DownArrow from "@/assets/svgs/DownArrow.svg?react";
+import DownArrow from "@/assets/svgs/DownArrow.svg";
 import { useThirdTrialStore } from "@/stores/thirdTrialStore";
 
 export default function Waiting() {

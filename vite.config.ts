@@ -8,7 +8,12 @@ import path from "path";
 export default defineConfig({
   plugins: [
     react(),
-    svgr(),
+    svgr({
+      // Transform all `.svg` imports into React components by default
+      include: ["**/*.svg", "**/*.svg?react"],
+      // leave `?url` and other queries to Vite asset handling
+      exclude: ["**/*.svg?url", "**/*.svg?raw"],
+    }),
     tailwindcss(),
   ],
   resolve: {
