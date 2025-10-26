@@ -1,3 +1,5 @@
+// src/pages/MainPage.tsx
+
 import React, { useState, useCallback } from "react";
 import Button from "@/components/common/Button";
 import Textarea from "@/components/common/textarea";
@@ -110,17 +112,18 @@ const MainPage = () => {
         </div>
 
         {/* 캐러셀 본체 - 화살표와 카드 목록을 분리하여 정렬 */}
-        <div className="flex items-center justify-center">
-          {/* 왼쪽 버튼 영역 (120px 여백 역할) */}
-          <div className="flex justify-start w-[120px] flex-shrink-0">
-            <Button
-              onClick={handlePrevSingle}
-              variant="ghost"
-              disabled={startIndex === 0}
-            >
-              <img src={Left} alt="이전 논쟁" className="w-8 h-8" />
-            </Button>
-          </div>
+        <div className="flex items-center justify-center"> 
+            
+            {/* 왼쪽 버튼 영역 (120px 여백 역할) */}
+            <div className="flex justify-start w-[120px] flex-shrink-0"> 
+                <Button 
+                    onClick={handlePrevSingle}
+                    variant="ghost" 
+                    disabled={startIndex === 0}
+                >
+                    <Left className="w-8 h-8" title="이전 논쟁" />
+                </Button>
+            </div>
 
           {/* 캐러셀 뷰포트 (4개 카드만 보이도록 정확히 너비 지정) */}
           <div
@@ -141,17 +144,17 @@ const MainPage = () => {
             </div>
           </div>
 
-          {/* 오른쪽 버튼 영역 (120px 여백 역할) */}
-          <div className="flex justify-end w-[120px] flex-shrink-0">
-            <Button
-              onClick={handleNextSingle}
-              variant="ghost"
-              disabled={startIndex >= TOTAL_DEBATES - VISIBLE_COUNT}
-            >
-              {/* import한 Right 이미지 사용 */}
-              <img src={Right} alt="다음 논쟁" className="w-8 h-8" />
-            </Button>
-          </div>
+            {/* 오른쪽 버튼 영역 (120px 여백 역할) */}
+            <div className="flex justify-end w-[120px] flex-shrink-0">
+                <Button 
+                    onClick={handleNextSingle}
+                    variant="ghost" 
+                    disabled={startIndex >= TOTAL_DEBATES - VISIBLE_COUNT}
+                >
+                    <Right className="w-8 h-8" title="다음 논쟁"/>
+                </Button>
+            </div>
+            
         </div>
       </section>
     </div>
