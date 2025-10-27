@@ -31,12 +31,21 @@ function App() {
           path={PATHS.SECOND_TRIAL_REGISTER}
           element={<SecondTrialRegister />}
         />
-        <Route path="/secondtrial/1" element={<SecondTrial_1 />} />
-        <Route path="/firsttrial/start" element={<FirstTrialStart />} />
-        <Route path="/firsttrial/submit" element={<FirstTrialSubmit />} />
-        <Route path="/first-trial/loading" element={<FirstTrialLoading />} />
-        <Route path="/first-trial/result" element={<FirstTrialResult />} />
-        <Route path="/ai-judge" element={<FirstTrialJudge />} />
+        <Route
+          path={PATHS.SECOND_TRIAL_ROUND_ONE}
+          element={<SecondTrial_1 />}
+        />
+        <Route path={PATHS.FIRST_TRIAL_START} element={<FirstTrialStart />} />
+        <Route path={PATHS.FIRST_TRIAL_SUBMIT} element={<FirstTrialSubmit />} />
+        <Route
+          path={PATHS.FIRST_TRIAL_LOADING}
+          element={<FirstTrialLoading />}
+        />
+        <Route
+          path={PATHS.FIRST_TRIAL_RESULT}
+          element={<FirstTrialResult />}
+        />
+        <Route path={PATHS.AI_JUDGE} element={<FirstTrialJudge />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </>

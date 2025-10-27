@@ -6,6 +6,7 @@ import HotDebateCard from "@/components/common/DebateCard"; // HotDebateCard 컴
 import Left from "@/assets/svgs/Left.svg"; // 왼쪽 화살표 이미지 임포트
 import Right from "@/assets/svgs/Right.svg"; // 오른쪽 화살표 이미지 임포트
 import { useNavigate } from "react-router-dom";
+import { PATHS } from "@/constants";
 
 // API로부터 받아올 더미 데이터 (총 7개)
 const hotDebates = [
@@ -94,7 +95,7 @@ const MainPage = () => {
         {/* 오른쪽 섹션: 밸런스 재판 시작하기 패널 */}
         <div
           className="flex-1 bg-[#DDD] rounded-2xl p-[64px] h-[470px] relative cursor-pointer hover:opacity-90 transition" // 클릭 가능하도록 커서/효과 추가
-          onClick={() => navigate("/firsttrial/start")} // 솔로모드, vs 모드 선택 페이지로 이동
+          onClick={() => navigate(PATHS.FIRST_TRIAL_START)} // 솔로모드, vs 모드 선택 페이지로 이동
         >
           <h2 className="text-3xl font-bold">밸런스 재판 시작하기</h2>
           {/* 패널 내 콘텐츠는 여기에 추가 */}

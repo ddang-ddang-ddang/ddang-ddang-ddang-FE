@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import FileIcon from "@/assets/svgs/file.svg";
+import { PATHS } from "@/constants";
 
 export default function FirstTrialResult() {
   const navigate = useNavigate();
@@ -45,7 +46,7 @@ export default function FirstTrialResult() {
 
       {/* AI 판결 보기 버튼 */}
       <button
-        onClick={() => navigate("/ai-judge")}
+        onClick={() => navigate(PATHS.AI_JUDGE)}
         className="mt-[40px] h-[123px] px-[101px] py-[40px] bg-[#E8E8E8] rounded-[30px] text-[24px] font-semibold text-[#000000] hover:bg-[#d9d9d9]"
         style={{
           fontFamily: "Pretendard",

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Textarea from "@/components/common/textarea";
 import Button from "@/components/common/Button";
+import { PATHS } from "@/constants";
 
 /* 입장문 제출 페이지 */
 export default function FirstTrialSubmit() {
@@ -21,7 +22,7 @@ export default function FirstTrialSubmit() {
       setAlertMessage("입장을 선택해주세요.");
       return;
     }
-    navigate("/first-trial/loading");
+    navigate(PATHS.FIRST_TRIAL_LOADING);
   };
 
   return (

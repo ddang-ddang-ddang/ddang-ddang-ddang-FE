@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import FileIcon from "@/assets/svgs/file.svg";
+import { PATHS } from "@/constants";
 
 export default function FirstTrialLoading() {
   const navigate = useNavigate();
@@ -8,7 +9,7 @@ export default function FirstTrialLoading() {
   // 2초 후 결과 페이지로 이동
   useEffect(() => {
     const timer = setTimeout(() => {
-      navigate("/first-trial/result");
+      navigate(PATHS.FIRST_TRIAL_RESULT);
     }, 2000);
     return () => clearTimeout(timer);
   }, [navigate]);
