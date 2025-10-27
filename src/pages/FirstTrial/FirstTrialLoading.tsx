@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import fileIcon from "@/assets/svgs/file.svg";
+import FileIcon from "@/assets/svgs/file.svg";
 
 export default function FirstTrialLoading() {
   const navigate = useNavigate();
@@ -35,10 +35,9 @@ export default function FirstTrialLoading() {
         }}
       >
         {/* 아이콘 */}
-        <img
-          src={fileIcon}
-          alt="입장문 제출중 아이콘"
+        <FileIcon
           className="w-[229px] h-[229px] mb-[20px]"
+          title="입장문 제출중 아이콘"
         />
 
         {/* 텍스트 */}

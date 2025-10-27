@@ -41,3 +41,19 @@ npm run preview
 ## Development Conventions
 
 The project uses ESLint for code linting. The configuration is in `eslint.config.js`.
+
+## src Directory Structure
+```
+src/
+├───apis/
+├───assets/
+├───components/
+├───constants/
+├───hooks/
+├───pages/
+├───stores/
+├───App.css
+├───App.tsx
+├───index.css
+└───main.tsx
+```

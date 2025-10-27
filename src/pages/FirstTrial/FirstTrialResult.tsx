@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import fileIcon from "@/assets/svgs/file.svg";
+import FileIcon from "@/assets/svgs/file.svg";
 
 export default function FirstTrialResult() {
   const navigate = useNavigate();
@@ -26,10 +26,9 @@ export default function FirstTrialResult() {
         }}
       >
         {/* 아이콘 */}
-        <img
-          src={fileIcon}
-          alt="판결 완료 아이콘"
+        <FileIcon
           className="w-[229px] h-[229px] mb-[20px]"
+          title="판결 완료 아이콘"
         />
 
         {/* 텍스트 */}

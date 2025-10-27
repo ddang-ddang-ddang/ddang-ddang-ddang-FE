@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { PATHS } from "@/constants";
 
 export default function FirstTrialJudge() {
   const navigate = useNavigate();
@@ -79,7 +80,7 @@ export default function FirstTrialJudge() {
           style={{
             fontFamily: "Pretendard",
           }}
-          onClick={() => navigate("/")}
+          onClick={() => navigate(PATHS.ROOT)}
         >
           여기서 마치기
         </button>
@@ -89,7 +90,7 @@ export default function FirstTrialJudge() {
           style={{
             fontFamily: "Pretendard",
           }}
-          onClick={() => navigate("/second-trial")}
+          onClick={() => navigate(PATHS.SECOND_TRIAL)}
         >
           2차 심판 가기
         </button>

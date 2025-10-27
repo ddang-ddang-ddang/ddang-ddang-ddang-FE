@@ -11,6 +11,8 @@ import FirstTrialSubmit from "@/pages/FirstTrial/FirstTrialSubmit";
 import FirstTrialLoading from "@/pages/FirstTrial/FirstTrialLoading";
 import FirstTrialResult from "@/pages/FirstTrial/FirstTrialResult";
 import FirstTrialJudge from "./pages/FirstTrial/FirstTrialJudge";
+import NotFound from "@/pages/NotFound";
+import { PATHS } from "@/constants";
 
 function App() {
   return (
@@ -20,17 +22,22 @@ function App() {
 
       {/* 라우팅 영역 */}
       <Routes>
-        <Route path="/" element={<Main />} />
-        <Route path="/mypage" element={<MyPage />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/third-trial" element={<ThirdTrialPage />} />
-        <Route path="/secondtrial/register" element={<SecondTrialRegister />} />
+        <Route path={PATHS.ROOT} element={<Main />} />
+        <Route path={PATHS.MY_PAGE} element={<MyPage />} />
+        <Route path={PATHS.LOGIN} element={<Login />} />
+        <Route path={PATHS.THIRD_TRIAL} element={<ThirdTrialPage />} />
+        <Route path={PATHS.SECOND_TRIAL} element={<SecondTrialRegister />} />
+        <Route
+          path={PATHS.SECOND_TRIAL_REGISTER}
+          element={<SecondTrialRegister />}
+        />
         <Route path="/secondtrial/1" element={<SecondTrial_1 />} />
         <Route path="/firsttrial/start" element={<FirstTrialStart />} />
         <Route path="/firsttrial/submit" element={<FirstTrialSubmit />} />
         <Route path="/first-trial/loading" element={<FirstTrialLoading />} />
         <Route path="/first-trial/result" element={<FirstTrialResult />} />
         <Route path="/ai-judge" element={<FirstTrialJudge />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </>
   );

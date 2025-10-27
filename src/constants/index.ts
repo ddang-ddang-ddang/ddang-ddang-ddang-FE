@@ -2,7 +2,9 @@ export const PATHS = {
   ROOT: "/",
   LOGIN: "/login",
   MY_PAGE: "/mypage",
+  SECOND_TRIAL: "/second-trial",
   THIRD_TRIAL: "/third-trial",
+  SECOND_TRIAL_REGISTER: "/secondtrial/register",
 } as const;
 
 // 네브바를 숨길 스텝 매핑 (경로별)

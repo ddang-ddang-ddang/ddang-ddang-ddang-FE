@@ -2,13 +2,10 @@
 
 import React, { useState, useCallback } from "react";
 import Button from "@/components/common/Button";
-import Textarea from "@/components/common/textarea";
 import HotDebateCard from "@/components/common/DebateCard"; // HotDebateCard 컴포넌트 임포트
 import Left from "@/assets/svgs/Left.svg"; // 왼쪽 화살표 이미지 임포트
 import Right from "@/assets/svgs/Right.svg"; // 오른쪽 화살표 이미지 임포트
 import { useNavigate } from "react-router-dom";
-
-import ArgumentCard from "@/components/common/ArgumentCard";
 
 // API로부터 받아올 더미 데이터 (총 7개)
 const hotDebates = [

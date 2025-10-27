@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Textarea from "@/components/common/textarea";
 import Button from "@/components/common/Button";
 
@@ -8,6 +9,7 @@ export default function FirstTrialSubmit() {
   const [alertMessage, setAlertMessage] = useState("");
   const [aPosition, setAPosition] = useState("");
   const [bPosition, setBPosition] = useState("");
+  const navigate = useNavigate();
 
   const handleSelect = (side: "A" | "B") => {
     setSelectedSide(side);
@@ -19,7 +21,7 @@ export default function FirstTrialSubmit() {
       setAlertMessage("입장을 선택해주세요.");
       return;
     }
-    window.location.href = "/first-trial/loading";
+    navigate("/first-trial/loading");
   };
 
   return (
