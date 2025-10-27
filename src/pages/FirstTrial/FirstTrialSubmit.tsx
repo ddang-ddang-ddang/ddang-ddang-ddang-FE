@@ -23,7 +23,7 @@ export default function FirstTrialSubmit() {
       setErrorMessage("입장을 선택해주세요");
       return;
     }
-    navigate("/first-trial/judge");
+    navigate("/first-trial/loading");
   };
 
   return (

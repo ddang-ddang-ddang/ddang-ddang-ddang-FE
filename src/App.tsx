@@ -29,8 +29,8 @@ function App() {
         <Route path="/firsttrial/start" element={<FirstTrialStart />} />
         <Route path="/firsttrial/submit" element={<FirstTrialSubmit />} />
         <Route path="/first-trial/loading" element={<FirstTrialLoading />} />
+        <Route path="/first-trial/judge" element={<FirstTrialJudge />} />
         <Route path="/first-trial/result" element={<FirstTrialResult />} />
-        <Route path="/ai-judge" element={<FirstTrialJudge />} />
       </Routes>
     </>
   );

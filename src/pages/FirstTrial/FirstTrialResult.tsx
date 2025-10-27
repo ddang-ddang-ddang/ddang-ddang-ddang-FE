@@ -28,10 +28,9 @@ export default function FirstTrialResult() {
           판결 완료!
         </p>
       </div>
-
       <button
-        onClick={() => navigate("/ai-judge")}
-        className="mt-[40px] h-[123px] px-[101px] py-[40px] bg-[#E8E8E8] rounded-[30px] text-[24px] font-semibold text-[#000000] hover:bg-[#d9d9d9]"
+        onClick={() => navigate("/first-trial/judge")}
+        className="mt-[78px] flex justify-center items-center h-[123px] px-[102px] py-[40px] bg-[#E8E8E8] rounded-[30px] text-[36px] font-bold text-[#000000] leading-[1.2] tracking-[0.02em] hover:bg-[#d9d9d9] mb-[120px]"
         style={{ fontFamily: "Pretendard" }}
       >
         AI 판결 보기
