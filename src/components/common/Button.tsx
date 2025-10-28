@@ -1,11 +1,9 @@
-// Button.tsx
-
 import clsx from "clsx";
 
 // Button 컴포넌트의 props 타입 정의
 type ButtonProps = {
   children: React.ReactNode;
-  variant?: "primary" | "secondary" | "navbar" | 'ghost'; // 버튼 스타일 종류 + ghost 추가
+  variant?: "primary" | "secondary" | "navbar" | "ghost"; // 버튼 스타일 종류 + ghost 추가
   size?: "sm" | "md" | "lg"; // 버튼 크기
   isLoading?: boolean; // 로딩 상태
   className?: string; // 추가적인 클래스네임(승찬이형 pr 반영)
@@ -28,14 +26,16 @@ const Button = ({
     // primary와 secondary에 패딩, 폰트 굵기, 둥근 모서리 스타일 포함 (승찬이형 pr 반영)
     // ghost 스타일 추가
     primary:
-      "bg-[#E8E8E8] hover:bg-gray-300 text-black font-bold py-2 px-4 rounded", //bg 일단 회색으로 해놓음
+      "bg-yellow-400 hover:bg-blue-700 text-black font-bold py-2 px-4 rounded",
+    // 첫번째 재판 (솔로모드, VS모드 버튼)
     secondary:
-      "bg-yellow-200 hover:bg-gray-700 text-black font-medium py-1 px-3 rounded-lg",
+      "bg-[#E8E8E8] hover:opacity-80 text-[#000000] font-semibold text-[24px] rounded-[30px]",
     // Navbar의 LOGIN 버튼
     navbar:
-      "box-border h-[44px] px-[37px] py-[10px] rounded-[33px] bg-[#FFFFFF] " +
+      "box-border px-[37px] py-[10px] rounded-[33px] bg-[#FFFFFF] " +
       "text-[#000000] font-[Pretendard] text-[20px] font-normal leading-normal hover:bg-gray-100",
-    ghost: 'bg-transparent text-black hover:bg-gray-200 font-bold py-2 px-4 rounded',
+    ghost:
+      "bg-transparent text-black hover:bg-gray-200 font-bold py-2 px-4 rounded",
   };
 
   const sizeStyles = {

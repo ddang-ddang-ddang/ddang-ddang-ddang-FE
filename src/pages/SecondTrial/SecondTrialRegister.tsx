@@ -1,7 +1,8 @@
 // src/pages/SecondTrialPage.tsx
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import Button from '@/components/common/Button';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import Button from "@/components/common/Button";
+import { PATHS } from "@/constants";
 
 const SecondTrialRegister: React.FC = () => {
   const [duration, setDuration] = useState<string>('');
@@ -57,7 +58,7 @@ const SecondTrialRegister: React.FC = () => {
         variant="primary"
         size="lg"
         className="w-[585px] h-[123px] rounded-[30px]"
-        onClick={() => navigate('/secondtrial/1')}
+        onClick={() => navigate(PATHS.SECOND_TRIAL_ROUND_ONE)}
       >
         2차 재판 시작
       </Button>

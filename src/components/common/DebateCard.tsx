@@ -1,5 +1,6 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom'; // useNavigate 훅 임포트
+import React from "react";
+import { useNavigate } from "react-router-dom"; // useNavigate 훅 임포트
+import { PATH_BUILDERS } from "@/constants";
 
 type Debate = {
   id: number;
@@ -14,12 +15,12 @@ const HotDebateCard = ({ debate }: HotDebateCardProps) => {
   const navigate = useNavigate(); // useNavigate 훅 초기화
   
   // 제목을 'VS' 기준으로 분리합니다. (예: ["밥 손으로 처먹는 남친 ", " 칼로 썰어 먹는 남친"])
-  const titleParts = debate.title.split('VS');
+  const titleParts = debate.title.split("VS");
 
   // 클릭 이벤트 핸들러
   const handleCardClick = () => {
     // debate.id를 사용하여 동적 URL로 페이지 이동
-    navigate(`/debate/${debate.id}`);
+    navigate(PATH_BUILDERS.debateDetail(debate.id));
   };
 
   return (
