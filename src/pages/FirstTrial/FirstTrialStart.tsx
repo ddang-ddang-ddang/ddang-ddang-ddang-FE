@@ -1,12 +1,13 @@
 import { useNavigate } from "react-router-dom";
 import Button from "@/components/common/Button";
+import { PATHS } from "@/constants";
 
 /* 초심 - 재판 시작 선택 페이지 */
 export default function FirstTrialStart() {
   const navigate = useNavigate();
 
   const handleSoloMode = () => {
-    navigate("/firsttrial/submit");
+    navigate(PATHS.FIRST_TRIAL_SUBMIT);
   };
 
   return (
