@@ -15,26 +15,14 @@ export default function FirstTrialLoading() {
   }, [navigate]);
 
   return (
-    <div className="flex flex-col items-center bg-[#FFFFFF] mx-auto w-full max-w-[1440px] min-h-screen">
+    <div className="flex flex-col items-center bg-white mx-auto w-full max-w-[1440px] min-h-screen text-[#203C77] font-[Pretendard]">
       {/* 제목 */}
-      <h1
-        className="text-[38px] font-bold text-[#000000] text-center mt-[78px]"
-        style={{
-          fontFamily: "Pretendard",
-          lineHeight: "150%",
-        }}
-      >
+      <h1 className="text-[38px] font-bold text-center mt-[78px] leading-relaxed">
         초심
       </h1>
 
       {/* 파일 아이콘 박스 */}
-      <div
-        className="flex flex-col items-center justify-center mt-[100px] rounded-[100px] bg-[#E8E8E8]"
-        style={{
-          width: "395px",
-          height: "448px",
-        }}
-      >
+      <div className="flex flex-col items-center justify-center mt-[100px] w-[395px] h-[448px] rounded-[100px] bg-main-medium/20">
         {/* 아이콘 */}
         <FileIcon
           className="w-[229px] h-[229px] mb-[20px]"
@@ -42,15 +30,7 @@ export default function FirstTrialLoading() {
         />
 
         {/* 텍스트 */}
-        <p
-          className="text-[36px] font-bold text-[#000000]"
-          style={{
-            fontFamily: "Pretendard",
-            lineHeight: "normal",
-          }}
-        >
-          입장문 제출중..
-        </p>
+        <p className="text-[36px] font-bold leading-tight">입장문 제출중..</p>
       </div>
     </div>
   );
