@@ -4,11 +4,9 @@ import MyPage from "@/pages/MyPage";
 import Navbar from "@/components/layout/Navbar";
 import Login from "./pages/login/LoginPage";
 import ThirdTrialPage from "@/pages/third-trial/ThirdTrialPage";
-import FirstTrialStart from "@/pages/FirstTrial/FirstTrialStart";
-import FirstTrialSubmit from "@/pages/FirstTrial/FirstTrialSubmit";
-import FirstTrialLoading from "@/pages/FirstTrial/FirstTrialLoading";
-import FirstTrialResult from "@/pages/FirstTrial/FirstTrialResult";
-import FirstTrialJudge from "./pages/FirstTrial/FirstTrialJudge";
+import SecondTrialRegister from "./pages/SecondTrial/SecondTrialRegister";
+import SecondTrial_1 from "./pages/SecondTrial/SecondTrial_1";
+import FirstTrialPage from "@/pages/FirstTrial/FirstTrialPage";
 import NotFound from "@/pages/NotFound";
 import { PATHS } from "@/constants";
 import SecondTrialRegister from "@/pages/SecondTrial/SecondTrialRegister";
@@ -26,6 +24,7 @@ function App() {
         <Route path={PATHS.ROOT} element={<Main />} />
         <Route path={PATHS.MY_PAGE} element={<MyPage />} />
         <Route path={PATHS.LOGIN} element={<Login />} />
+        <Route path={PATHS.FIRST_TRIAL} element={<FirstTrialPage />} />
         <Route path={PATHS.THIRD_TRIAL} element={<ThirdTrialPage />} />
         <Route path={PATHS.SECOND_TRIAL} element={<SecondTrialRegister />} />
         <Route

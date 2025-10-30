@@ -3,9 +3,7 @@
   font-style: normal;
   font-weight: 400;
   font-display: swap;
-  src:
-    local("Pretendard Regular"),
-    local("Pretendard-Regular"),
+  src: local("Pretendard Regular"), local("Pretendard-Regular"),
     url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-regular.woff2")
       format("woff2");
 }
@@ -15,9 +13,16 @@
   font-style: normal;
   font-weight: 700;
   font-display: swap;
-  src:
-    local("Pretendard Bold"),
-    local("Pretendard-Bold"),
+  src: local("Pretendard Bold"), local("Pretendard-Bold"),
     url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-bold.woff2")
       format("woff2");
+}
+
+@font-face {
+  font-family: "Gapyeong Hanseokbong";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local("Gapyeong Hanseokbong Regular"), local("GapyeongHanseokbongR"),
+    url("/fonts/GapyeongHanseokbongR.ttf") format("truetype");
 }
