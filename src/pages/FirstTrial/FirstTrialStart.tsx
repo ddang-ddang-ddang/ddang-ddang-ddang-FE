@@ -6,22 +6,38 @@ import { PATHS } from "@/constants";
 /* 초심 - 재판 시작 선택 페이지 */
 export default function FirstTrialStart() {
   const navigate = useNavigate();
+
+  // 현재 선택 상태
   const [selected, setSelected] = useState<"none" | "solo" | "vs">("none");
 
-  const handleStart = () => navigate(PATHS.FIRST_TRIAL_SUBMIT);
+  const handleSoloClick = () => {
+    setSelected("solo");
+  };
+
+  const handleVsClick = () => {
+    setSelected("vs");
+  };
+
+  const handleStart = () => {
+    navigate(PATHS.FIRST_TRIAL_SUBMIT);
+  };
 
   return (
-    <div className="flex flex-col items-center bg-white mx-auto w-full max-w-[1440px] min-h-screen">
+    <div className="flex flex-col items-center bg-[#FFFFFF] mx-auto w-full max-w-[1440px] min-h-screen">
       {/* 제목 */}
-      <h1 className="text-[38px] font-bold text-main mt-[78px] mb-[60px] leading-[150%] font-[Pretendard]">
+      <h1
+        className="text-[38px] font-bold text-[#203C77] mt-[78px] mb-[60px]"
+        style={{ fontFamily: "Pretendard", lineHeight: "150%" }}
+      >
         밸런스 재판 시작하기
       </h1>
 
       {/* 버튼 그룹 */}
       <div className="flex gap-[40px] justify-center mb-[40px]">
+        {/* 솔로모드 버튼 */}
         <Button
           variant="secondary"
-          onClick={() => setSelected("solo")}
+          onClick={handleSoloClick}
           className={`w-[380px] h-[123px] ${
             selected === "solo" ? "font-bold" : "font-normal"
           }`}
@@ -29,9 +45,10 @@ export default function FirstTrialStart() {
           솔로모드
         </Button>
 
+        {/* VS모드 버튼 */}
         <Button
           variant="third"
-          onClick={() => setSelected("vs")}
+          onClick={handleVsClick}
           className={`w-[380px] h-[123px] ${
             selected === "solo" ? "opacity-40" : "opacity-100"
           }`}
@@ -40,10 +57,15 @@ export default function FirstTrialStart() {
         </Button>
       </div>
 
-      {/* 설명 박스 */}
+      {/* 설명 박스 (솔로모드 선택 시만 표시됨) */}
       {selected === "solo" && (
-        <div className="flex justify-center items-center text-center w-[995px] h-[414px] bg-main-bright rounded-[15px] px-[92px] py-[87px] mb-[60px]">
-          <p className="text-[20px] font-normal text-main-medium leading-[150%] font-[Pretendard]">
+        <div className="flex justify-center items-center text-center w-[995px] h-[414px] bg-[#E8F2FF] rounded-[15px] px-[92px] py-[87px] mb-[60px]">
+          <p
+            className="text-[20px] font-normal text-[#809AD2] leading-[150%]"
+            style={{
+              fontFamily: "Pretendard",
+            }}
+          >
             솔로모드는 혼자서 밸런스 재판을 체험해보는 모드입니다. <br />
             상대방 없이 스스로 찬성과 반대 입장을 모두 작성하고, AI 판결을 통해
             결과를 확인할 수 있습니다. <br />
@@ -55,11 +77,11 @@ export default function FirstTrialStart() {
         </div>
       )}
 
-      {/* 재판 시작하기 버튼 */}
+      {/* 재판 시작하기 버튼 (솔로모드 선택 시만 표시됨) */}
       {selected === "solo" && (
         <Button
           variant="trialStart"
-          className="w-[380px] h-[123px] mt-[40px] mb-[120px]"
+          className="w-[380px] h-[123px] px-[92px] py-[40px] mt-[40px] mb-[120px]"
           onClick={handleStart}
         >
           재판 시작하기
