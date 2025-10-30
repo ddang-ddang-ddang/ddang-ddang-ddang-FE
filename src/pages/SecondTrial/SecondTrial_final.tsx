@@ -30,13 +30,13 @@ const SecondTrial_final = () => {
       <div className="max-w-6xl mx-auto px-4">
         
         {/* 1. 헤더 및 타이머 (마감 상태) */}
-        <div className="flex justify-between items-center pb-4 mb-6 border-b border-gray-200">
-          <h1 className="text-3xl font-bold">2차 재판</h1>
-          <span className="bg-[#FFE5E5] p-4 rounded-lg text-md font-medium text-[#EB9292]">{MOCK_DEBATE_DATA.timeLimit}</span>
+        <div className="flex justify-between items-center pb-4 mb-6 ">
+          <h1 className="text-3xl font-bold text-main">2차 재판</h1>
+          <span className="bg-[#FFE5E5] p-4 rounded-lg text-md font-medium text-main-red">{MOCK_DEBATE_DATA.timeLimit}</span>
         </div>
 
         {/* 2. 상황 설명 */}
-        <p className="font-medium mb-8">{MOCK_DEBATE_DATA.situation}</p>
+        <p className="font-medium mb-8 text-main">{MOCK_DEBATE_DATA.situation}</p>
 
         {/* 3. 최종 심의 대상 카드 (2차 재판 결과 표시 예정) */}
         <div className="flex space-x-8 justify-center mb-12">
@@ -44,37 +44,41 @@ const SecondTrial_final = () => {
           {/* A. 찬성 블록 (결과 확정) */}
           <div 
             className={clsx(
-              "flex-1 p-8 rounded-lg min-h-[400px] border-2 transition-all duration-200 bg-[#809AD2]",
+              "w-[513px] h-[447px] bg-main-medium rounded-[30px] flex justify-center items-center flex-col",
               // 3차 심의에서는 투표가 불가능하므로 비활성화 스타일 유지
               'cursor-default opacity-70 border-gray-300' 
             )}
           >
-            <h2 className="text-xl font-bold mb-4 text-white">A측 입장</h2>
-            <p className="text-center text-white">{MOCK_DEBATE_DATA.argumentA}</p>
+            <span className="text-2xl font-bold text-center text-white">
+              A. 찬성 {/* api 통해 값 넣기 */}
+            </span>
+            <p className="px-20 py-10 text-white">{MOCK_DEBATE_DATA.argumentA}</p>
           </div>
           
           {/* B. 반대 블록 (결과 확정) */}
           <div 
             className={clsx(
-              "flex-1 p-8 rounded-lg min-h-[400px] border-2 transition-all duration-200 bg-[#EB9292]",
+              "w-[513px] h-[447px] bg-main-red rounded-[30px] flex justify-center items-center flex-col",
               'cursor-default opacity-70 border-gray-300'
             )}
           >
-            <h2 className="text-xl font-bold mb-4 text-white">B측 입장</h2>
-            <p className="text-center text-white">{MOCK_DEBATE_DATA.argumentB}</p>
+            <span className="text-2xl font-bold text-center text-white">
+              B. 찬성 {/* api 통해 값 넣기 */}
+            </span>
+            <p className="px-20 py-10 text-white">{MOCK_DEBATE_DATA.argumentB}</p>
           </div>
         </div>
         
         {/* 4. 최종 투표 결과 바 (추가된 부분) */}
-        <div className="flex flex-col items-center mb-12 border-t pt-8">
-            <h2 className="text-2xl font-bold text-gray-700 mb-6">최종 투표 결과</h2>
+        <div className="flex flex-col items-center mb-12 pt-8">
+            <h2 className="text-2xl font-bold text-main mb-6">2차 재판 투표 결과</h2>
             
             {/* 비율 바 컨테이너 */}
             <div className="w-full max-w-xl h-10 bg-gray-200 rounded-full flex overflow-hidden">
                 {/* A측 비율 (파란색) */}
                 <div 
                     style={{ width: `${MOCK_VOTE_RESULT.voteA}%` }}
-                    className="bg-[#809AD2] flex justify-center items-center text-white font-bold text-sm h-full"
+                    className="bg-main-medium flex justify-center items-center text-white font-bold text-sm h-full"
                 >
                     {/* A측 비율 텍스트 */}
                     {MOCK_VOTE_RESULT.voteA > 5 && (
@@ -85,7 +89,7 @@ const SecondTrial_final = () => {
                 {/* B측 비율 (빨간색) */}
                 <div 
                     style={{ width: `${MOCK_VOTE_RESULT.voteB}%` }}
-                    className="bg-[#EB9292] flex justify-center items-center text-white font-bold text-sm h-full"
+                    className="bg-main-red flex justify-center items-center text-white font-bold text-sm h-full"
                 >
                     {/* B측 비율 텍스트 */}
                     {MOCK_VOTE_RESULT.voteB > 5 && (
@@ -114,7 +118,7 @@ const SecondTrial_final = () => {
                 variant="primary"
                 size="lg"
                 onClick={() => navigate(PATHS.THIRD_TRIAL)} // 3차 재판 페이지로 이동
-                className="w-1/3" // 중앙에 위치하도록 너비 조정
+                className="w-[585px] h-[123px] rounded-[30px]" 
             >
                 최종심 결과보기
             </Button>

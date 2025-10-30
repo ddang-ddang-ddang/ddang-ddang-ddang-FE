@@ -1,15 +1,16 @@
 import React, { useState, useMemo } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import Button from '@/components/common/Button';
 import Textarea from '@/components/common/textarea';
 import ArgumentCard, { ArgumentData } from '@/components/common/ArgumentCard';
 import clsx from 'clsx'; 
+import { PATHS } from '@/constants';
 import ReplyInput from '@/components/common/ReplyInput'; 
 
 // 더미 데이터 및 상수
 const MOCK_DEBATE_DATA = {
   id: 1,
-  timeLimit: '마감',
+  timeLimit: '마감까지 남은 시간 : 1시간',
   situation: '깻잎 논쟁: 내 연인이 친구의 깻잎을 떼어주는 것을 허용해야 하는가?',
   argumentA: '연인을 배려하는 행동이며, 사소한 일에 질투하는 것은 속이 좁은 것이다.',
   argumentB: '연인과 친구 사이에 무의식적인 친밀감을 형성하는 행동이며, 오해의 소지가 있다.',
@@ -38,13 +39,14 @@ const handleSubmitReply = (payload: any) => {
 
 const SecondTrial_1 = () => {
     const { debateId } = useParams<{ debateId: string }>(); 
+    const navigate = useNavigate();
     // 투표 상태는 이제 API를 통해 가져와야 하지만, 재투표 로직을 위해 로컬 상태를 유지합니다.
     const [selectedSide, setSelectedSide] = useState<'A' | 'B' | null>(null);
     const [isVoted, setIsVoted] = useState(false); // 투표 기록 유무 상태
     
     // 변론 입력 상태
     const [newArgument, setNewArgument] = useState('');
-    const [newArgumentSide, setNewArgumentSide] = useState<'A' | 'B'>('A');
+    const [newArgumentSide, setNewArgumentSide] = useState<'' | 'A' | 'B'>('');
     const [currentTab, setCurrentTab] = useState<Tab>('all'); // 댓글 탭 필터 상태
 
     // 탭 필터링 로직
@@ -77,9 +79,16 @@ const SecondTrial_1 = () => {
             alert('변론 내용을 입력해 주세요.');
             return;
         }
+        // ⭐️ '입장 선택'이 기본값인 경우 제출 방지
+        if (newArgumentSide === '') {
+            alert('논거 제출 입장을 선택해 주세요.');
+            return;
+        }
+        
         console.log(`[변론 제출] 진영: ${newArgumentSide}, 내용: ${newArgument}`);
         // TODO: 새 논거 API 호출 로직 구현
         setNewArgument(''); // 입력 필드 초기화
+        setNewArgumentSide(''); // ⭐️ 입장 선택 초기화
         alert('변론이 성공적으로 제출되었습니다!');
     };
 
@@ -89,13 +98,13 @@ const SecondTrial_1 = () => {
             <div className="max-w-6xl mx-auto px-4">
                 
                 {/* 1. 헤더 및 타이머 */}
-                <div className="flex justify-between items-center pb-4 mb-6 border-b border-gray-200">
-                    <h1 className="text-3xl font-bold">2차 재판</h1>
-                    <span className="bg-[#E8F2FF] p-4 rounded-lg text-md font-medium text-black">{MOCK_DEBATE_DATA.timeLimit}</span>
+                <div className="flex justify-between items-center pb-4 mb-6">
+                    <h1 className="text-3xl font-bold text-main">2차 재판</h1>
+                    <span className="bg-main-bright p-4 rounded-lg text-md font-medium text-main">{MOCK_DEBATE_DATA.timeLimit}</span>
                 </div>
 
                 {/* 2. 상황 설명 */}
-                <p className="font-medium mb-8">{MOCK_DEBATE_DATA.situation}</p>
+                <p className="font-medium mb-8 text-main">{MOCK_DEBATE_DATA.situation}</p>
 
                 {/* 3. 주장 선택 카드 */}
                 <div className="flex space-x-8 justify-center mb-12">
@@ -104,15 +113,15 @@ const SecondTrial_1 = () => {
                         // ⭐️ 마감 전일 때만 클릭 가능
                         onClick={() => MOCK_DEBATE_DATA.isVoteTime && setSelectedSide('A')}
                         className={clsx(
-                            "flex-1 p-8 rounded-lg min-h-[400px] border-2 transition-all duration-200 bg-[#809AD2]",
+                            "w-[513px] h-[447px] bg-main-medium rounded-[30px] flex justify-center items-center flex-col",
                             MOCK_DEBATE_DATA.isVoteTime ? 'cursor-pointer' : 'cursor-default', // 마감 후 커서 변경
                             selectedSide === 'A' ? 'border-blue-500 shadow-lg scale-[1.02]' : 'border-gray-300 hover:border-blue-500',
                             // 마감 후 비활성화 스타일
                             !MOCK_DEBATE_DATA.isVoteTime && 'opacity-70' 
                         )}
                     >
-                        <h2 className="text-xl font-bold mb-4 text-white">A측 입장</h2>
-                        <p className="text-center text-white">{MOCK_DEBATE_DATA.argumentA}</p>
+                        <h2 className="text-2xl font-bold text-center text-white">A측 입장</h2>
+                        <p className="px-20 py-10 text-white">{MOCK_DEBATE_DATA.argumentA}</p>
                     </div>
                     
                     {/* B. 반대 블록 */}
@@ -120,15 +129,15 @@ const SecondTrial_1 = () => {
                         // ⭐️ 마감 전일 때만 클릭 가능
                         onClick={() => MOCK_DEBATE_DATA.isVoteTime && setSelectedSide('B')}
                         className={clsx(
-                            "flex-1 p-8 rounded-lg min-h-[400px] border-2 transition-all duration-200 bg-[#EB9292]",
+                            "w-[513px] h-[447px] bg-main-red rounded-[30px] flex justify-center items-center flex-col",
                             MOCK_DEBATE_DATA.isVoteTime ? 'cursor-pointer' : 'cursor-default', // 마감 후 커서 변경
                             selectedSide === 'B' ? 'border-red-500 shadow-lg scale-[1.02]' : 'border-gray-300 hover:border-red-500',
                             // 마감 후 비활성화 스타일
                             !MOCK_DEBATE_DATA.isVoteTime && 'opacity-70'
                         )}
                     >
-                        <h2 className="text-xl font-bold mb-4 text-white">B측 입장</h2>
-                        <p className="text-center text-white">{MOCK_DEBATE_DATA.argumentB}</p>
+                        <h2 className="text-2xl font-bold text-center text-white">B측 입장</h2>
+                        <p className="px-20 py-10 text-white">{MOCK_DEBATE_DATA.argumentB}</p>
                     </div>
                 </div>
 
@@ -139,44 +148,59 @@ const SecondTrial_1 = () => {
                             variant="primary" 
                             size="lg" 
                             onClick={handleVote}
-                            // 투표 시간이 아니면 비활성화 (사실 위에 조건부 렌더링으로 처리하는게 더 좋음)
                             disabled={!selectedSide} 
+                            className="w-[585px] h-[123px] rounded-[30px]"
                         >
-                            {isVoted ? '재투표하기' : '투표하기'} {/* ⭐️ 상태에 따라 텍스트 변경 */}
+                            {isVoted ? '재투표하기' : '투표하기'}
                         </Button>
                     ) : (
-                         <Button variant="secondary" size="lg" disabled>투표 마감</Button>
+                        // ⭐️ 투표 마감 시 버튼 역할 변경
+                        <Button 
+                            variant="primary" 
+                            size="lg" 
+                            className="w-[585px] h-[123px] rounded-[30px]"
+                            onClick={() => navigate(PATHS.SECOND_TRIAL_FINAL)} // ⭐️ 최종 페이지 이동 함수 연결
+                        >
+                            투표 결과보기
+                        </Button>
                     )}
                 </div>
                 
-                {/* 5. 변론 입력 섹션 (⭐️ 마감 시간 후 숨김) */}
+                {/* 5. 변론 입력 섹션 (마감 시간 후 숨김) */}
                 {MOCK_DEBATE_DATA.isArgumentTime && (
                     <>
-                        <h2 className="text-2xl font-bold mb-4 border-t pt-8">변호</h2>
-                        <div className="bg-[#E8F2FF] p-6 rounded-lg mb-8">
-                            {/* 입력창 및 진영 선택 */}
+                        <h2 className="text-2xl font-bold mb-4 border-t border-main pt-8 text-main">변호</h2>
+                        <div className="bg-main-bright p-6 rounded-lg mb-8"> 
                             <div className="flex items-start space-x-4 mb-4">
-                                <Textarea 
-                                    placeholder="선택한 입장의 변호의견을 제시해주세요." 
-                                    minRows={3} 
-                                    maxRows={6} 
-                                    value={newArgument}
-                                    onChange={(e) => setNewArgument(e.target.value)}
-                                    className="flex-1 bg-white" 
-                                />
-                                {/* 의견 선택 라디오 버튼 및 등록 버튼 */}
-                                <div className="flex flex-col space-y-2 pt-2 pr-4">
-                                    {/* 라디오 버튼 그룹 */}
-                                    <label className="flex items-center space-x-2 cursor-pointer">
-                                        <input type="radio" name="newArgumentSide" value="A" checked={newArgumentSide === 'A'} onChange={() => setNewArgumentSide('A')} className="form-radio text-blue-600 w-5 h-5" />
-                                        <span className="text-base font-medium">A 의견</span>
-                                    </label>
-                                    <label className="flex items-center space-x-2 cursor-pointer">
-                                        <input type="radio" name="newArgumentSide" value="B" checked={newArgumentSide === 'B'} onChange={() => setNewArgumentSide('B')} className="form-radio text-red-600 w-5 h-5" />
-                                        <span className="text-base font-medium">B 의견</span>
-                                    </label>
+                                <div className="flex flex-col w-full space-y-4"> 
+                                    <select
+                                        id="argumentSideSelect"
+                                        value={newArgumentSide}
+                                        onChange={(e) => setNewArgumentSide(e.target.value as 'A' | 'B')}
+                                        className="
+                                        w-40 p-3 border border-main-medium rounded-md bg-white 
+                                        flex items-center justify-center 
+                                        text-center text-main
+                                        appearance-auto
+                                        focus:outline-none focus:ring-2 focus:ring-main-medium
+                                        "
+                                    >
+                                        <option value="">입장 선택</option>
+                                        <option value="A">A 의견</option>
+                                        <option value="B">B 의견</option>
+                                    </select>
+                                    
+                                    <Textarea 
+                                        placeholder="선택한 입장의 변호의견을 제시해주세요." 
+                                        minRows={3} 
+                                        maxRows={6} 
+                                        value={newArgument}
+                                        onChange={(e) => setNewArgument(e.target.value)}
+                                        className="w-full bg-white border-main-medium" // w-full 명시적 적용
+                                    />
                                 </div>
                             </div>
+                            
                             <div className="flex justify-end">
                                 <Button 
                                     variant="primary" 
@@ -192,16 +216,16 @@ const SecondTrial_1 = () => {
                 )}
                 
                 {/* 탭 네비게이션 */}
-                <div className="flex space-x-2 mb-6 pb-2 border-b border-gray-200">
+                <div className="flex space-x-2 mb-6 pb-2">
                     {['all', 'A', 'B'].map((tab) => (
                         <Button 
                             key={tab}
-                            variant={currentTab === tab ? 'primary' : 'secondary'}
+                            variant={currentTab === tab ? 'primary' : 'ghost'}
                             size="sm"
                             onClick={() => setCurrentTab(tab as Tab)}
                             className={clsx(
                                 "min-w-[80px]",
-                                currentTab !== tab && 'text-black hover:bg-gray-300'
+                                currentTab !== tab && 'text-main hover:bg-gray-300'
                             )}
                         >
                             {tab === 'all' ? `전체 (${DUMMY_ARGUMENTS.length})` : tab === 'A' ? `A 의견 (${DUMMY_ARGUMENTS.filter(a => a.side === 'A').length})` : `B 의견 (${DUMMY_ARGUMENTS.filter(a => a.side === 'B').length})`}
@@ -220,7 +244,7 @@ const SecondTrial_1 = () => {
                             />
                         ))
                     ) : (
-                        <p className="text-center text-black py-10 bg-gray-50 rounded-lg">
+                        <p className="text-center text-main py-10 bg-gray-50 rounded-lg">
                             제출된 변론 논거가 없습니다. 첫 논거를 작성해 보세요!
                         </p>
                     )}
