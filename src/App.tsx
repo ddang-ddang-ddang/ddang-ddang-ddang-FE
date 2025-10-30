@@ -9,6 +9,9 @@ import SecondTrial_1 from "./pages/SecondTrial/SecondTrial_1";
 import FirstTrialPage from "@/pages/FirstTrial/FirstTrialPage";
 import NotFound from "@/pages/NotFound";
 import { PATHS } from "@/constants";
+import SecondTrialRegister from "@/pages/SecondTrial/SecondTrialRegister";
+import SecondTrial_1 from "@/pages/SecondTrial/SecondTrial_1";
+import SecondTrial_final from "@/pages/SecondTrial/SecondTrial_final";
 
 function App() {
   return (
@@ -32,7 +35,21 @@ function App() {
           path={PATHS.SECOND_TRIAL_ROUND_ONE}
           element={<SecondTrial_1 />}
         />
-
+        <Route
+          path={PATHS.SECOND_TRIAL_FINAL}
+          element={<SecondTrial_final />}
+        />
+        <Route path={PATHS.FIRST_TRIAL_START} element={<FirstTrialStart />} />
+        <Route path={PATHS.FIRST_TRIAL_SUBMIT} element={<FirstTrialSubmit />} />
+        <Route
+          path={PATHS.FIRST_TRIAL_LOADING}
+          element={<FirstTrialLoading />}
+        />
+        <Route
+          path={PATHS.FIRST_TRIAL_RESULT}
+          element={<FirstTrialResult />}
+        />
+        <Route path={PATHS.AI_JUDGE} element={<FirstTrialJudge />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </>

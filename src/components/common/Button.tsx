@@ -48,6 +48,10 @@ const Button = ({
     trialStart:
       "bg-[#203C77] text-white text-[36px] font-bold rounded-[15px] hover:opacity-90 leading-none whitespace-nowrap", // FirstTrialStart 재판 시작하기 버튼
 
+      "bg-main hover:bg-blue-700 text-white font-bold py-2 px-4 rounded",
+    // 첫번째 재판 (솔로모드, VS모드 버튼)
+    secondary1:
+      "bg-main-medium hover:opacity-80 text-white font-semibold text-[24px] rounded-[30px]",
     // Navbar의 LOGIN 버튼
     navbar:
       "box-border px-[37px] py-[10px] rounded-[33px] bg-[#FFFFFF] text-[#000000] font-[Pretendard] text-[20px] font-normal leading-normal hover:bg-gray-100", // Navbar 로그인 버튼
