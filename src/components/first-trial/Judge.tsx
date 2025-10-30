@@ -1,10 +1,12 @@
-import { useNavigate } from "react-router-dom";
 import JudgeIcon from "@/assets/svgs/FirstJudge.svg";
 import ScaleIcon from "@/assets/svgs/Scale.svg";
 import Button from "@/components/common/Button";
+import { useFirstTrialStore } from "@/stores/firstTrialStore";
+import { useNavigate } from "react-router-dom";
 import { PATHS } from "@/constants";
 
-export default function FirstTrialJudge() {
+export default function Judge() {
+  const { reset } = useFirstTrialStore();
   const navigate = useNavigate();
 
   return (
@@ -26,13 +28,11 @@ export default function FirstTrialJudge() {
         {/* 말풍선 */}
         <div className="absolute left-[57px] top-[162px]">
           <div className="relative">
-            {/* 본체 */}
             <div className="relative w-[316px] h-[78px] bg-white rounded-[30px] shadow-sm flex justify-center items-center px-[55px] py-[21px]">
               <p className="text-black text-[24px] font-normal leading-[150%] text-center">
                 더 논리적이었던 건 A!
               </p>
 
-              {/* 꼬리 */}
               <div
                 className="absolute left-[50px] bottom-[-20px] w-0 h-0
                            border-l-[24px] border-l-transparent 
@@ -48,28 +48,23 @@ export default function FirstTrialJudge() {
 
         {/* 판결문 노란 상자 */}
         <div className="absolute top-[151px] right-[44px] w-[496px] h-[513px] bg-[#FFFFF6] rounded-[7px] flex flex-col items-center pt-[30px] text-[#EBAD27]">
-          {/* 사건번호 */}
           <p className="absolute left-[39px] top-[29px] text-[14px] leading-[150%] font-['Gapyeong_Hanseokbong']">
             사건번호 - 01
           </p>
 
-          {/* AI 판사 */}
           <p className="absolute right-[45px] top-[26px] text-[14px] leading-[150%] text-right font-['Gapyeong_Hanseokbong']">
             AI 판사
           </p>
 
-          {/* 중앙 저울 아이콘 (위로 24px 조정) */}
           <ScaleIcon
             className="absolute top-[24px] left-1/2 -translate-x-1/2 w-[48px] h-[48px] text-[#EBAD27] fill-[#EBAD27]"
             title="AI 판결 저울"
           />
 
-          {/* 판결문 타이틀 */}
           <h2 className="absolute top-[78px] left-1/2 -translate-x-1/2 text-[38px] font-bold leading-[150%] text-center text-[#EBAD27] font-['Gapyeong_Hanseokbong']">
             판결문
           </h2>
 
-          {/* 배경 / A입장 / B입장 */}
           <p className="absolute top-[150px] left-1/2 -translate-x-1/2 w-[420px] text-[13px] leading-[150%] text-center text-[#EBAD27] font-normal font-['Gapyeong_Hanseokbong']">
             배경: 어쩌고저쩌고
             <br />
@@ -78,7 +73,6 @@ export default function FirstTrialJudge() {
             B입장: 어쩌고저쩌고
           </p>
 
-          {/* 상세 판단 부분 */}
           <p className="absolute top-[249px] left-1/2 -translate-x-1/2 w-[420px] text-[15px] leading-[150%] text-center text-[#EBAD27] font-normal font-['Gapyeong_Hanseokbong']">
             A입장의 어쩌고 저쩌고 근거가 더 배경설명과 주제를 납득 어쩌고 저쩌고
             <br />
@@ -89,7 +83,6 @@ export default function FirstTrialJudge() {
             저쩌고 해서
           </p>
 
-          {/* 최종 판결 */}
           <p className="absolute top-[403px] left-1/2 -translate-x-1/2 w-[420px] text-[15px] font-bold leading-[150%] text-center text-[#EBAD27] font-['Gapyeong_Hanseokbong']">
             A입장 논리의 승리! B입장은 불복할 시 재심을 청구할 수 있음
           </p>
@@ -103,7 +96,6 @@ export default function FirstTrialJudge() {
             A 입장의 근거가 B 입장의 근거에 비해 n%정도 더 논리적이었어요!
           </p>
 
-          {/* 꼬리 */}
           <div
             className="absolute left-[-28px] top-1/2 -translate-y-1/2 w-0 h-0 
                        border-t-[16px] border-t-transparent 
@@ -134,20 +126,28 @@ export default function FirstTrialJudge() {
 
       {/* 하단 버튼 2개 */}
       <div className="mt-[84px] flex justify-center gap-[32px]">
+        {/* 여기서 마치기 → 홈으로 */}
         <Button
           variant="secondary"
           className="w-[380px] h-[123px]"
-          onClick={() => navigate(PATHS.ROOT)}
+          onClick={() => {
+            reset();
+            navigate(PATHS.ROOT); // 홈으로 이동
+          }}
         >
           <span className="text-white text-[36px] font-bold leading-normal">
             여기서 마치기
           </span>
         </Button>
 
+        {/* 재심 신청하기 → 2차 재판 */}
         <Button
           variant="trialStart"
           className="w-[380px] h-[123px]"
-          onClick={() => navigate(PATHS.SECOND_TRIAL)}
+          onClick={() => {
+            reset();
+            navigate(PATHS.SECOND_TRIAL); // 2차 재판 첫 화면으로 이동
+          }}
         >
           <span className="text-white text-[36px] font-bold leading-normal">
             재심 신청하기

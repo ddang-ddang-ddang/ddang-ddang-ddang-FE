@@ -1,25 +1,19 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import Button from "@/components/common/Button";
-import { PATHS } from "@/constants";
+import { useFirstTrialStore } from "@/stores/firstTrialStore";
 
 /* 초심 - 재판 시작 선택 페이지 */
-export default function FirstTrialStart() {
-  const navigate = useNavigate();
+export default function Start() {
+  const { setStep } = useFirstTrialStore();
 
   // 현재 선택 상태
   const [selected, setSelected] = useState<"none" | "solo" | "vs">("none");
 
-  const handleSoloClick = () => {
-    setSelected("solo");
-  };
-
-  const handleVsClick = () => {
-    setSelected("vs");
-  };
+  const handleSoloClick = () => setSelected("solo");
+  const handleVsClick = () => setSelected("vs");
 
   const handleStart = () => {
-    navigate(PATHS.FIRST_TRIAL_SUBMIT);
+    setStep("submit"); // 상태로 다음 단계 이동
   };
 
   return (

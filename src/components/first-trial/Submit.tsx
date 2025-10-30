@@ -1,17 +1,15 @@
 import { useState } from "react";
 import Button from "@/components/common/Button";
 import Textarea from "@/components/common/textarea";
-import { useNavigate } from "react-router-dom";
-import { PATHS } from "@/constants";
+import { useFirstTrialStore } from "@/stores/firstTrialStore";
 
 /* 입장문 제출 페이지 */
-export default function FirstTrialSubmit() {
+export default function Submit() {
   const [selectedSide, setSelectedSide] = useState<"A" | "B" | null>(null);
   const [errorMessage, setErrorMessage] = useState("");
-  const navigate = useNavigate();
+  const { setStep } = useFirstTrialStore();
 
   const handleSelect = (side: "A" | "B") => {
-    // 같은 버튼 다시 누르면 선택 해제
     if (selectedSide === side) {
       setSelectedSide(null);
       return;
@@ -25,7 +23,7 @@ export default function FirstTrialSubmit() {
       setErrorMessage("입장을 선택해주세요");
       return;
     }
-    navigate(PATHS.FIRST_TRIAL_LOADING);
+    setStep("loading");
   };
 
   return (

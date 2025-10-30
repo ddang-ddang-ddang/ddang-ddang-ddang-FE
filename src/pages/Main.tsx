@@ -95,7 +95,7 @@ const MainPage = () => {
         {/* 오른쪽 섹션: 밸런스 재판 시작하기 패널 */}
         <div
           className="flex-1 bg-[#DDD] rounded-2xl p-[64px] h-[470px] relative cursor-pointer hover:opacity-90 transition" // 클릭 가능하도록 커서/효과 추가
-          onClick={() => navigate(PATHS.FIRST_TRIAL_START)} // 솔로모드, vs 모드 선택 페이지로 이동
+          onClick={() => navigate(PATHS.FIRST_TRIAL)} // 솔로모드, vs 모드 선택 페이지로 이동
         >
           <h2 className="text-3xl font-bold">밸런스 재판 시작하기</h2>
           {/* 패널 내 콘텐츠는 여기에 추가 */}
@@ -112,18 +112,17 @@ const MainPage = () => {
         </div>
 
         {/* 캐러셀 본체 - 화살표와 카드 목록을 분리하여 정렬 */}
-        <div className="flex items-center justify-center"> 
-            
-            {/* 왼쪽 버튼 영역 (120px 여백 역할) */}
-            <div className="flex justify-start w-[120px] flex-shrink-0"> 
-                <Button 
-                    onClick={handlePrevSingle}
-                    variant="ghost" 
-                    disabled={startIndex === 0}
-                >
-                    <Left className="w-8 h-8" title="이전 논쟁" />
-                </Button>
-            </div>
+        <div className="flex items-center justify-center">
+          {/* 왼쪽 버튼 영역 (120px 여백 역할) */}
+          <div className="flex justify-start w-[120px] flex-shrink-0">
+            <Button
+              onClick={handlePrevSingle}
+              variant="ghost"
+              disabled={startIndex === 0}
+            >
+              <Left className="w-8 h-8" title="이전 논쟁" />
+            </Button>
+          </div>
 
           {/* 캐러셀 뷰포트 (4개 카드만 보이도록 정확히 너비 지정) */}
           <div
@@ -144,20 +143,18 @@ const MainPage = () => {
             </div>
           </div>
 
-            {/* 오른쪽 버튼 영역 (120px 여백 역할) */}
-            <div className="flex justify-end w-[120px] flex-shrink-0">
-                <Button 
-                    onClick={handleNextSingle}
-                    variant="ghost" 
-                    disabled={startIndex >= TOTAL_DEBATES - VISIBLE_COUNT}
-                >
-                    <Right className="w-8 h-8" title="다음 논쟁"/>
-                </Button>
-            </div>
-            
+          {/* 오른쪽 버튼 영역 (120px 여백 역할) */}
+          <div className="flex justify-end w-[120px] flex-shrink-0">
+            <Button
+              onClick={handleNextSingle}
+              variant="ghost"
+              disabled={startIndex >= TOTAL_DEBATES - VISIBLE_COUNT}
+            >
+              <Right className="w-8 h-8" title="다음 논쟁" />
+            </Button>
+          </div>
         </div>
       </section>
-
     </div>
   );
 };
