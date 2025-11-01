@@ -4,8 +4,6 @@ import MyPage from "@/pages/MyPage";
 import Navbar from "@/components/layout/Navbar";
 import Login from "./pages/login/LoginPage";
 import ThirdTrialPage from "@/pages/third-trial/ThirdTrialPage";
-import SecondTrialRegister from "./pages/SecondTrial/SecondTrialRegister";
-import SecondTrial_1 from "./pages/SecondTrial/SecondTrial_1";
 import FirstTrialPage from "@/pages/FirstTrial/FirstTrialPage";
 import NotFound from "@/pages/NotFound";
 import { PATHS } from "@/constants";
@@ -39,6 +37,8 @@ function App() {
           path={PATHS.SECOND_TRIAL_FINAL}
           element={<SecondTrial_final />}
         />
+
+        {/* FIRST_TRIAL의 세부 페이지들 에러 나서 주석처리 했습니다.
         <Route path={PATHS.FIRST_TRIAL_START} element={<FirstTrialStart />} />
         <Route path={PATHS.FIRST_TRIAL_SUBMIT} element={<FirstTrialSubmit />} />
         <Route
@@ -50,6 +50,7 @@ function App() {
           element={<FirstTrialResult />}
         />
         <Route path={PATHS.AI_JUDGE} element={<FirstTrialJudge />} />
+        */}
         <Route path="*" element={<NotFound />} />
       </Routes>
     </>
