@@ -46,6 +46,12 @@ const Button = ({
     trialStart:
       "bg-[#203C77] text-white text-[36px] font-bold rounded-[15px] hover:opacity-90 leading-none whitespace-nowrap", // FirstTrialStart 재판 시작하기 버튼
 
+    white:
+      "bg-white text-main font-bold font-[Pretendard] py-2 px-4 hover:bg-gray-100", // 흰색 배경 버튼
+   
+    bright_main:
+      "bg-[#C0DCFF] text-main font-bold font-[Pretendard] py-2 px-4 rounded-3xl hover:opacity-90", // Main 페이지의 중간색 버튼
+
     // Navbar의 LOGIN 버튼
     navbar:
       "box-border px-[37px] py-[10px] rounded-[33px] bg-[#FFFFFF] text-[#000000] font-[Pretendard] text-[20px] font-normal leading-normal hover:bg-gray-100", // Navbar 로그인 버튼
