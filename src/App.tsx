@@ -10,6 +10,7 @@ import { PATHS } from "@/constants";
 import SecondTrialRegister from "@/pages/SecondTrial/SecondTrialRegister";
 import SecondTrial_1 from "@/pages/SecondTrial/SecondTrial_1";
 import SecondTrial_final from "@/pages/SecondTrial/SecondTrial_final";
+import SignUpPage from "@/pages/SignUp/SignUp";
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
         <Route path={PATHS.ROOT} element={<Main />} />
         <Route path={PATHS.MY_PAGE} element={<MyPage />} />
         <Route path={PATHS.LOGIN} element={<Login />} />
+        <Route path={PATHS.SIGNUP} element={<SignUpPage />} />
         <Route path={PATHS.FIRST_TRIAL} element={<FirstTrialPage />} />
         <Route path={PATHS.THIRD_TRIAL} element={<ThirdTrialPage />} />
         <Route path={PATHS.SECOND_TRIAL} element={<SecondTrialRegister />} />
@@ -38,19 +40,6 @@ function App() {
           element={<SecondTrial_final />}
         />
 
-        {/* FIRST_TRIAL의 세부 페이지들 에러 나서 주석처리 했습니다.
-        <Route path={PATHS.FIRST_TRIAL_START} element={<FirstTrialStart />} />
-        <Route path={PATHS.FIRST_TRIAL_SUBMIT} element={<FirstTrialSubmit />} />
-        <Route
-          path={PATHS.FIRST_TRIAL_LOADING}
-          element={<FirstTrialLoading />}
-        />
-        <Route
-          path={PATHS.FIRST_TRIAL_RESULT}
-          element={<FirstTrialResult />}
-        />
-        <Route path={PATHS.AI_JUDGE} element={<FirstTrialJudge />} />
-        */}
         <Route path="*" element={<NotFound />} />
       </Routes>
     </>
