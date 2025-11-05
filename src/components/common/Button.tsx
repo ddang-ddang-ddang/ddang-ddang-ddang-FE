@@ -32,7 +32,7 @@ const Button = ({
     // primary와 secondary 스타일 정의 -> 와이어프레임 나오면 그거에 맞게 색상 수정해야 할 것 같습니다.
     // primary와 secondary에 패딩, 폰트 굵기, 둥근 모서리 스타일 포함 (승찬이형 pr 반영)
     primary:
-      "bg-main hover:opacity-90 text-white font-bold py-2 px-4 rounded", // 🔹 기본 버튼 (예: 공통 테스트용)
+      "bg-main hover:opacity-90 text-white font-bold py-2 px-4 rounded", // 🔹 기본 버튼 (예: 공통 테스트용) + main으로 색 변경 및 text 화이트
 
     // 솔로모드 버튼
     secondary:

@@ -137,7 +137,7 @@ const MainPage = () => {
             재판 시작하기
           </Button>
           <FirstJudge
-          className="absolute bottom-0 right-15 w-[80%] max-w-md h-auto"
+          className="absolute bottom-0 right-10 w-[55%] max-w-md h-auto"
           title="판사 아이콘"
           />
         </div>

@@ -37,7 +37,8 @@ function App() {
           path={PATHS.SECOND_TRIAL_FINAL}
           element={<SecondTrial_final />}
         />
-        {/*
+
+        {/* FIRST_TRIAL의 세부 페이지들 에러 나서 주석처리 했습니다.
         <Route path={PATHS.FIRST_TRIAL_START} element={<FirstTrialStart />} />
         <Route path={PATHS.FIRST_TRIAL_SUBMIT} element={<FirstTrialSubmit />} />
         <Route
