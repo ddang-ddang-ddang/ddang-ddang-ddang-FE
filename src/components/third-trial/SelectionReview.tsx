@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState, useCallback } from "react";
 import Button from "@/components/common/Button";
 import { useThirdTrialStore } from "@/stores/thirdTrialStore";
 import { THIRD_TRIAL_ARGUMENTS } from "@/mock/thirdTrialArguments";
@@ -13,6 +13,11 @@ export default function SelectionReview() {
     (state) => state.selectedArguments
   );
   const setStep = useThirdTrialStore((state) => state.setStep);
+
+  const [openMap, setOpenMap] = useState<Record<string, boolean>>({});
+  const toggleOpen = useCallback((id: number) => {
+    setOpenMap((prev) => ({ ...prev, [id]: !(prev[id] ?? true) }));
+  }, []);
 
   const sections = useMemo(
     () =>
@@ -65,14 +70,21 @@ export default function SelectionReview() {
                   선택된 변론이 없습니다.
                 </div>
               ) : (
-                items.map((argument) => (
+                items.map((argument) => {
+                  const isOpen = (openMap[argument.id] ?? true);
+                  return (
                   <article
                     key={argument.id}
                     className={`relative flex w-full flex-col gap-6 rounded-[30px] px-8 py-8 md:px-12 ${meta.cardBgClass}`}
                   >
-                    <div className="absolute right-6 top-6 md:right-12">
-                      <ChevronUpIcon className="h-[53px] w-[53px] rotate-180 text-main" />
-                    </div>
+                    <button
+                      type="button"
+                      aria-expanded={isOpen}
+                      onClick={() => toggleOpen(argument.id)}
+                      className="absolute right-6 top-3 md:right-12 p-1"
+                    >
+                      <ChevronUpIcon className={`h-[53px] w-[53px] text-main transition-transform duration-200 ${isOpen ? "rotate-0" : "rotate-180"}`} />
+                    </button>
 
                     <div className="flex items-center gap-[25px]">
                       <span className="text-[16px] font-bold text-main">
@@ -85,11 +97,14 @@ export default function SelectionReview() {
                       </span>
                     </div>
 
-                    <p className="text-[16px] font-normal leading-[24px] text-main">
-                      {argument.content}
-                    </p>
+                    {isOpen && (
+                      <p className="text-[16px] font-normal leading-[24px] text-main">
+                        {argument.content}
+                      </p>
+                    )}
                   </article>
-                ))
+                )
+                })
               )}
             </div>
           </div>
