@@ -1,4 +1,4 @@
-import FileIcon from "@/assets/svgs/file.svg";
+import FileIcon from "@/assets/svgs/file.svg?react";
 import Button from "@/components/common/Button";
 import { useFirstTrialStore } from "@/stores/firstTrialStore";
 

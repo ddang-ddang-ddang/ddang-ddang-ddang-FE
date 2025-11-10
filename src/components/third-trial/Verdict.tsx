@@ -1,6 +1,6 @@
 import Button from "@/components/common/Button";
-import JudgeIcon from "@/assets/svgs/FirstJudge.svg";
-import ScaleIcon from "@/assets/svgs/Scale.svg";
+import JudgeIcon from "@/assets/svgs/FirstJudge.svg?react";
+import ScaleIcon from "@/assets/svgs/Scale.svg?react";
 import { useThirdTrialStore } from "@/stores/thirdTrialStore";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";

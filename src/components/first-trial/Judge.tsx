@@ -1,5 +1,5 @@
-import JudgeIcon from "@/assets/svgs/FirstJudge.svg";
-import ScaleIcon from "@/assets/svgs/Scale.svg";
+import JudgeIcon from "@/assets/svgs/FirstJudge.svg?react";
+import ScaleIcon from "@/assets/svgs/Scale.svg?react";
 import Button from "@/components/common/Button";
 import { useFirstTrialStore } from "@/stores/firstTrialStore";
 import { useNavigate } from "react-router-dom";

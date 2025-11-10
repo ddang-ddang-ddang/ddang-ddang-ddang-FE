@@ -1,8 +1,8 @@
 import { useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { PATHS } from "@/constants";
-import PasswordIcon from "@/assets/svgs/password.svg";
-import Logo from "@/assets/svgs/logo.svg";
+import PasswordIcon from "@/assets/svgs/password.svg?react";
+import Logo from "@/assets/svgs/logo.svg?react";
 
 export default function SignupPage() {
   const [name, setName] = useState("");

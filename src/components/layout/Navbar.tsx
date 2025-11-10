@@ -1,6 +1,6 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import Button from "@/components/common/Button";
-import Logo from "@/assets/svgs/logo.svg"; // svgr 컴포넌트 사용
+import Logo from "@/assets/svgs/logo.svg?react"; // svgr 컴포넌트 사용
 import { HIDE_NAV_STEPS_BY_PATH, PATHS } from "@/constants";
 import { useThirdTrialStore } from "@/stores/thirdTrialStore";
 

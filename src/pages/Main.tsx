@@ -3,10 +3,10 @@
 import React, { useState, useCallback } from "react";
 import Button from "@/components/common/Button"; // 공통 Button 컴포넌트 임포트
 import HotDebateCard from "@/components/common/DebateCard"; // HotDebateCard 컴포넌트 임포트
-import Hammer from "@/assets/svgs/hammer.svg"; // 망치 이미지 임포트
-import Left from "@/assets/svgs/Left.svg"; // 왼쪽 화살표 이미지 임포트
-import Right from "@/assets/svgs/Right.svg"; // 오른쪽 화살표 이미지 임포트
-import FirstJudge from "@/assets/svgs/FirstJudge.svg";
+import Hammer from "@/assets/svgs/hammer.svg?react"; // 망치 이미지 임포트
+import Left from "@/assets/svgs/Left.svg?react"; // 왼쪽 화살표 이미지 임포트
+import Right from "@/assets/svgs/Right.svg?react"; // 오른쪽 화살표 이미지 임포트
+import FirstJudge from "@/assets/svgs/FirstJudge.svg?react";
 import { useNavigate } from "react-router-dom";
 import { PATHS } from "@/constants";
 

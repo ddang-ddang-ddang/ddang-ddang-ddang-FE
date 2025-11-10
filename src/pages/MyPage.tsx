@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import Button from "@/components/common/Button"; 
 import TrialListItem, { TrialData, TrialStatus } from "@/components/mypage/TrialListItem"; 
-import JudgeIcon from "@/assets/svgs/FirstJudge.svg"; 
-import ProfileIcon from "@/assets/svgs/profileIcon.svg";
+import JudgeIcon from "@/assets/svgs/FirstJudge.svg?react"; 
+import ProfileIcon from "@/assets/svgs/profileIcon.svg?react";
 import { useMemo } from "react";
 
 // 나중에 별도 컴포넌트로 분리할 섹션들을 일단 MyPage 컴포넌트 내부에 직접 구현
