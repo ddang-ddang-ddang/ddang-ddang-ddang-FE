@@ -6,7 +6,7 @@ import HotDebateCard from "@/components/common/DebateCard"; // HotDebateCard 컴
 import Hammer from "@/assets/svgs/hammer.svg?react"; // 망치 이미지 임포트
 import Left from "@/assets/svgs/Left.svg?react"; // 왼쪽 화살표 이미지 임포트
 import Right from "@/assets/svgs/Right.svg?react"; // 오른쪽 화살표 이미지 임포트
-import FirstJudge from "@/assets/svgs/FirstJudge.svg?react";
+import firstJudgeIllustrationUrl from "@/assets/svgs/FirstJudge.svg?url";
 import { useNavigate } from "react-router-dom";
 import { PATHS } from "@/constants";
 
@@ -136,9 +136,10 @@ const MainPage = () => {
           >
             재판 시작하기
           </Button>
-          <FirstJudge
-          className="absolute bottom-0 right-10 w-[55%] max-w-md h-auto"
-          title="판사 아이콘"
+          <img
+            src={firstJudgeIllustrationUrl}
+            alt="판사 아이콘"
+            className="absolute bottom-0 right-10 w-[55%] max-w-md h-auto"
           />
         </div>
       </section>
