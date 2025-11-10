@@ -3,6 +3,7 @@ import axios, {
   type AxiosInstance,
   type AxiosResponse,
   type InternalAxiosRequestConfig,
+  AxiosHeaders,
 } from "axios";
 
 import { PATHS } from "@/constants";
@@ -18,12 +19,14 @@ const getAuthState = (): AuthStore => useAuthStore.getState();
 const withAuthToken = (config: InternalAxiosRequestConfig): InternalAxiosRequestConfig => {
   const { accessToken } = getAuthState();
 
-  if (accessToken) {
-    config.headers = {
-      ...config.headers,
-      Authorization: `Bearer ${accessToken}`,
-    };
+  if (!accessToken) {
+    return config;
   }
+
+  const headers = AxiosHeaders.from(config.headers ?? {});
+  headers.set("Authorization", `Bearer ${accessToken}`);
+
+  config.headers = headers;
 
   return config;
 };

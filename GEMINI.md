@@ -72,6 +72,14 @@ npm run preview
 
 The project uses ESLint for code linting. The configuration is in `eslint.config.js`.
 
+## API Conventions
+
+1. **Naming**: Every exported API function follows the `{method}{Resource}` camelCase pattern (e.g., `postLogin`, `getCases`). Keep resource names concise to avoid overly long identifiers.
+2. **Module layout**: HTTP request functions live under `src/apis/**`. React Query-based hooks that consume those functions live under `src/hooks/**`, keeping data fetching logic decoupled from UI concerns.
+3. **Typing**: Request/response DTOs for each domain live in `src/types/apis/{domain}.ts`. Shared wrappers such as the common API response shape are defined once under `src/types/common/**` and reused across feature types.
+
+> Suggestion: consider allowing resource-centric names (e.g., `login` instead of `postLogin`) when the HTTP verb is already obvious from the caller context; it can keep call-sites cleaner while still documenting the method in the request helper itself.
+
 ## src Directory Structure
 ```
 src/
