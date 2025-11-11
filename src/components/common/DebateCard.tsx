@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom"; // useNavigate 훅 임포트
 import { PATH_BUILDERS } from "@/constants";
-import LawIcon from "@/assets/svgs/law.svg";
+import LawIcon from "@/assets/svgs/law.svg?react";
 import clsx from "clsx"; // clsx 임포트 추가
 
 type Debate = {

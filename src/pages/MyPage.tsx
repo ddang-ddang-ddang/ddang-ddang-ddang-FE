@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import Button from "@/components/common/Button"; 
 import TrialListItem, { TrialData, TrialStatus } from "@/components/mypage/TrialListItem"; 
-import JudgeIcon from "@/assets/svgs/FirstJudge.svg"; 
-import ProfileIcon from "@/assets/svgs/profileIcon.svg";
+import judgeIllustrationUrl from "@/assets/svgs/FirstJudge.svg?url"; 
+import ProfileIcon from "@/assets/svgs/profileIcon.svg?react";
 import { useMemo } from "react";
 
 // 나중에 별도 컴포넌트로 분리할 섹션들을 일단 MyPage 컴포넌트 내부에 직접 구현
@@ -92,7 +92,11 @@ const MyPage = () => {
               </p>
             </div>
             {/* 판사 아이콘 */}
-            <JudgeIcon className="bottom-0 w-[201px] h-auto text-white " title="판사 아이콘" /> 
+            <img
+              src={judgeIllustrationUrl}
+              alt="판사 아이콘"
+              className="bottom-0 w-[201px] h-auto text-white "
+            /> 
           </div>
         </div>
 

@@ -1,5 +1,5 @@
-import JudgeIcon from "@/assets/svgs/FirstJudge.svg";
-import ScaleIcon from "@/assets/svgs/Scale.svg";
+import judgeIllustrationUrl from "@/assets/svgs/FirstJudge.svg?url";
+import ScaleIcon from "@/assets/svgs/Scale.svg?react";
 import Button from "@/components/common/Button";
 import { useFirstTrialStore } from "@/stores/firstTrialStore";
 import { useNavigate } from "react-router-dom";
@@ -44,7 +44,11 @@ export default function Judge() {
         </div>
 
         {/* 판사 이미지 */}
-        <JudgeIcon className="absolute bottom-0 left-[30px] w-[410px] h-[385px]" />
+        <img
+          src={judgeIllustrationUrl}
+          alt="판사 일러스트"
+          className="absolute bottom-0 left-[30px] w-[410px] h-[385px]"
+        />
 
         {/* 판결문 노란 상자 */}
         <div className="absolute top-[151px] right-[44px] w-[496px] h-[513px] bg-[#FFFFF6] rounded-[7px] flex flex-col items-center pt-[30px] text-[#EBAD27]">

@@ -1,7 +1,7 @@
 import React from "react";
 import { Textarea } from "./textarea"; // Textarea 컴포넌트 import
 import ReplyInput from "./ReplyInput"; // ReplyInput 컴포넌트 import
-import ThumbUpIcon from "@/assets/svgs/thumbs-up.svg"; // 추천 아이콘 import
+import ThumbUpIcon from "@/assets/svgs/thumbs-up.svg?react"; // 추천 아이콘 import
 
 // 변론 논거 데이터 타입 정의 (최소한의 정보만 유지)
 export type ArgumentData = {
@@ -57,7 +57,7 @@ const ArgumentCard = ({ argument, onSubmitReply }: ArgumentCardProps) => {
         
         {/* 추천 버튼 */}
         <button className="flex items-center space-x-1 text-gray-600 hover:text-blue-500 transition-colors">
-          <ThumbUpIcon className="w-4 h-4" title="추천 아이콘" />
+          <ThumbUpIcon className="w-4 h-4"/>
           <span className="text-sm font-medium">{argument.likes}명이 이 의견에 찬성합니다</span>
         </button>
       </div>
