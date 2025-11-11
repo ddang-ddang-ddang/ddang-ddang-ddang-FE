@@ -1,5 +1,3 @@
-// src/pages/MainPage.tsx
-
 import React, { useState, useCallback } from "react";
 import Button from "@/components/common/Button"; // 공통 Button 컴포넌트 임포트
 import HotDebateCard from "@/components/common/DebateCard"; // HotDebateCard 컴포넌트 임포트
@@ -10,6 +8,9 @@ import firstJudgeIllustrationUrl from "@/assets/svgs/FirstJudge.svg?url";
 import { useNavigate } from "react-router-dom";
 import { PATHS } from "@/constants";
 
+/* 로그인 상태 확인용 */
+import { useAuthStore } from "@/stores/useAuthStore";
+
 // API로부터 받아올 더미 데이터 (총 7개)
 const hotDebates = [
   { id: 1, title: "짜장면 VS 짬뽕", participants: 120 },
@@ -17,7 +18,7 @@ const hotDebates = [
   { id: 3, title: "부먹 VS 찍먹", participants: 95 },
   { id: 4, title: "바다 VS 산", participants: 110 },
   { id: 5, title: "수도권 VS 지방 이사 논쟁", participants: 77 }, // 추가 더미 데이터
-  { id: 6, title: "커피 VS 탄산음료", participants: 99}, // 추가 더미 데이터
+  { id: 6, title: "커피 VS 탄산음료", participants: 99 }, // 추가 더미 데이터
   { id: 7, title: "라면 VS 떡볶이", participants: 54 }, // 추가 더미 데이터
 ];
 
@@ -30,6 +31,9 @@ const TOTAL_DEBATES = hotDebates.length;
 const MainPage = () => {
   // 현재 캐러셀의 시작 인덱스 (0, 1, 2...로 이동)
   const [startIndex, setStartIndex] = useState(0);
+
+  /* ▼ 추가: 로그인 필요 모달 on/off (auth-guard) */
+  const [showLoginModal, setShowLoginModal] = useState(false);
 
   // 이전 슬라이드로 1개씩 이동 (0보다 작아지지 않도록 제한)
   const handlePrevSingle = useCallback(() => {
@@ -54,6 +58,9 @@ const MainPage = () => {
 
   const navigate = useNavigate();
 
+  /* ▼ 추가: accessToken으로 로그인 상태 판별 (auth-guard) */
+  const accessToken = useAuthStore((s) => s.accessToken);
+
   return (
     <div className="bg-white min-h-screen">
       {/* 1 & 2. 상단 및 로그인/로그아웃 영역 통합 */}
@@ -72,7 +79,7 @@ const MainPage = () => {
                 {/* LOGIN 라벨 */}
                 <div className="flex gap-2 items-center mb-2">
                   <label className="text-[20px] text-white">로그인</label>
-                  <Hammer/>
+                  <Hammer />
                 </div>
 
                 {/* 아이디 섹션 */}
@@ -97,12 +104,15 @@ const MainPage = () => {
 
                 {/*회원가입 및 로그인 버튼 */}
                 <div className="flex justify-between items-center">
-                  <Button variant="ghost" className="text-white hover:underline">
+                  <Button
+                    variant="ghost"
+                    className="text-white hover:underline"
+                  >
                     회원가입
                   </Button>
-                  <Button 
+                  <Button
                     variant="primary"
-                    className="px-10 py-2 rounded-md" 
+                    className="px-10 py-2 rounded-md"
                     onClick={() => {
                       console.log("로그인 버튼 클릭");
                       // navigate(PATHS.LOGIN); // 실제 로그인 페이지 이동 로직
@@ -120,7 +130,9 @@ const MainPage = () => {
         <div
           className="flex-1 bg-[#6596DA] rounded-2xl p-[64px] w-[790px] h-[509px] relative transition" // 클릭 가능하도록 커서/효과 추가
         >
-          <h2 className="text-3xl font-bold text-white">AI판사와 밸런스 재판</h2>
+          <h2 className="text-3xl font-bold text-white">
+            AI판사와 밸런스 재판
+          </h2>
           <p className="mt-4 text-sm text-white">
             일상 속 사소한 논쟁이 가장 치열한 토론 배틀이 됩니다.
           </p>
@@ -132,7 +144,14 @@ const MainPage = () => {
             variant="white"
             size="lg"
             className="mt-55 px-[109px] py-[24px] rounded-3xl cursor-pointer hover:opacity-90"
-            onClick={() => navigate(PATHS.FIRST_TRIAL)} // 솔로모드, vs 모드 선택 페이지로 이동
+            onClick={() => {
+              /* ▼ 변경: 로그인 필요 체크 (auth-guard) */
+              if (accessToken) {
+                navigate(PATHS.FIRST_TRIAL); // 솔로모드, vs 모드 선택 페이지로 이동
+              } else {
+                setShowLoginModal(true); // 로그인해주세요! 모달
+              }
+            }}
           >
             재판 시작하기
           </Button>
@@ -148,12 +167,19 @@ const MainPage = () => {
       <section className="bg-main-bright pt-8 pb-20 mt-16 mb-20">
         {/*제목 및 전체재판 보기*/}
         <div className="flex pl-[120px] pr-[120px] justify-between items-center pt-10">
-          <h2 className="text-2xl font-bold text-main">현재 진행중인 가장 핫한 재판에 참여해보세요</h2>
-          <Button variant="bright_main" className="cursor-pointer px-[60px] py-[19px]">
+          <h2 className="text-2xl font-bold text-main">
+            현재 진행중인 가장 핫한 재판에 참여해보세요
+          </h2>
+          <Button
+            variant="bright_main"
+            className="cursor-pointer px-[60px] py-[19px]"
+          >
             전체 재판 보기
           </Button>
         </div>
-        <p className="pl-[120px] pr-[120px] text-main-medium mb-10">재판에 참여해서 변론을 작성하고, 당신의 논리를 펼쳐보세요!</p>
+        <p className="pl-[120px] pr-[120px] text-main-medium mb-10">
+          재판에 참여해서 변론을 작성하고, 당신의 논리를 펼쳐보세요!
+        </p>
 
         {/* 캐러셀 본체 - 화살표와 카드 목록을 분리하여 정렬 */}
         <div className="flex pl-[120px] pr-[120px] justify-between items-center pt-10">
@@ -200,6 +226,45 @@ const MainPage = () => {
           </div>
         </div>
       </section>
+
+      {/* ▼ 추가: 로그인 필요 모달 (auth-guard) */}
+      {showLoginModal && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center">
+          {/* 반투명 배경 */}
+          <div
+            className="absolute inset-0 bg-black/50"
+            onClick={() => setShowLoginModal(false)}
+          />
+          {/* 모달 카드 */}
+          <div className="relative z-10 w-[420px] max-w-[90vw] rounded-2xl bg-white p-6 shadow-xl">
+            <h3 className="text-[20px] font-bold text-main mb-2">
+              로그인이 필요합니다
+            </h3>
+            <p className="text-[16px] text-greyColor-grey700 mb-6">
+              밸런스 재판을 시작하려면 먼저 로그인해주세요.
+            </p>
+            <div className="flex justify-end gap-2">
+              <Button
+                variant="bright_main"
+                className="px-6"
+                onClick={() => setShowLoginModal(false)}
+              >
+                닫기
+              </Button>
+              <Button
+                variant="primary"
+                className="px-6"
+                onClick={() => {
+                  setShowLoginModal(false);
+                  navigate(PATHS.LOGIN);
+                }}
+              >
+                로그인하러 가기
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
