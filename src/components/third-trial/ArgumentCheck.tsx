@@ -1,6 +1,6 @@
 import type { ChangeEvent } from "react";
 import clsx from "clsx";
-import ThumbUpIcon from "@/assets/svgs/thumbs-up.svg";
+import ThumbUpIcon from "@/assets/svgs/thumbs-up.svg?react";
 import CheckIcon from "@/assets/icons/CheckIcon";
 import type { ArgumentData } from "@/components/common/ArgumentCard";
 
