@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useMemo } from "react";
 import Button from "@/components/common/Button"; // 공통 Button 컴포넌트 임포트
 import HotDebateCard from "@/components/common/DebateCard"; // HotDebateCard 컴포넌트 임포트
 import Hammer from "@/assets/svgs/hammer.svg?react"; // 망치 이미지 임포트
@@ -11,8 +11,15 @@ import { PATHS } from "@/constants";
 /* 로그인 상태 확인용 */
 import { useAuthStore } from "@/stores/useAuthStore";
 
+/* 메인페이지 API 훅 */
+import {
+  useHotCasesQuery,
+  useMyOngoingCasesQuery,
+  useMyDefensesQuery,
+} from "@/hooks/home/useHome";
+
 // API로부터 받아올 더미 데이터 (총 7개)
-const hotDebates = [
+const hotDebatesFallback = [
   { id: 1, title: "짜장면 VS 짬뽕", participants: 120 },
   { id: 2, title: "민트초코 VS 반민트초코", participants: 85 },
   { id: 3, title: "부먹 VS 찍먹", participants: 95 },
@@ -26,27 +33,18 @@ const hotDebates = [
 const CARD_WIDTH = 340; // HotDebateCard의 width
 const CARD_GAP = 16; // Tailwind의 space-x-4에 해당하는 gap (4*0.25rem = 1rem = 16px)
 const VISIBLE_COUNT = 4;
-const TOTAL_DEBATES = hotDebates.length;
 
 const MainPage = () => {
   // 현재 캐러셀의 시작 인덱스 (0, 1, 2...로 이동)
   const [startIndex, setStartIndex] = useState(0);
 
-  /* ▼ 추가: 로그인 필요 모달 on/off (auth-guard) */
+  /* 로그인 필요 모달 on/off */
   const [showLoginModal, setShowLoginModal] = useState(false);
 
   // 이전 슬라이드로 1개씩 이동 (0보다 작아지지 않도록 제한)
   const handlePrevSingle = useCallback(() => {
     setStartIndex((prevIndex) => Math.max(prevIndex - 1, 0));
     console.log("이전 슬라이드 클릭"); // ⭐️ 콘솔 로그 유지
-  }, []);
-
-  // 다음 슬라이드로 1개씩 이동 (마지막 카드가 보일 수 있는 최대 인덱스까지만 이동)
-  const handleNextSingle = useCallback(() => {
-    setStartIndex((prevIndex) =>
-      Math.min(prevIndex + 1, TOTAL_DEBATES - VISIBLE_COUNT)
-    );
-    console.log("다음 슬라이드 클릭"); // ⭐️ 콘솔 로그 추가
   }, []);
 
   // 캐러셀 이동 거리 계산 (startIndex * (카드 너비 + 간격))
@@ -58,8 +56,37 @@ const MainPage = () => {
 
   const navigate = useNavigate();
 
-  /* ▼ 추가: accessToken으로 로그인 상태 판별 (auth-guard) */
+  /* accessToken으로 로그인 상태 판별 */
   const accessToken = useAuthStore((s) => s.accessToken);
+
+  /* 메인 API 호출 */
+  const hotQ = useHotCasesQuery(); // 비로그인 OK
+  useMyOngoingCasesQuery(); // 로그인 시 백그라운드로 미리 받아둠 (UI 안변경)
+  useMyDefensesQuery(); // 로그인 시 백그라운드로 미리 받아둠 (UI 안변경)
+
+  // HOT 데이터 → 기존 카드 구조에 맞게 가공 (참가자 수는 서버 응답에 없으므로 더미 수치 유지)
+  const hotList =
+    hotQ.data?.result?.map((c, idx) => ({
+      id: c.caseId,
+      title:
+        c.mainArguments && c.mainArguments.length >= 2
+          ? `${c.mainArguments[0]} VS ${c.mainArguments[1]}`
+          : c.title,
+      participants:
+        hotDebatesFallback[idx % hotDebatesFallback.length].participants,
+    })) ?? hotDebatesFallback;
+
+  /* length만 의존하는 메모 값 */
+  const maxIndex = useMemo(
+    () => Math.max(hotList.length - VISIBLE_COUNT, 0),
+    [hotList.length]
+  );
+
+  /* 다음 슬라이드 콜백에서 maxIndex 사용 */
+  const handleNextSingle = useCallback(() => {
+    setStartIndex((prevIndex) => Math.min(prevIndex + 1, maxIndex));
+    console.log("다음 슬라이드 클릭"); // ⭐️ 콘솔 로그 추가
+  }, [maxIndex]);
 
   return (
     <div className="bg-white min-h-screen">
@@ -145,7 +172,7 @@ const MainPage = () => {
             size="lg"
             className="mt-55 px-[109px] py-[24px] rounded-3xl cursor-pointer hover:opacity-90"
             onClick={() => {
-              /* ▼ 변경: 로그인 필요 체크 (auth-guard) */
+              /* 로그인 필요 체크 */
               if (accessToken) {
                 navigate(PATHS.FIRST_TRIAL); // 솔로모드, vs 모드 선택 페이지로 이동
               } else {
@@ -208,7 +235,7 @@ const MainPage = () => {
               }}
             >
               {/* map 함수를 이용해 데이터 렌더링 */}
-              {hotDebates.map((debate) => (
+              {hotList.map((debate) => (
                 <HotDebateCard key={debate.id} debate={debate} />
               ))}
             </div>
@@ -227,7 +254,7 @@ const MainPage = () => {
         </div>
       </section>
 
-      {/* ▼ 추가: 로그인 필요 모달 (auth-guard) */}
+      {/* 로그인 필요 모달 */}
       {showLoginModal && (
         <div className="fixed inset-0 z-[9999] flex items-center justify-center">
           {/* 반투명 배경 */}
