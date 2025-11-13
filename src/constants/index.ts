@@ -1,6 +1,7 @@
 export const PATHS = {
   ROOT: "/",
   LOGIN: "/login",
+  SIGNUP: "/signup",
   MY_PAGE: "/mypage",
   FIRST_TRIAL: "/first-trial",
   SECOND_TRIAL: "/second-trial",

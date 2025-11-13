@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import FileIcon from "@/assets/svgs/file.svg";
+import FileIcon from "@/assets/svgs/file.svg?react";
 import { useFirstTrialStore } from "@/stores/firstTrialStore";
 
 export default function Loading() {
