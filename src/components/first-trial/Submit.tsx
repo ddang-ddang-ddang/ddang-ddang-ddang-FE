@@ -9,7 +9,7 @@ import { useCreateFirstCaseMutation } from "@/hooks/firstTrial/useFirstTrial";
 export default function Submit() {
   const [selectedSide, setSelectedSide] = useState<"A" | "B" | null>(null);
   const [errorMessage, setErrorMessage] = useState("");
-  const { setStep, setCaseId } = useFirstTrialStore(); // ▼ caseId 저장을 위해 setCaseId 사용
+  const { setStep, setCaseId } = useFirstTrialStore();
 
   /* 폼 데이터 상태 */
   const [title, setTitle] = useState("");
@@ -18,7 +18,7 @@ export default function Submit() {
   const [bMain, setBMain] = useState("");
   const [bReason, setBReason] = useState("");
 
-  /* ▼ 추가: 생성 뮤테이션 */
+  /* 생성 뮤테이션 */
   const createMut = useCreateFirstCaseMutation();
 
   const handleSelect = (side: "A" | "B") => {
@@ -35,7 +35,6 @@ export default function Submit() {
       setErrorMessage("입장을 선택해주세요");
       return;
     }
-    // 유효성 체크
     if (!title || !aMain || !aReason || !bMain || !bReason) {
       setErrorMessage("모든 내용을 입력해주세요");
       return;
@@ -109,31 +108,6 @@ export default function Submit() {
         </div>
       </div>
 
-      {/* A/B 버튼 + VS */}
-      <div className="flex items-center justify-center mt-[72px] gap-[42px]">
-        <Button
-          variant="secondary"
-          size="lg"
-          className={`w-[373px] h-[96px] text-[24px] font-semibold leading-none rounded-[15px] transition-all duration-200 ${
-            selectedSide === "B" ? "opacity-60" : "opacity-100"
-          }`}
-          onClick={() => handleSelect("A")}
-        >
-          A측 입장
-        </Button>
-        <p className="text-[36px] font-bold text-[#203C77]">VS</p>
-        <Button
-          variant="third"
-          size="lg"
-          className={`w-[373px] h-[96px] text-[24px] font-semibold leading-none rounded-[15px] transition-all duration-200 ${
-            selectedSide === "A" ? "opacity-60" : "opacity-100"
-          }`}
-          onClick={() => handleSelect("B")}
-        >
-          B측 입장
-        </Button>
-      </div>
-
       {/* B측 */}
       <div className="mt-[60px] w-[995px]">
         <h2 className="text-[24px] font-bold mb-[15px]">B측 입장</h2>
@@ -157,6 +131,31 @@ export default function Submit() {
             onChange={(e) => setBReason(e.target.value)}
           />
         </div>
+      </div>
+
+      {/* A/B 선택 버튼 + VS (⬇️ B측 아래로 이동) */}
+      <div className="flex items-center justify-center mt-[72px] gap-[42px]">
+        <Button
+          variant="secondary"
+          size="lg"
+          className={`w-[373px] h-[96px] text-[24px] font-semibold leading-none rounded-[15px] transition-all duration-200 ${
+            selectedSide === "B" ? "opacity-60" : "opacity-100"
+          }`}
+          onClick={() => handleSelect("A")}
+        >
+          A측 입장
+        </Button>
+        <p className="text-[36px] font-bold text-[#203C77]">VS</p>
+        <Button
+          variant="third"
+          size="lg"
+          className={`w-[373px] h-[96px] text-[24px] font-semibold leading-none rounded-[15px] transition-all duration-200 ${
+            selectedSide === "A" ? "opacity-60" : "opacity-100"
+          }`}
+          onClick={() => handleSelect("B")}
+        >
+          B측 입장
+        </Button>
       </div>
 
       {/* 안내/에러 */}
