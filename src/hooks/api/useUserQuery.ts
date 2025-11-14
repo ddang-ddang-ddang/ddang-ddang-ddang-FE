@@ -6,7 +6,8 @@ import type {
   UserRecordResponse,
   UserAchievementsResponse,
   UserRankResponse,
-  UserCasesResponse
+  UserCasesResponse,
+  UserProfileImageResponse
 } from '@/types/apis/user';
 
 // My Page: 사용자 프로필 정보를 가져오는 훅
@@ -101,3 +102,22 @@ export const useUpdateUserProfileMutation = () => {
         },
     });
 };
+
+// My Page: 프로필 사진을 업로드하는 훅
+export const useUploadProfileImageMutation = () => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: async (file: File) => {
+            const response = await userApi.uploadProfileImage(file);
+            if (!response.isSuccess) {
+                throw new Error(response.message || '프로필 사진 업로드에 실패했습니다.');
+            }
+            return response;
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['userProfile'] });
+        },
+    });
+};
+

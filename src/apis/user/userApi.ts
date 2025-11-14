@@ -6,7 +6,8 @@ import type {
   UserRecordResponse,
   UserAchievementsResponse,
   UserRankResponse,
-  UserCasesResponse
+  UserCasesResponse,
+  UserProfileImageResponse
 } from "@/types/apis/user";
 
 const USER_BASE_PATH = "/api/users";
@@ -60,6 +61,22 @@ const updateProfile = async (payload: UserUpdateRequest): Promise<UserUpdateResp
   return data;
 };
 
+const uploadProfileImage = async (file: File): Promise<UserProfileImageResponse> => {
+  const formData = new FormData();
+  formData.append("image", file);
+  
+  const { data } = await instance.post<UserProfileImageResponse>(
+    `${USER_BASE_PATH}/image`,
+    formData,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    }
+  );
+  return data;
+};
+
 export const userApi = {
   getProfile,
   updateProfile,
@@ -67,6 +84,7 @@ export const userApi = {
   getUserAchievements,
   getUserRecord,
   getUserCases,
+  uploadProfileImage,
 } as const;
 
 export type UserApi = typeof userApi;

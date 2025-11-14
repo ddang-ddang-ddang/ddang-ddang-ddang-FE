@@ -78,3 +78,6 @@ export type CaseRecord = {
 };
 
 export type UserCasesResponse = ApiResponse<CaseRecord[]>;
+
+// 프로필 사진 업로드 응답 타입
+export type UserProfileImageResponse = ApiResponse<{}>;
