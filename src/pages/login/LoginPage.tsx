@@ -18,7 +18,7 @@ export default function LoginPage() {
       setErrorMessage(null);
       navigate(PATHS.ROOT);
     },
-    onError: error => {
+    onError: (error) => {
       setErrorMessage(error.message || "로그인에 실패했습니다.");
     },
   });
@@ -37,9 +37,9 @@ export default function LoginPage() {
   };
 
   return (
-    <main className="min-h-screen w-full bg-white">
+    <main className="mmt-[96px] mb-[-100px] flex w-full justify-center">
       {/* 로그인 카드 배치 */}
-      <section className="mt-[284.5px] flex w-full justify-center">
+      <section className="mt-[96px] flex w-full justify-center">
         {/* 남색 카드 컨테이너 */}
         <div
           className="rounded-[30px] px-[205px] py-[92px] flex flex-col items-center"
@@ -104,25 +104,25 @@ export default function LoginPage() {
                 회원가입
               </Link>
 
-            {/* 오류 메시지 */}
-            {errorMessage && (
-              <p className="mt-2 text-sm text-main-red" role="alert">
-                {errorMessage}
-              </p>
-            )}
+              {/* 오류 메시지 */}
+              {errorMessage && (
+                <p className="mt-2 text-sm text-main-red" role="alert">
+                  {errorMessage}
+                </p>
+              )}
 
-            {/* 로그인 버튼 */}
-            <button
-              type="submit"
-              disabled={isSubmitDisabled}
-              className="
+              {/* 로그인 버튼 */}
+              <button
+                type="submit"
+                disabled={isSubmitDisabled}
+                className="
                       rounded-[10px] bg-white px-[47px] py-[10px]
                       cursor-pointer
                       transition-opacity duration-100
                       hover:opacity-90
                       focus:outline-none
                     "
-                    aria-busy={isPending}
+                aria-busy={isPending}
               >
                 <span
                   className="font-bold text-[20px] leading-[150%]"
