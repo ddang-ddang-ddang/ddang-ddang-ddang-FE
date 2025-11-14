@@ -3,6 +3,24 @@ import { Link, useNavigate } from "react-router-dom";
 import { PATHS } from "@/constants";
 import PasswordIcon from "@/assets/svgs/password.svg?react";
 import Logo from "@/assets/svgs/logo.svg?react";
+import {
+  useSendEmailCodeMutation,
+  useVerifyEmailCodeMutation,
+  usePostSignupMutation,
+} from "@/hooks/auth/useAuthMutations";
+import { isAxiosError } from "axios";
+
+function getErrorMessage(e: unknown) {
+  if (isAxiosError(e)) {
+    return e.response?.data?.message || e.message || "요청에 실패했습니다.";
+  }
+  if (e instanceof Error) return e.message;
+  try {
+    return JSON.stringify(e);
+  } catch {
+    return "알 수 없는 오류가 발생했습니다.";
+  }
+}
 
 export default function SignupPage() {
   const [name, setName] = useState("");
@@ -28,18 +46,33 @@ export default function SignupPage() {
     [name, userId, pw, code]
   );
 
-  const handleSendCode = () => {
-    if (!canSendCode) return;
-    const rand = String(Math.floor(100000 + Math.random() * 900000));
-    alert(`인증코드가 전송되었습니다: ${rand}`);
+  const sendCodeMut = useSendEmailCodeMutation();
+  const verifyCodeMut = useVerifyEmailCodeMutation();
+  const signupMut = usePostSignupMutation();
+
+  const handleSendCode = async () => {
+    if (!canSendCode || !email) return;
+    try {
+      await sendCodeMut.mutateAsync({ email });
+      alert("인증코드가 이메일로 전송되었습니다.");
+    } catch (e: unknown) {
+      alert(getErrorMessage(e));
+    }
   };
 
-  const onSubmit = (e: React.FormEvent) => {
+  const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!canSubmit) return;
-    console.log({ name, userId, pw, email });
-    alert("회원가입 완료!");
-    nav(PATHS.LOGIN);
+    if (!canSubmit || !email) return;
+
+    try {
+      await verifyCodeMut.mutateAsync({ email, code });
+      await signupMut.mutateAsync({ nickname: name, email, password: pw });
+
+      alert("회원가입 완료!");
+      nav(PATHS.LOGIN);
+    } catch (e: unknown) {
+      alert(getErrorMessage(e));
+    }
   };
 
   return (
@@ -155,19 +188,19 @@ export default function SignupPage() {
                 <button
                   type="button"
                   onClick={handleSendCode}
-                  disabled={!canSendCode}
+                  disabled={!canSendCode || sendCodeMut.isPending}
                   aria-label="인증코드 보내기"
                   className={`
                     h-[56px] rounded-[15px] px-[16px]
                     bg-white text-main font-bold transition-opacity duration-100
                     ${
-                      canSendCode
+                      canSendCode && !sendCodeMut.isPending
                         ? "hover:opacity-90"
                         : "cursor-not-allowed opacity-50"
                     }
                   `}
                 >
-                  인증코드 보내기
+                  {sendCodeMut.isPending ? "전송중..." : "인증코드 보내기"}
                 </button>
               </div>
             </div>
@@ -186,18 +219,24 @@ export default function SignupPage() {
 
               <button
                 type="submit"
-                disabled={!canSubmit}
+                disabled={
+                  !canSubmit || verifyCodeMut.isPending || signupMut.isPending
+                }
                 className={`
                   rounded-[10px] bg-white px-6 py-3
                   ${
-                    canSubmit
+                    canSubmit &&
+                    !verifyCodeMut.isPending &&
+                    !signupMut.isPending
                       ? "hover:opacity-90"
                       : "cursor-not-allowed opacity-50"
                   }
                 `}
               >
                 <span className="text-[20px] font-bold leading-[150%] text-main">
-                  회원가입하기
+                  {verifyCodeMut.isPending || signupMut.isPending
+                    ? "처리중..."
+                    : "회원가입하기"}
                 </span>
               </button>
             </div>
