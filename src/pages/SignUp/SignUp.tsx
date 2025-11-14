@@ -24,7 +24,6 @@ function getErrorMessage(e: unknown) {
 
 export default function SignupPage() {
   const [name, setName] = useState("");
-  const [userId, setUserId] = useState("");
   const [pw, setPw] = useState("");
   const [emailLocal, setEmailLocal] = useState("");
   const [emailDomain, setEmailDomain] = useState(""); // placeholder 상태
@@ -42,8 +41,8 @@ export default function SignupPage() {
     [emailLocal, emailDomain]
   );
   const canSubmit = useMemo(
-    () => !!(name && userId && pw && code.trim().length > 0),
-    [name, userId, pw, code]
+    () => !!(name && pw && code.trim().length > 0),
+    [name, pw, code]
   );
 
   const sendCodeMut = useSendEmailCodeMutation();
@@ -76,58 +75,15 @@ export default function SignupPage() {
   };
 
   return (
-    <main className="min-h-screen w-full bg-white">
-      <section className="mt-[160px] mb-[160px] flex w-full justify-center">
-        <div className="flex w-[860px] flex-col items-stretch rounded-[30px] px-[60px] py-[60px] bg-main">
+    <main className="min-h-full w-full bg-white flex flex-col justify-center my-10">
+      <section className="flex w-full justify-center">
+        <div className="flex flex-col gap-6 items-stretch rounded-[30px] px-20 py-[40px] bg-main">
           {/* 로고 */}
           <div className="flex w-full justify-center">
             <Logo className="h-auto w-[380px] rotate-[1.317deg]" />
           </div>
-          <div className="h-[56px]" />
 
-          <form onSubmit={onSubmit} className="w-full space-y-6">
-            <Field
-              label="닉네임"
-              placeholder="닉네임을 입력해주세요"
-              value={name}
-              onChange={setName}
-            />
-            <Field
-              label="아이디"
-              placeholder="아이디를 입력해주세요"
-              value={userId}
-              onChange={setUserId}
-            />
-
-            {/* 비밀번호 */}
-            <div className="flex flex-col gap-2">
-              <Label>비밀번호</Label>
-              <div className="relative">
-                <input
-                  type={showPw ? "text" : "password"}
-                  value={pw}
-                  onChange={(e) => setPw(e.target.value)}
-                  placeholder="비밀번호를 입력해주세요"
-                  className="
-                    h-[64px] w-full rounded-[10px]
-                    bg-main-bright px-[20px] pr-[52px]
-                    text-[16px] text-main outline-none
-                    placeholder:text-main
-                    focus:ring-2 focus:ring-main-medium
-                  "
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPw((v) => !v)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2"
-                  aria-label={showPw ? "비밀번호 숨기기" : "비밀번호 보기"}
-                >
-                  <PasswordIcon className="h-[20px] w-[20px] opacity-80" />
-                </button>
-              </div>
-            </div>
-
-            {/* 이메일 */}
+          {/* 이메일 */}
             <div className="flex flex-col gap-2">
               <Label>이메일</Label>
 
@@ -212,9 +168,48 @@ export default function SignupPage() {
               onChange={setCode}
             />
 
+          <form onSubmit={onSubmit} className="w-full space-y-6">
+            <Field
+              label="닉네임"
+              placeholder="닉네임을 입력해주세요"
+              value={name}
+              onChange={setName}
+            />
+
+            {/* 비밀번호 */}
+            <div className="flex flex-col gap-2">
+              <Label>비밀번호</Label>
+              <div className="relative">
+                <input
+                  type={showPw ? "text" : "password"}
+                  value={pw}
+                  onChange={(e) => setPw(e.target.value)}
+                  placeholder="비밀번호를 입력해주세요"
+                  className="
+                    h-[64px] w-full rounded-[10px]
+                    bg-main-bright px-[20px] pr-[52px]
+                    text-[16px] text-main outline-none
+                    placeholder:text-main
+                    focus:ring-2 focus:ring-main-medium
+                  "
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPw((v) => !v)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2"
+                  aria-label={showPw ? "비밀번호 숨기기" : "비밀번호 보기"}
+                >
+                  <PasswordIcon className="h-[20px] w-[20px] opacity-80" />
+                </button>
+              </div>
+            </div>
+
             <div className="flex items-start justify-between pt-2">
-              <Link to={PATHS.LOGIN} className="text-[16px] text-main-bright">
-                로그인
+              <Link to={PATHS.LOGIN}>
+                <div
+                className="text-[20px] font-bold leading-[150%] bg-main rounded-[10px] text-white px-6 py-3">
+                  로그인
+                </div>
               </Link>
 
               <button
