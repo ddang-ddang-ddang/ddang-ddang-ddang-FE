@@ -1,97 +1,147 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Button from "@/components/common/Button"; 
 import TrialListItem, { TrialData, TrialStatus } from "@/components/mypage/TrialListItem"; 
 import judgeIllustrationUrl from "@/assets/svgs/FirstJudge.svg?url"; 
 import ProfileIcon from "@/assets/svgs/profileIcon.svg?react";
+import { useUserProfileQuery, useUserRecordQuery, useUserAchievementsQuery, useUserRankQuery, useUserCasesQuery, useUpdateUserProfileMutation  } from "@/hooks/api/useUserQuery";
+import type { UserProfileData } from "@/types/apis/user";
+import { useAuthStore } from "@/stores/useAuthStore"; 
 import { useMemo } from "react";
 
-// 나중에 별도 컴포넌트로 분리할 섹션들을 일단 MyPage 컴포넌트 내부에 직접 구현
 const MyPage = () => {
-  // 실제 데이터는 API 연동 후 useState로 관리하게 됩니다.
-  const [userName] = useState("명예 변호사"); // 와이어프레임 'OOO님의 법정' 위의 OOO 부분
-  const [wins] = useState(10);
-  const [losses] = useState(5);
-  const [nickname, setNickname] = useState("OO");
-  const [email, setEmail] = useState("mutsa@example.com");
-  const [phoneNumber, setPhoneNumber] = useState("010-1234-5678");
+  // ⭐️ 인증 상태 확인
+  const authStore = useAuthStore();
+  const isAuthenticated = !!authStore.accessToken;
 
-  // 경험치 및 칭호 관련 더미 데이터
-  const expData = {
-    currentLevel: "법대생",
-    nextLevel: "로스쿨 학생",
-    totalExp: 18, // 현재까지 진행한 재판 수
-    expNeeded: 7, // 다음 레벨까지 남은 재판 수
-    expProgress: 65, // 경험치 진행률 (65% 가정)
-  };
+  // ⭐️ API 데이터 조회 훅들
+  const { data: userData, isLoading, isError, error } = useUserProfileQuery({
+      enabled: isAuthenticated, 
+  });
+  
+  const { data: recordData } = useUserRecordQuery({
+      enabled: isAuthenticated,
+  });
+  
+  const { data: achievementsData } = useUserAchievementsQuery({
+      enabled: isAuthenticated,
+  });
+  
+  const { data: rankData } = useUserRankQuery({
+      enabled: isAuthenticated,
+  });
+  
+  const { data: casesData } = useUserCasesQuery({
+      enabled: isAuthenticated,
+  });
 
-  //전적 조회 더미 데이터
-  const DUMMY_TRIALS: TrialData[] = [
-    { id: 105, title: "다른 이성에게 깻잎을 떼어줘도 된다 VS 안된다", mySide: "안된다", status: '승리', currentRound: '진행중' },
-    { id: 104, title: "짜장면 VS 짬뽕", mySide: "짬뽕", status: '패배', currentRound: '종료' },
-    { id: 103, title: "부먹 VS 찍먹", mySide: "찍먹", status: '패배', currentRound: '종료' },
-    { id: 102, title: "얼죽아 VS 듸쥭따", mySide: "얼죽아", status: '승리', currentRound: '종료' },
-    { id: 101, title: "멋쟁이 사자처럼 VS 안 멋진 호랑이처럼", mySide: "멋쟁이 사자처럼", status: '진행중', currentRound: '진행중' },
-  ];
+  // ⭐️ 프로필 업데이트 뮤테이션
+  const updateProfileMutation = useUpdateUserProfileMutation();
 
-  // 사이드바 메뉴 선택 상태
-  // 'profile', 'exp', 'records', 'participate'
+  // ⭐️ 수정 가능한 상태 (UI 인풋 필드에 사용)
+  const [nickname, setNickname] = useState("");
+  const [email, setEmail] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+
+  // ⭐️ API 데이터가 로드된 후 한 번만 useState를 초기화
+  useEffect(() => {
+    if (userData) {
+      setNickname(userData.nickname);
+      setEmail(userData.email);
+      setPhoneNumber(userData.phone_number || "");
+    }
+  }, [userData]);
+
+  // 사이드바 메뉴 및 정렬 상태
   const [selectedMenu, setSelectedMenu] = useState("profile"); 
-
-  // 전적 조회 필터 상태
   const [sortType, setSortType] = useState<TrialStatus | '정렬'>('정렬');
+
+  // ⭐️ 전적 조회 데이터 변환
+  const wins = recordData?.result?.winCnt ?? 0;
+  const losses = recordData?.result?.loseCnt ?? 0;
+
+  // ⭐️ 칭호 조회 데이터 변환
+  const currentRank = rankData?.result?.rank ?? "로딩 중...";
+  const currentExp = rankData?.result?.exp ?? 0;
+
+  // ⭐️ 사건 기록 조회 데이터 변환
+  const trialListData: TrialData[] = casesData?.result?.map(caseItem => ({
+    id: caseItem.caseId,
+    title: caseItem.title,
+    mySide: caseItem.mainArguments[0] || "",
+    status: caseItem.caseResult === "WIN" ? "승리" : caseItem.caseResult === "LOSE" ? "패배" : "진행중",
+    currentRound: caseItem.status === "DONE" ? "종료" : "진행중",
+  })) ?? [];
 
   // 정렬/필터링 로직
   const filteredTrials = useMemo(() => {
-    let list = [...DUMMY_TRIALS]; // ID 순서 유지를 위해 복사
+    let list = [...trialListData];
 
     if (sortType === '정렬') {
-        return list.sort((a, b) => b.id - a.id); // ID 역순 (최신순)
+        return list.sort((a, b) => b.id - a.id);
     }
     
-    // 승리/패배/진행중 필터링
     return list.filter(trial => trial.status === sortType);
-  }, [sortType]);
+  }, [sortType, trialListData]);
 
-
-  const handleUpdateInfo = () => {
-    // 여기에 API 호출 로직을 추가합니다.
-    console.log("정보 수정하기 클릭! (데이터 업데이트)");
+  const handleUpdateInfo = async () => {
+    try {
+      await updateProfileMutation.mutateAsync({
+        nickname,
+        email,
+        profileImageUrl: userData?.profileImageUrl ?? undefined,
+      });
+      alert("정보가 성공적으로 수정되었습니다.");
+    } catch (err) {
+      console.error("정보 수정 실패:", err);
+      alert("정보 수정 중 오류가 발생했습니다.");
+    }
   };
   
-  // 임시로 사용할 커스텀 Tailwind 클래스 (와이어프레임 색상 반영)
-  const PROFILE_BG_COLOR = "bg-[#4A7AD8]"; // 프로필 섹션 배경색 (와이어프레임 블루)
-  const PROFILE_ACCENT_COLOR = "text-[#E8F2FF]"; // 폰트 강조색 (밝은 색)
+  const PROFILE_BG_COLOR = "bg-[#4A7AD8]"; 
+  const PROFILE_ACCENT_COLOR = "text-[#E8F2FF]";
+
+  // ⭐️ 로그인 필요 시 대체 UI
+  if (!isAuthenticated) { 
+    return (
+        <div className="text-center py-20 min-h-screen bg-white">
+            <h1 className="text-3xl font-bold text-main mb-4">로그인이 필요합니다.</h1>
+            <p className="text-lg text-gray-600 mb-6">마이페이지는 회원만 접근 가능합니다.</p>
+            <Button variant="primary" size="lg" onClick={() => window.location.href = "/login"}>
+                로그인 페이지로 이동
+            </Button>
+        </div>
+    );
+  }
+  
+  // ⭐️ API 로딩 처리 UI
+  if (isLoading) {
+    return <div className="text-center py-20 text-main font-bold">사용자 정보를 불러오는 중입니다...</div>;
+  }
+  
+  // ⭐️ API 에러 처리 UI
+  if (isError) {
+    console.error("Error fetching user profile:", error);
+    return <div className="text-center py-20 text-main-red font-bold">오류 발생: {error?.message}</div>;
+  }
 
   return (
     <div className="min-h-screen bg-white py-12">
-      {/* 전체 컨테이너: 중앙 정렬 및 최대 너비 설정, 자식 요소를 세로로 쌓음 */}
       <div className="max-w-6xl mx-auto px-4 flex flex-col"> 
         
-        {/* 상단 섹션 (타이틀 및 프로필 배너 - 전체 너비) */}
         <div className="w-full">
           <h2 className="text-[38px] font-bold text-main mb-4 pb-2">
             마이페이지
           </h2>
-          {/* 1. 상단 프로필 섹션 */}
           <div className={`${PROFILE_BG_COLOR} px-8 pt-4 rounded-xl flex items-center mb-10`}>
-            <div className="flex-grow">
-              {/* OOO님의 법정 위의 OOO 닉네임/등급 */}
-              <p className={`${PROFILE_ACCENT_COLOR} text-md mb-1`}>
-                {userName}
-              </p>
-              
-              {/* OOO님의 법정 */}
+            <div className="flex-grow">              
               <h2 className="text-white text-3xl font-extrabold mb-2">
                 {nickname}님의 법정
               </h2>
-
-              {/* 승패 기록 */}
               <p className="text-white text-lg">
                 <span className="font-bold">{wins}</span>승{" "}
                 <span className="font-bold">{losses}</span>패
               </p>
             </div>
-            {/* 판사 아이콘 */}
             <img
               src={judgeIllustrationUrl}
               alt="판사 아이콘"
@@ -100,14 +150,10 @@ const MyPage = () => {
           </div>
         </div>
 
-        {/* 하단 섹션 (사이드바 + 메인 콘텐츠 - Flex) */}
         <div className="flex w-full">
-          {/* 왼쪽 사이드바 (W: 25%) */}
           <div className="w-1/4 pr-8 pt-8"> 
             <nav className="flex flex-col space-y-2">
-              {/* 메뉴 그룹: 내 정보 조회/수정 */}
               <Button
-                // variant에 삼항 연산자 적용
                 variant={selectedMenu === "profile" ? "bright_main" : "ghost"} 
                 className={`text-md transition duration-150 ease-in-out`}
                 onClick={() => setSelectedMenu("profile")}
@@ -115,9 +161,7 @@ const MyPage = () => {
                 내 정보 조회/수정
               </Button>
 
-              {/* 메뉴 그룹: 경험치 및 칭호 */}
               <Button
-                // variant에 삼항 연산자 적용
                 variant={selectedMenu === "exp" ? "bright_main" : "ghost"}
                 className={`text-md transition duration-150 ease-in-out`}
                 onClick={() => setSelectedMenu("exp")}
@@ -125,9 +169,7 @@ const MyPage = () => {
                 경험치 및 칭호 조회
               </Button>
               
-              {/* 메뉴 그룹: 전적 조회 */}
               <Button
-                // variant에 삼항 연산자 적용
                 variant={selectedMenu === "achievements" ? "bright_main" : "ghost"}
                 className={`text-md transition duration-150 ease-in-out`}
                 onClick={() => setSelectedMenu("achievements")}
@@ -135,9 +177,7 @@ const MyPage = () => {
                 업적 조회하기
               </Button>
 
-              {/* 메뉴 그룹: 전적 조회 */}
               <Button
-                // variant에 삼항 연산자 적용
                 variant={selectedMenu === "records" ? "bright_main" : "ghost"}
                 className={`text-md transition duration-150 ease-in-out`}
                 onClick={() => setSelectedMenu("records")}
@@ -145,9 +185,7 @@ const MyPage = () => {
                 전적 조회하기
               </Button>
               
-              {/* 메뉴 그룹: 현재까지 참여한 재판 */}
               <Button
-                // variant에 삼항 연산자 적용
                 variant={selectedMenu === "participate" ? "bright_main": "ghost"}
                 className={`text-md transition duration-150 ease-in-out`}
                 onClick={() => setSelectedMenu("participate")}
@@ -157,22 +195,17 @@ const MyPage = () => {
             </nav>
           </div>
 
-          {/* 오른쪽 메인 콘텐츠 (W: 75%) */}
           <div className="w-3/4 pl-8 pt-8">
-            {/* 2. 사용자 정보 폼 (내 정보 조회/수정 탭 선택 시) */}
             {selectedMenu === "profile" && (
               <div>
                 <h3 className="text-2xl font-bold text-main mb-6 border-b pb-2">
                     내 정보 수정
                 </h3>
 
-                {/* 프로필 사진 섹션 */}
                 <div className="flex items-center space-x-6 mb-10">
-                    {/* 프로필 사진 미리보기 (클래스 복원) */}
                     <ProfileIcon className="w-24 h-24 text-main bg-gray-100 rounded-full p-1" title="프로필 사진" />
                 </div>
 
-                {/* 닉네임 */}
                 <div className="mb-6">
                   <label htmlFor="nickname" className="block text-main text-lg font-medium mb-2">
                     닉네임
@@ -186,7 +219,6 @@ const MyPage = () => {
                   />
                 </div>
 
-                {/* 이메일 주소 */}
                 <div className="mb-6">
                   <label htmlFor="email" className="block text-main text-lg font-medium mb-2">
                     이메일 주소
@@ -197,11 +229,10 @@ const MyPage = () => {
                     className="w-full border-b-2 border-main focus:border-main outline-none pb-2 text-lg text-main"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    readOnly // 이메일은 보통 수정 불가
+                    readOnly
                   />
                 </div>
 
-                {/* 전화번호 */}
                 <div className="mb-6">
                   <label htmlFor="phone" className="block text-main text-lg font-medium mb-2">
                     전화번호
@@ -215,89 +246,80 @@ const MyPage = () => {
                   />
                 </div>
 
-                {/* 정보 수정하기 버튼 */}
                 <div className="flex justify-end mt-10">
                   <Button
                     variant="primary" 
                     size="lg" 
                     className="px-8 py-3 rounded-md"
                     onClick={handleUpdateInfo}
+                    disabled={updateProfileMutation.isPending}
                   >
-                    정보 수정하기
+                    {updateProfileMutation.isPending ? "저장 중..." : "정보 수정하기"}
                   </Button>
                 </div>
               </div>
             )}
             
-            {/* 경험치 및 칭호 조회 (Exp) 탭 */}
             {selectedMenu === "exp" && (
               <div className="pt-4">
                 <h3 className="text-2xl font-bold text-main ">
                     현재 칭호
                 </h3>
-                <span className="text-main mb-6">{expData.currentLevel}</span>  
+                <span className="text-main mb-6">{currentRank}</span>  
                 
-                {/* 다음 칭호까지 남은 재판 수 */}
                 <p className="text-xl font-bold text-main mb-4 pt-8">
-                    다음 칭호를 얻기까지 남은 재판 수 <span className="text-main">{expData.expNeeded}개</span>
-                </p>
-                <p className="text-md text-main mb-6">
-                    다음 칭호: {expData.nextLevel}
+                    현재 경험치: <span className="text-main">{currentExp}</span>
                 </p>
 
-                {/* 경험치 진행률 바 */}
                 <div className="w-full bg-gray-200 rounded-full h-4 mb-4">
                     <div 
                         className="bg-main h-4 rounded-full transition-all duration-500"
-                        style={{ width: `${expData.expProgress}%` }}
+                        style={{ width: `${Math.min((currentExp / 2000) * 100, 100)}%` }}
                     ></div>
                 </div>
-                
-                <p className="text-sm text-main mb-8">
-                    현재까지 진행한 재판 수: {expData.totalExp}개
-                </p>
-
-                {/* 칭호 단계 히스토리 */}
-                <h3 className="text-xl font-bold text-main mb-4 pb-2">
-                    칭호 단계
-                </h3>
-                <p className="text-md text-main">
-                    말싸움 고수 → 법대생 → 로스쿨 → 천원짜리 변호사 → 만원짜리 변호사
-                </p>
               </div>
             )}
             
-            {/* 업적 조회하기 (achivement)) 탭 - 와이어프레임 아직*/}
             {selectedMenu === "achievements" && (
               <div className="pt-4">
                 <h3 className="text-2xl font-bold text-main mb-6 border-b pb-2">
                     업적 조회하기
                 </h3>
-                <div className="p-6 bg-gray-50 rounded-lg">
-                    <p className="text-main-medium">여기에 사용자 업적(첫 재판 승리, 10번째 재판 승리 등)이 표시됩니다.</p>
-                </div>
+                {achievementsData?.result && achievementsData.result.length > 0 ? (
+                  <div className="space-y-4">
+                    {achievementsData.result.map(achievement => (
+                      <div key={achievement.achievementId} className="p-4 bg-gray-50 rounded-lg">
+                        <h4 className="font-bold text-main mb-2">{achievement.achievementName}</h4>
+                        <p className="text-gray-600 text-sm">{achievement.achievementDescription}</p>
+                        <p className="text-gray-500 text-xs mt-2">{new Date(achievement.achievementTime).toLocaleDateString()}</p>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="p-6 bg-gray-50 rounded-lg">
+                    <p className="text-main-medium">획득한 업적이 없습니다.</p>
+                  </div>
+                )}
               </div>
             )}
 
-            {/* 전적 조회하기 (Records) 탭 - 와이어프레임 아직*/}
             {selectedMenu === "records" && (
               <div className="pt-4">
                 <h3 className="text-2xl font-bold text-main mb-6 border-b pb-2">
                     전적 조회하기
                 </h3>
                 <div className="p-6 bg-gray-50 rounded-lg">
-                    <p className="text-main-medium">여기에 사용자 전적(승패 기록, 상세 재판 결과 등)이 표시됩니다.</p>
+                    <p className="text-main-medium text-lg font-bold">총 {wins}승 {losses}패</p>
+                    <p className="text-main-medium mt-2">승률: {wins + losses > 0 ? ((wins / (wins + losses)) * 100).toFixed(1) : 0}%</p>
                 </div>
               </div>
             )}
 
-            {/* 4. 현재까지 참여한 재판 (Participate) 탭 */}
             {selectedMenu === "participate" && (
               <div className="pt-4">
-                {/* 상단 정보 및 정렬 드롭다운 */}
                 <div className="flex justify-between items-center mb-6">
                     <h3 className="text-2xl font-bold text-gray-800">
-                        참여한 재판 목록 <span className="text-lg text-gray-500 font-normal">({DUMMY_TRIALS.length}개의 재판)</span>
+                        참여한 재판 목록 <span className="text-lg text-gray-500 font-normal">({trialListData.length}개의 재판)</span>
                     </h3>
                     <select
                         value={sortType}
@@ -311,7 +333,6 @@ const MyPage = () => {
                     </select>
                 </div>
 
-                {/* ⭐️ 재판 목록 렌더링 */}
                 <div className="space-y-2">
                     {filteredTrials.length > 0 ? (
                         filteredTrials.map(trial => (
