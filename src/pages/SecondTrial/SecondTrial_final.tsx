@@ -1,8 +1,9 @@
 import React, { useState, useMemo } from 'react';
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { PATHS } from '@/constants';
 import clsx from 'clsx';
 import Button from '@/components/common/Button';
+import { useSecondTrialDetailsQuery, usePostVoteMutation, useVoteResultQuery } from "@/hooks/secondTrial/useSecondTrial";
 
 const MOCK_VOTE_RESULT = {
   voteA: 62, // A측 투표율 (62%)
@@ -20,11 +21,32 @@ const MOCK_DEBATE_DATA = {
 };
 
 
-const SecondTrial_final = () => {
+const SecondTrial_final: React.FC = () => {
+  const { caseId: caseIdParam } = useParams<{ caseId?: string }>();
+  const caseId = caseIdParam ? Number(caseIdParam) : undefined;
   const navigate = useNavigate();
-  // 2차 재판 결과가 확정된 후, 3차 투표를 위해 선택 상태만 임시로 유지
-  const [selectedSide, setSelectedSide] = useState<'A' | 'B' | null>(null);
-    
+
+  const { data: detail } = useSecondTrialDetailsQuery(caseId ?? undefined);
+  const { data: judgment } = useVoteResultQuery(caseId ?? undefined);
+
+  
+  const ratioA = Math.round(judgment?.result?.ratioA ?? 50);
+  const ratioB = Math.round(judgment?.result?.ratioB ?? 50);
+
+  const detailsQuery = useSecondTrialDetailsQuery(caseId);
+  const details = detailsQuery.data?.result;
+  const postVote = usePostVoteMutation();
+  const voteResultQuery = useVoteResultQuery(caseId);
+
+  const handleVote = async (choice: "A" | "B") => {
+    if (!caseId) return;
+    try {
+      await postVote.mutateAsync({ caseId, body: { choice } });
+    } catch (err) {
+      console.error("투표 실패:", err);
+    }
+  };
+
   return (
     <div className="bg-white min-h-screen pt-12 pb-20">
       <div className="max-w-6xl mx-auto px-4">
@@ -73,43 +95,22 @@ const SecondTrial_final = () => {
         <div className="flex flex-col items-center mb-12 pt-8">
             <h2 className="text-2xl font-bold text-main mb-6">2차 재판 투표 결과</h2>
             
-            {/* 비율 바 컨테이너 */}
-            <div className="w-full max-w-xl h-10 bg-gray-200 rounded-full flex overflow-hidden">
-                {/* A측 비율 (파란색) */}
-                <div 
-                    style={{ width: `${MOCK_VOTE_RESULT.voteA}%` }}
-                    className="bg-main-medium flex justify-center items-center text-white font-bold text-sm h-full"
-                >
-                    {/* A측 비율 텍스트 */}
-                    {MOCK_VOTE_RESULT.voteA > 5 && (
-                        <span>A측 입장 {MOCK_VOTE_RESULT.voteA}%</span>
-                    )}
-                </div>
-                
-                {/* B측 비율 (빨간색) */}
-                <div 
-                    style={{ width: `${MOCK_VOTE_RESULT.voteB}%` }}
-                    className="bg-main-red flex justify-center items-center text-white font-bold text-sm h-full"
-                >
-                    {/* B측 비율 텍스트 */}
-                    {MOCK_VOTE_RESULT.voteB > 5 && (
-                        <span>B측 입장 {MOCK_VOTE_RESULT.voteB}%</span>
-                    )}
-                </div>
-                
-                {/* 비율이 너무 작아서 텍스트가 안 보일 경우를 대비한 처리 */}
-                {MOCK_VOTE_RESULT.voteA <= 5 && MOCK_VOTE_RESULT.voteA > 0 && (
-                     <div className="absolute left-0 transform translate-x-[calc(50%-50%)]">
-                        <span className="text-black text-xs ml-1">A {MOCK_VOTE_RESULT.voteA}%</span>
-                     </div>
-                )}
-                {MOCK_VOTE_RESULT.voteB <= 5 && MOCK_VOTE_RESULT.voteB > 0 && (
-                     <div className="absolute right-0 transform translate-x-[calc(-50%+50%)]">
-                        <span className="text-black text-xs mr-1">B {MOCK_VOTE_RESULT.voteB}%</span>
-                     </div>
-                )}
-            </div>
-            
+            <div className="mt-[43px] flex justify-center">
+        <div className="relative w-[995px] h-[44px] bg-[rgba(235,146,146,0.46)] rounded-[30px] overflow-hidden flex items-center justify-between px-[20px]">
+          <div
+            className="absolute left-0 top-0 h-full bg-[#809AD2] rounded-[30px]"
+            style={{ width: `${ratioA}%` }}
+          ></div>
+          <div className="relative z-10 flex w-full justify-between items-center px-[20px]">
+            <p className="text-white text-[16px] font-bold leading-[150%]">
+              A입장 {ratioA}%
+            </p>
+            <p className="text-white text-[16px] font-bold leading-[150%]">
+              B입장 {ratioB}%
+            </p>
+          </div>
+        </div>
+      </div>
         </div>
         
         {/* ⭐️ 최종심 결과보기 버튼 추가 */}
@@ -129,4 +130,4 @@ const SecondTrial_final = () => {
   );
 }
 
-export default SecondTrial_final; 
+export default SecondTrial_final;
