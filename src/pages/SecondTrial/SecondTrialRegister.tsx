@@ -4,20 +4,7 @@ import { useNavigate, useParams, useLocation } from "react-router-dom";
 import Button from "@/components/common/Button";
 import { PATHS } from "@/constants";
 import { useStartSecondTrialMutation } from "@/hooks/secondTrial/useSecondTrial";
-
-// 기존 UI용 더미 데이터 (변경 없음)
-const MOCK_DEBATE_DATA = {
-  id: 1,
-  timeLimit: "마감",
-  situation:
-    "깻잎 논쟁: 내 연인이 친구의 깻잎을 떼어주는 것을 허용해야 하는가?",
-  argumentA:
-    "연인을 배려하는 행동이며, 사소한 일에 질투하는 것은 속이 좁은 것이다.",
-  argumentB:
-    "연인과 친구 사이에 무의식적인 친밀감을 형성하는 행동이며, 오해의 소지가 있다.",
-  isArgumentTime: false,
-  isVoteTime: false,
-};
+import { useFirstCaseDetailQuery } from "@/hooks/firstTrial/useFirstTrial";
 
 const SecondTrialRegister: React.FC = () => {
   const [duration, setDuration] = useState<string>("");
@@ -42,6 +29,13 @@ const SecondTrialRegister: React.FC = () => {
   };
 
   const resolveCaseIdOnce = (): number | undefined => {
+    // 4) localStorage fallback (1차 재판에서 저장해뒀다면)
+    const stored = localStorage.getItem("lastCaseId");
+    if (stored) {
+      const n = Number(stored);
+      if (!Number.isNaN(n)) return n;
+    }
+
     // 1) URL param
     if (params?.caseId) {
       const n = Number(params.caseId);
@@ -60,13 +54,6 @@ const SecondTrialRegister: React.FC = () => {
     const fromQs = getCaseIdFromSearch();
     if (fromQs) return fromQs;
 
-    // 4) localStorage fallback (1차 재판에서 저장해뒀다면)
-    const stored = localStorage.getItem("lastCaseId");
-    if (stored) {
-      const n = Number(stored);
-      if (!Number.isNaN(n)) return n;
-    }
-
     return undefined;
   };
 
@@ -81,21 +68,53 @@ const SecondTrialRegister: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.key, location.search, (location as any).state, params?.caseId]);
 
+  // 1차 재판 상세 정보 조회 (title, argumentA, argumentB)
+  const { data: caseDetailRes, isLoading: isCaseDetailLoading } = useFirstCaseDetailQuery(caseId);
+  const caseDetail = caseDetailRes?.result;
+
   const handleStartClick = async () => {
     if (!caseId) {
       alert("케이스 ID가 없습니다. 1차 재판에서 넘어온 caseId를 확인해 주세요.");
       return;
     }
 
+    if (!duration) {
+      alert("변호 종료 시간을 선택해 주세요.");
+      return;
+    }
+
     try {
+      // TODO: duration을 서버에 전달하는 로직이 필요하다면 여기서 추가 API 호출
+      // 예: await updateTrialDuration({ caseId, duration: Number(duration) });
+      
       await startSecond.mutateAsync(caseId);
       // 성공 시 기존 동작(페이지 이동) 유지
-      navigate(PATHS.SECOND_TRIAL_ROUND_ONE);
+      navigate(`${PATHS.SECOND_TRIAL_ROUND_ONE}/${caseId}`);
     } catch (err) {
       console.error("2차 재판 시작 실패:", err);
       alert("2차 재판 시작에 실패했습니다. 다시 시도해 주세요.");
     }
   };
+
+  // 로딩 상태 처리
+  if (isCaseDetailLoading) {
+    return (
+      <div className="flex flex-col items-center pt-10 gap-y-10 pb-30">
+        <h1 className="text-2xl font-bold text-center text-main">2차 재판 등록</h1>
+        <p className="text-main">사건 정보를 불러오는 중...</p>
+      </div>
+    );
+  }
+
+  // 케이스 상세 정보가 없을 때
+  if (!caseDetail) {
+    return (
+      <div className="flex flex-col items-center pt-10 gap-y-10 pb-30">
+        <h1 className="text-2xl font-bold text-center text-main">2차 재판 등록</h1>
+        <p className="text-main-red">사건 정보를 불러올 수 없습니다.</p>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col items-center pt-10 gap-y-10 pb-30">
@@ -103,20 +122,26 @@ const SecondTrialRegister: React.FC = () => {
 
       <div className="flex gap-[31px]">
         <div className="w-[513px] h-[447px] bg-main-medium rounded-[30px] flex justify-center items-center flex-col">
-          <span className="text-2xl font-bold text-center text-white">A. 찬성</span>
-          <p className="px-20 py-10 text-white">{MOCK_DEBATE_DATA.argumentA}</p>
+          <span className="text-2xl font-bold text-center text-white">{caseDetail.argumentA.mainArgument}</span>
+          <p className="px-20 py-10 text-white">
+            {caseDetail.argumentA.reasoning}
+          </p>
         </div>
         <div className="w-[513px] h-[447px] bg-main-red rounded-[30px] flex justify-center items-center flex-col">
-          <span className="text-2xl font-bold text-center text-white">B. 반대</span>
-          <p className="px-20 py-10 text-white">{MOCK_DEBATE_DATA.argumentB}</p>
+          <span className="text-2xl font-bold text-center text-white">{caseDetail.argumentB.mainArgument}</span>
+          <p className="px-20 py-10 text-white">
+            {caseDetail.argumentB.reasoning}
+          </p>
         </div>
       </div>
 
       <div className="w-[1058px] flex justify-center items-center pb-6">
-        <h1 className="text-main text-24px">{MOCK_DEBATE_DATA.situation}</h1>
+        <h1 className="text-main text-24px">
+          {caseDetail.title}
+        </h1>
       </div>
 
-      <h1 className="text-2xl font-bold text-center text-main">변호 종료 시간 설정</h1>
+      <h1 className="text-2xl font-bold text-center text-main">투표 종료 시간 설정</h1>
 
       <select
         id="durationSelect"
@@ -147,7 +172,7 @@ const SecondTrialRegister: React.FC = () => {
         size="lg"
         className="w-[585px] h-[123px] rounded-[30px]"
         onClick={handleStartClick}
-        disabled={startSecond.isPending}
+        disabled={startSecond.isPending || !duration}
       >
         {startSecond.isPending ? "시작 요청중..." : "2차 재판 시작하기"}
       </Button>

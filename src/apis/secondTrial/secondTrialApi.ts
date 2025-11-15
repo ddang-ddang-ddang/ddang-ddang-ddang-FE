@@ -1,7 +1,10 @@
 import instance from "@/apis/instance";
 import type { ApiResponse } from "@/types/common/api";
-import type { SecondTrialDetailsResponse, DefenseRequest, DefenseResponse, DefenseItem, LikeRequest, VoteRequest, VoteResultResponse, RebuttalRequest, RebuttalResponse, RebuttalItem } from "@/types/apis/secondTrial";
+import type { SecondTrialDetailsResponse, DefenseRequest, DefenseResponse, DefenseItem, LikeRequest, VoteRequest, VoteResultResponse, RebuttalRequest, RebuttalItem } from "@/types/apis/secondTrial";
 
+{/* 2차 재판 관련 API 모음 swagger (1 o, 2 o, 3 o, 4 o, 5 o, 6 o,7 o, 8 o) */}
+
+//2차 재판 시작 swagger 5
 const startSecondTrial = async (caseId: number): Promise<ApiResponse<null>> => {
   const { data } = await instance.patch<ApiResponse<null>>(
     `/api/v1/cases/${caseId}/appeal`,
@@ -16,9 +19,11 @@ const startSecondTrial = async (caseId: number): Promise<ApiResponse<null>> => {
   return data;
 };
 
+//swagger 8
+//2차 재판 상세 정보 조회
 const getSecondTrialDetails = async (caseId: number): Promise<ApiResponse<SecondTrialDetailsResponse>> => {
   const { data } = await instance.get<ApiResponse<SecondTrialDetailsResponse>>(
-    `/api/v1/cases/${caseId}/second`,
+    `/api/v1/cases/${caseId}/debate`,
     {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("accessToken") ?? ""}`,
@@ -29,6 +34,7 @@ const getSecondTrialDetails = async (caseId: number): Promise<ApiResponse<Second
   return data;
 };
 
+//변론 제출 swagger 4
 const postDefense = async (caseId: number, body: DefenseRequest): Promise<ApiResponse<DefenseResponse>> => {
   const { data } = await instance.post<ApiResponse<DefenseResponse>>(
     `/api/v1/cases/${caseId}/defenses`,
@@ -44,21 +50,7 @@ const postDefense = async (caseId: number, body: DefenseRequest): Promise<ApiRes
   return data;
 };
 
-const postLike = async (defenseId: number, body: LikeRequest): Promise<ApiResponse<boolean>> => {
-  const { data } = await instance.post<ApiResponse<boolean>>(
-    `/api/likes/${defenseId}`,
-    body,
-    {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("accessToken") ?? ""}`,
-      },
-      withCredentials: true,
-    }
-  );
-  return data;
-};
-
+//배심원 투표 swagger 2
 const postVote = async (caseId: number, body: VoteRequest): Promise<ApiResponse<null>> => {
   const { data } = await instance.post<ApiResponse<null>>(
     `/api/v1/cases/${caseId}/vote`,
@@ -74,6 +66,7 @@ const postVote = async (caseId: number, body: VoteRequest): Promise<ApiResponse<
   return data;
 };
 
+//2차재판 투표 결과 조회 swagger 7
 const getVoteResult = async (caseId: number): Promise<ApiResponse<VoteResultResponse>> => {
   const { data } = await instance.get<ApiResponse<VoteResultResponse>>(
     `/api/v1/cases/${caseId}/vote/result`,
@@ -88,15 +81,15 @@ const getVoteResult = async (caseId: number): Promise<ApiResponse<VoteResultResp
 };
 
 /**
- * 반론 등록
- * POST /api/v1/rebuttals/{defenseId}
+ * 반론(대댓글) 등록 swagger 1
+ * POST /api/v1/rebuttals
  * RequestHeader: Content-Type: application/json, Authorization: Bearer accessToken
- * RequestBody: { defenseId, parentId, type, content }
- * Response: ApiResponse<{ rebuttalId: number }>
+ * RequestBody: { defenseId, type, content, parentId }
+ * Response: ApiResponse<number> (result: rebuttalId)
  */
-const postRebuttal = async (defenseId: number, body: RebuttalRequest): Promise<ApiResponse<RebuttalResponse>> => {
-  const { data } = await instance.post<ApiResponse<RebuttalResponse>>(
-    `/api/v1/rebuttals/${defenseId}`,
+const postRebuttal = async (body: RebuttalRequest): Promise<ApiResponse<number>> => {
+  const { data } = await instance.post<ApiResponse<number>>(
+    `/api/v1/rebuttals`,
     body,
     {
       headers: {
@@ -110,29 +103,7 @@ const postRebuttal = async (defenseId: number, body: RebuttalRequest): Promise<A
 };
 
 /**
- * 반론(리버털) 좋아요 추가
- * POST /api/likes/{rebuttalId}
- * headers: Content-Type: application/json, Authorization: Bearer accessToken
- * body: { contentId: number, contentType: "REBUTTAL" }
- * response: ApiResponse<boolean>
- */
-const postRebuttalLike = async (rebuttalId: number, body: LikeRequest): Promise<ApiResponse<boolean>> => {
-  const { data } = await instance.post<ApiResponse<boolean>>(
-    `/api/likes/${rebuttalId}`,
-    body,
-    {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("accessToken") ?? ""}`,
-      },
-      withCredentials: true,
-    }
-  );
-  return data;
-};
-
-/**
- * 변론 목록 조회
+ * 2차 변론 목록 조회 swagger 3
  * GET /api/v1/cases/{caseId}/defenses
  * headers: Authorization: Bearer accessToken
  * response: ApiResponse<DefenseItem[]>
@@ -151,7 +122,7 @@ const getDefenses = async (caseId: number): Promise<ApiResponse<DefenseItem[]>> 
 };
 
 /**
- * 반론(대댓글) 목록 조회 (중첩)
+ * 반론(대댓글) 목록 조회 (중첩) swagger 6
  * GET /api/v1/defenses/{defenseId}/rebuttals
  */
 const getRebuttals = async (defenseId: number): Promise<ApiResponse<RebuttalItem[]>> => {
@@ -167,4 +138,4 @@ const getRebuttals = async (defenseId: number): Promise<ApiResponse<RebuttalItem
   return data;
 };
 
-export { startSecondTrial, getSecondTrialDetails, postDefense, getDefenses, postLike, postVote, getVoteResult, postRebuttal, postRebuttalLike, getRebuttals };
+export { startSecondTrial, getSecondTrialDetails, postDefense, getDefenses, postVote, getVoteResult, postRebuttal, getRebuttals };

@@ -14,6 +14,10 @@ export const PATHS = {
 
 export const PATH_BUILDERS = {
   debateDetail: (id: string | number) => `${PATHS.DEBATE}/${id}`,
+  // 추가: caseId를 받는 2차 재판 경로들
+  secondTrialRegister: (caseId: string | number) => `/secondtrial/register/${caseId}`,
+  secondTrialRoundOne: (caseId: string | number) => `/secondtrial/1/${caseId}`,
+  secondTrialFinal: (caseId: string | number) => `/secondtrial/final/${caseId}`,
 } as const;
 
 // 네브바를 숨길 스텝 매핑 (경로별)

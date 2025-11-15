@@ -1,7 +1,8 @@
-import { startSecondTrial, getSecondTrialDetails, getDefenses, postDefense, postLike, postVote, getVoteResult, postRebuttal, getRebuttals, postRebuttalLike, } from "@/apis/secondTrial/secondTrialApi";
+import { startSecondTrial, getSecondTrialDetails, getDefenses, postDefense, postVote, getVoteResult, postRebuttal, getRebuttals } from "@/apis/secondTrial/secondTrialApi";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { ApiResponse } from "@/types/common/api";
 import type { SecondTrialDetailsResponse, DefenseRequest, LikeRequest, VoteRequest, VoteResultResponse, RebuttalRequest, DefenseItem, RebuttalItem } from "@/types/apis/secondTrial";
+
 
 // 2차 재판 시작 훅
 export const useStartSecondTrialMutation = () => {
@@ -30,25 +31,11 @@ export const useSecondTrialDetailsQuery = (caseId?: number) => {
 export const usePostDefenseMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    // expects variables: { caseId: number, body: DefenseRequest }
     mutationFn: ({ caseId, body }: { caseId: number; body: DefenseRequest }) =>
       postDefense(caseId, body),
-    onSuccess: () => {
-      // 제출 성공 시 상세 조회 재요청
-      queryClient.invalidateQueries({ queryKey: ['secondTrialDetails'] });
-    },
-  });
-};
-
-// 좋아요 제출 훅
-export const usePostLikeMutation = () => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: ({ defenseId, body }: { defenseId: number; body: LikeRequest }) =>
-      postLike(defenseId, body),
-    onSuccess: () => {
-      // 좋아요 상태 변경 시 상세 재조회
-      queryClient.invalidateQueries({ queryKey: ["secondTrialDetails"] });
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['secondTrialDetails', variables.caseId] });
+      queryClient.invalidateQueries({ queryKey: ['defenses', variables.caseId] });
     },
   });
 };
@@ -82,26 +69,11 @@ export const useVoteResultQuery = (caseId?: number) => {
 export const usePostRebuttalMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    // variables: { defenseId, body }
-    mutationFn: ({ defenseId, body }: { defenseId: number; body: RebuttalRequest }) =>
-      postRebuttal(defenseId, body),
+    // body만 받도록 수정 (defenseId는 body 안에 포함)
+    mutationFn: (body: RebuttalRequest) => postRebuttal(body),
     onSuccess: () => {
-      // 반론 등록 후 관련 상세 재조회
       queryClient.invalidateQueries({ queryKey: ["secondTrialDetails"] });
-    },
-  });
-};
-
-// 반론 좋아요 훅
-export const usePostRebuttalLikeMutation = () => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    // variables: { rebuttalId: number, body: LikeRequest }
-    mutationFn: ({ rebuttalId, body }: { rebuttalId: number; body: LikeRequest }) =>
-      postRebuttalLike(rebuttalId, body),
-    onSuccess: () => {
-      // 좋아요 변경 시 상세 데이터 갱신
-      queryClient.invalidateQueries({ queryKey: ["secondTrialDetails"] });
+      queryClient.invalidateQueries({ queryKey: ["rebuttals"] });
     },
   });
 };

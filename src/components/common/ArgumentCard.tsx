@@ -2,8 +2,13 @@ import React, { useMemo, useRef, useState } from "react";
 import {
   useRebuttalsQuery,
   usePostRebuttalMutation,
-  usePostRebuttalLikeMutation,
 } from "@/hooks/secondTrial/useSecondTrial";
+
+import{
+  useToggleRebuttalLikeMutation,
+  useToggleDefenseLikeMutation,
+} from "@/hooks/like/useLike";
+
 import type {
   RebuttalItem,
   RebuttalRequest,
@@ -13,6 +18,7 @@ import ThumbUpIcon from "@/assets/svgs/thumbs-up.svg";
 
 export interface ArgumentCardProps {
   defenseId: number;
+  caseId: number;
   authorNickname?: string;
   side?: string; // "A" | "B"
   content?: string;
@@ -23,6 +29,7 @@ export interface ArgumentCardProps {
 
 const ArgumentCard: React.FC<ArgumentCardProps> = ({
   defenseId,
+  caseId,
   authorNickname = "닉네임",
   side,
   content,
@@ -30,14 +37,20 @@ const ArgumentCard: React.FC<ArgumentCardProps> = ({
   isLikedByMe,
   badgeLabel = "칭호",
 }) => {
-  // 의견(반론) 조회
-  const { data: rebuttalsRes, isLoading: isRebuttalsLoading } =
-    useRebuttalsQuery(defenseId);
-  const rebuttals: RebuttalItem[] = (rebuttalsRes?.result as RebuttalItem[]) ?? [];
-
-  // 의견(반론) 등록/좋아요
+  const { data: rebuttalsRes, isLoading: isRebuttalsLoading } = useRebuttalsQuery(defenseId);
   const postRebuttalMutation = usePostRebuttalMutation();
-  const postRebuttalLikeMutation = usePostRebuttalLikeMutation();
+  const toggleRebuttalLikeMutation = useToggleRebuttalLikeMutation();
+  const toggleDefenseLikeMutation = useToggleDefenseLikeMutation();
+
+  // 방어변론 좋아요 로컬 상태
+  const [likedDefense, setLikedDefense] = useState(!!isLikedByMe);
+  const [defenseLikes, setDefenseLikes] = useState(likesCount);
+
+  const [localLikes, setLocalLikes] = useState(likesCount);
+  const [liked, setLiked] = useState(!!isLikedByMe);
+
+  // 의견(반론) 조회
+  const rebuttals: RebuttalItem[] = (rebuttalsRes?.result as RebuttalItem[]) ?? [];
 
   // UI 상태
   const [expanded, setExpanded] = useState(false);
@@ -69,7 +82,7 @@ const ArgumentCard: React.FC<ArgumentCardProps> = ({
       content: trimmed,
     };
     try {
-      await postRebuttalMutation.mutateAsync({ defenseId, body });
+      await postRebuttalMutation.mutateAsync(body); // defenseId 제거, body만 전달
       setRebuttalContent("");
       if (!expanded) setExpanded(true);
     } catch (err) {
@@ -78,13 +91,44 @@ const ArgumentCard: React.FC<ArgumentCardProps> = ({
     }
   };
 
+  const handleToggleDefenseLike = () => {
+    if (toggleDefenseLikeMutation.isPending) return;
+    const body: LikeRequest = { contentId: defenseId, contentType: "DEFENSE" };
+    // 낙관적 토글
+    const nextLiked = !likedDefense;
+    setLikedDefense(nextLiked);
+    setDefenseLikes((c) => Math.max(0, c + (nextLiked ? 1 : -1)));
+    toggleDefenseLikeMutation.mutate(
+      { caseId, body },
+      {
+        onSuccess: (res) => {
+          // 서버 최종 결과(res.result)가 false면 실제 취소되었으므로 동기화
+          if (res.result !== nextLiked) {
+            setLikedDefense(res.result);
+            setDefenseLikes((c) =>
+              Math.max(0, c + (res.result ? 1 : -1) - (nextLiked ? 1 : -1))
+            );
+          }
+        },
+        onError: () => {
+          // 롤백
+            setLikedDefense((prev) => !prev);
+            setDefenseLikes((c) => Math.max(0, c + (nextLiked ? -1 : 1)));
+            alert("방어변론 좋아요 처리 실패");
+        },
+      }
+    );
+  };
+
   const handleLikeRebuttal = async (rebuttalId: number) => {
+    if (toggleRebuttalLikeMutation.isPending) return;
     const body: LikeRequest = { contentId: rebuttalId, contentType: "REBUTTAL" };
-    try {
-      await postRebuttalLikeMutation.mutateAsync({ rebuttalId, body });
-    } catch (err) {
-      console.error("반론 좋아요 실패:", err);
-    }
+    toggleRebuttalLikeMutation.mutate(
+      { defenseId, body },
+      {
+        onError: () => alert("반론 좋아요 처리 실패"),
+      }
+    );
   };
 
   return (
@@ -98,12 +142,18 @@ const ArgumentCard: React.FC<ArgumentCardProps> = ({
           <span className="text-main font-bold">{authorNickname}</span>
         </div>
 
-        <div className="flex items-center gap-2 text-main">
-          <ThumbUpIcon/>
+        {/* 상단 좋아요 UI */}
+        <button
+          onClick={handleToggleDefenseLike}
+          disabled={toggleDefenseLikeMutation.isPending}
+          className="flex items-center gap-2 text-main disabled:opacity-50"
+          aria-label="방어변론 좋아요"
+        >
+          <ThumbUpIcon className={likedDefense ? "opacity-60" : ""} />
           <span className="text-md">
-            {likesCount}명이 이 의견에 찬성합니다
+            {defenseLikes}명이 이 의견에 찬성합니다
           </span>
-        </div>
+        </button>
       </div>
 
       {/* 본문 */}
@@ -155,7 +205,7 @@ const ArgumentCard: React.FC<ArgumentCardProps> = ({
 
                   <button
                     onClick={() => handleLikeRebuttal(r.rebuttalId)}
-                    disabled={postRebuttalLikeMutation.isPending}
+                    disabled={toggleRebuttalLikeMutation.isPending}
                     className="text-xs px-2 py-1 rounded bg-main-bright text-main"
                   >
                     좋아요 {r.likesCount}

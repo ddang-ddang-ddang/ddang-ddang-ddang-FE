@@ -55,14 +55,13 @@ export interface VoteResultResponse {
 
 export interface RebuttalRequest {
   defenseId: number;
-  parentId: number | null;
-  type: string; // "A" | "B" 등
+  type: string; // "A" | "B"
   content: string;
+  parentId: number | null;
 }
 
-export interface RebuttalResponse {
-  rebuttalId: number;
-}
+// result는 이제 number (rebuttalId)
+// 기존 RebuttalResponse는 제거하고 ApiResponse<number>로 직접 사용
 
 export interface RebuttalItem {
   rebuttalId: number;

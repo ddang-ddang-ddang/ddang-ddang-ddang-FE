@@ -27,18 +27,16 @@ function App() {
         <Route path={PATHS.FIRST_TRIAL} element={<FirstTrialPage />} />
         <Route path={PATHS.THIRD_TRIAL} element={<ThirdTrialPage />} />
         <Route path={PATHS.SECOND_TRIAL} element={<SecondTrialRegister />} />
-        <Route
-          path={PATHS.SECOND_TRIAL_REGISTER}
-          element={<SecondTrialRegister />}
-        />
-        <Route
-          path={PATHS.SECOND_TRIAL_ROUND_ONE}
-          element={<SecondTrial_1 />}
-        />
-        <Route
-          path={PATHS.SECOND_TRIAL_FINAL} 
-          element={<SecondTrial_final />}
-        />
+        
+        {/* 2차 재판 라우트 (caseId 파라미터 포함) */}
+        <Route path={PATHS.SECOND_TRIAL_REGISTER} element={<SecondTrialRegister />} />
+        <Route path="/secondtrial/register/:caseId" element={<SecondTrialRegister />} />
+        
+        <Route path={PATHS.SECOND_TRIAL_ROUND_ONE} element={<SecondTrial_1 />} />
+        <Route path="/secondtrial/1/:caseId" element={<SecondTrial_1 />} />
+        
+        <Route path={PATHS.SECOND_TRIAL_FINAL} element={<SecondTrial_final />} />
+        <Route path="/secondtrial/final/:caseId" element={<SecondTrial_final />} />
 
         <Route path="*" element={<NotFound />} />
       </Routes>
