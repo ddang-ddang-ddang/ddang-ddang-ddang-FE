@@ -51,8 +51,7 @@ export default function Navbar() {
           </Button>
           <Button
             variant="none"
-            // todo: 경로 수정 필요
-            onClick={() => navigate(PATHS.ROOT)}
+            onClick={() => navigate(PATHS.VS_MODE_WAITING)}
             className="text-white text-xl"
           >
             재판 매칭

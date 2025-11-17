@@ -11,6 +11,10 @@ import SecondTrialRegister from "@/pages/SecondTrial/SecondTrialRegister";
 import SecondTrial_1 from "@/pages/SecondTrial/SecondTrial_1";
 import SecondTrial_final from "@/pages/SecondTrial/SecondTrial_final";
 import SignUpPage from "@/pages/SignUp/SignUp";
+import WaitingTrialList from "@/pages/VsMode/WaitingTrialList";
+import JoinTrialPage from "@/pages/VsMode/JoinTrialPage";
+import RivalVsSubmit from "@/pages/VsMode/RivalVsSubmit";
+import VsLoading from "@/pages/VsMode/VsLoading";
 
 function App() {
   return (
@@ -37,6 +41,12 @@ function App() {
         
         <Route path={PATHS.SECOND_TRIAL_FINAL} element={<SecondTrial_final />} />
         <Route path="/secondtrial/final/:caseId" element={<SecondTrial_final />} />
+
+        {/* VS 모드 라우트 */}
+        <Route path="/vs-mode/waiting" element={<WaitingTrialList />} />
+        <Route path="/vs-mode/join/:caseId" element={<JoinTrialPage />} />
+        <Route path="/vs-mode/submit/:caseId" element={<RivalVsSubmit />} />
+        <Route path="/vs-mode/loading/:caseId" element={<VsLoading />} />
 
         <Route path="*" element={<NotFound />} />
       </Routes>
