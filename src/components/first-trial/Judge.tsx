@@ -3,7 +3,7 @@ import ScaleIcon from "@/assets/svgs/Scale.svg?react";
 import Button from "@/components/common/Button";
 import { useFirstTrialStore } from "@/stores/firstTrialStore";
 import { useNavigate } from "react-router-dom";
-import { PATHS } from "@/constants";
+import { PATHS, PATH_BUILDERS } from "@/constants";
 
 import {
   useFirstCaseDetailQuery,
@@ -33,7 +33,7 @@ export default function Judge() {
   const winnerRatio = ratioA >= ratioB ? ratioA : ratioB;
 
   return (
-    <div className="flex flex-col items-center bg-white mx-auto ...40px] min-h-screen pb-[100px] text-[#203C77] font-[Pretendard]">
+    <div className="flex flex-col items-center bg-white mx-auto px-[40px] min-h-screen pb-[100px] text-[#203C77] font-[Pretendard]">
       {/* 제목 */}
       <h1 className="text-[38px] font-bold text-center mt-[84px] leading-[150%]">
         초심 최종 판결
@@ -139,7 +139,7 @@ export default function Judge() {
           onClick={async () => {
             if (caseId) await doneMut.mutateAsync({ caseId });
             reset();
-            navigate(PATHS.ROOT); // 홈으로 이동
+            navigate(PATHS.ROOT);
           }}
         >
           <span className="text-white text-[36px] font-bold leading-normal">
@@ -150,10 +150,15 @@ export default function Judge() {
         <Button
           variant="trialStart"
           className="w-[380px] h-[123px]"
-          onClick={async () => {
-            if (caseId) await doneMut.mutateAsync({ caseId });
-            reset();
-            navigate(PATHS.SECOND_TRIAL); // 2차 재판 첫 화면으로 이동
+          onClick={() => {
+            if (!caseId) {
+              alert("케이스 ID가 없습니다.");
+              return;
+            }
+            // caseId를 localStorage에 저장
+            localStorage.setItem("lastCaseId", String(caseId));
+            // PATH_BUILDERS 사용하여 경로 생성
+            navigate(PATH_BUILDERS.secondTrialRegister(caseId), { state: { caseId } });
           }}
         >
           <span className="text-white text-[36px] font-bold leading-normal">
