@@ -5,7 +5,8 @@ export type FirstTrialStep =
   | "submit"
   | "loading"
   | "result"
-  | "judge";
+  | "judge"
+  | "vsSubmit";
 
 type FirstTrialState = {
   step: FirstTrialStep;
