@@ -1,10 +1,9 @@
 import FileIcon from "@/assets/svgs/VsLoading.svg?react";
 import Button from "@/components/common/Button";
-import { useFirstTrialStore } from "@/stores/firstTrialStore";
+import { useVsModeStore } from "@/stores/vsModeStore";
 
-/* 초심 - 결과 페이지 */
-export default function Result() {
-  const { setStep } = useFirstTrialStore();
+export default function VsResult() {
+  const { setStep } = useVsModeStore();
 
   return (
     <div className="flex flex-col items-center bg-white mx-auto w-full max-w-[1440px] min-h-screen text-[#203C77] font-[Pretendard]">

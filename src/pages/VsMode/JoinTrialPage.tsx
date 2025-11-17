@@ -1,12 +1,10 @@
 import React from "react";
-import { useNavigate, useParams } from "react-router-dom";
 import Button from "@/components/common/Button";
 import { mockWaitingCases } from "@/mock/vsModeData";
+import { useVsModeStore } from "@/stores/vsModeStore";
 
 const JoinTrialPage: React.FC = () => {
-  const { caseId: caseIdParam } = useParams<{ caseId: string }>();
-  const caseId = caseIdParam ? Number(caseIdParam) : undefined;
-  const navigate = useNavigate();
+  const { caseId, setStep } = useVsModeStore();
 
   // TODO: API 연결 시 useFirstCaseDetailQuery(caseId) 사용
   const caseDetail = mockWaitingCases.find((c) => c.caseId === caseId);
@@ -17,9 +15,7 @@ const JoinTrialPage: React.FC = () => {
       alert("재판 ID가 없습니다.");
       return;
     }
-
-    // RivalVsSubmit 페이지로 이동
-    navigate(`/vs-mode/submit/${caseId}`);
+    setStep("submit");
   };
 
   if (isLoading) {
@@ -36,7 +32,7 @@ const JoinTrialPage: React.FC = () => {
         <p className="text-main-red font-bold text-xl">
           재판 정보를 불러올 수 없습니다
         </p>
-        <Button variant="primary" onClick={() => navigate(-1)}>
+        <Button variant="primary" onClick={() => setStep("waiting")}>
           이전으로
         </Button>
       </div>

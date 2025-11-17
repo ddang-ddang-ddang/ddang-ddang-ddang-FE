@@ -1,12 +1,12 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { mockWaitingCases } from "@/mock/vsModeData";
 import WaitingTrialTable from "@/components/vs-mode/WaitingTrialTable";
 import Pagination from "@/components/vs-mode/Pagination";
+import { useVsModeStore } from "@/stores/vsModeStore";
 
 const WaitingTrialList: React.FC = () => {
-  const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
+  const { setStep, setCaseId } = useVsModeStore();
   const itemsPerPage = 10;
 
   // TODO: API 연결 시 useWaitingCasesQuery() 사용
@@ -25,7 +25,8 @@ const WaitingTrialList: React.FC = () => {
   const currentCases = sortedCases.slice(startIndex, startIndex + itemsPerPage);
 
   const handleCaseClick = (caseId: number) => {
-    navigate(`/vs-mode/join/${caseId}`);
+    setCaseId(caseId);
+    setStep("join");
   };
 
   if (isLoading) {
@@ -44,7 +45,7 @@ const WaitingTrialList: React.FC = () => {
           <h1 className="text-3xl font-bold text-[#203C77] mb-3">
             재판 매칭을 기다리고 있는 주제들이에요!
           </h1>
-          <p className="text-main-medium">
+          <p className="text-gray-500">
             마음에 드는 논쟁을 골라 반대 입장으로서, 당신의 논리가 대결을 완성합니다!
           </p>
         </div>

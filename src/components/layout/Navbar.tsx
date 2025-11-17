@@ -4,6 +4,7 @@ import Logo from "@/assets/svgs/logo.svg?react"; // svgr 컴포넌트 사용
 import { HIDE_NAV_STEPS_BY_PATH, PATHS } from "@/constants";
 import { useThirdTrialStore } from "@/stores/thirdTrialStore";
 import { useAuthStore } from "@/stores/useAuthStore";
+import { useVsModeStore } from "@/stores/vsModeStore";
 
 export default function Navbar() {
   const navigate = useNavigate();
@@ -20,6 +21,11 @@ export default function Navbar() {
   }
 
   if (hide) return null;
+
+  const handleVsModeClick = () => {
+    useVsModeStore.getState().reset(); // VS 모드 초기화
+    navigate("/vs-mode");
+  };
 
   return (
     <nav
@@ -51,7 +57,7 @@ export default function Navbar() {
           </Button>
           <Button
             variant="none"
-            onClick={() => navigate(PATHS.VS_MODE_WAITING)}
+            onClick={handleVsModeClick}
             className="text-white text-xl"
           >
             재판 매칭
@@ -83,8 +89,7 @@ export default function Navbar() {
           </Button>
           <Button
             variant="none"
-            // todo: 경로 수정 필요
-            onClick={() => navigate(PATHS.ROOT)}
+            onClick={handleVsModeClick}
             className="text-white text-xl"
           >
             재판 매칭

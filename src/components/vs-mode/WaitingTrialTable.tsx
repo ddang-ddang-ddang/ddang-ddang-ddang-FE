@@ -28,9 +28,9 @@ const WaitingTrialTable: React.FC<WaitingTrialTableProps> = ({
     <div className="bg-white rounded-lg overflow-hidden">
       {/* 테이블 헤더 */}
       <div className="grid grid-cols-12 gap-4 bg-main-bright px-6 py-4 font-bold text-main-medium">
-        <div className="col-span-1 text-center">순번</div>
-        <div className="col-span-3 text-center">짝짓면 VS ???</div>
-        <div className="col-span-6 text-center">주장</div>
+        <div className="col-span-1 text-center">순서</div>
+        <div className="col-span-3 text-center">주장</div>
+        <div className="col-span-6 text-center">주제</div>
         <div className="col-span-2 text-center">등록한 시간</div>
       </div>
 

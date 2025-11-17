@@ -1,14 +1,14 @@
 import { useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Button from "@/components/common/Button";
 import Textarea from "@/components/common/textarea";
 import { PATHS } from "@/constants";
 import { mockWaitingCases } from "@/mock/vsModeData";
+import { useVsModeStore } from "@/stores/vsModeStore";
 
 export default function RSubmit() {
   const navigate = useNavigate();
-  const { caseId: caseIdParam } = useParams<{ caseId: string }>();
-  const caseId = caseIdParam ? Number(caseIdParam) : undefined;
+  const { caseId, setStep } = useVsModeStore();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -20,8 +20,8 @@ export default function RSubmit() {
   };
 
   const handleProceed = () => {
-    // VsLoading 페이지로 이동
-    navigate(`/vs-mode/loading/${caseId}`);
+    setIsModalOpen(false);
+    setStep("loading"); // loading으로 step 변경
   };
 
   const handleCancel = () => {
