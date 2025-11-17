@@ -70,7 +70,7 @@ const TrialListItem = ({ trial }: TrialListItemProps) => {
                 text: "진행중", 
                 bgClass: "bg-gray-400 text-white",
                 isOngoing: true,
-                roundText: "2차 재판"
+                roundText: "2차 재판 진행중"
             };
         }
         
@@ -79,7 +79,7 @@ const TrialListItem = ({ trial }: TrialListItemProps) => {
             text: "진행중", 
             bgClass: "bg-gray-400 text-white",
             isOngoing: true,
-            roundText: "1차 재판"
+            roundText: "1차 재판 진행중"
         };
     };
 
