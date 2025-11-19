@@ -442,6 +442,7 @@ const MainPage = () => {
               active:shadow-[0_4px_0_0_rgba(62,116,214,0.8)]
               transition-all
             "
+            onClick={() => navigate(PATHS.ONGOING_TRIALS)}
           >
             전체 재판 보기
           </Button>

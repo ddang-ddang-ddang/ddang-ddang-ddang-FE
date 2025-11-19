@@ -36,7 +36,7 @@ const OngoingTrialList: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-white py-12">
+    <div className="min-h-[calc(100vh-98px)] bg-white py-12">
       <div className="max-w-7xl mx-auto px-4">
         {/* 헤더 */}
         <div className="mb-8">
@@ -44,7 +44,7 @@ const OngoingTrialList: React.FC = () => {
             현재 진행중인 재판
           </h1>
           <p className="text-gray-500">
-            진행 중인 재판들을 확인하고, 결과를 기다려보세요!
+            현재 많은 변호사들이 참여중인 재판을 살펴봐요!
           </p>
         </div>
 

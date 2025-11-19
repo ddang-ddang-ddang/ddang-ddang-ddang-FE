@@ -38,7 +38,7 @@ const WaitingTrialList: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-white py-12">
+    <div className="min-h-[calc(100vh-98px)] bg-white py-12">
       <div className="max-w-7xl mx-auto px-4">
         {/* 헤더 */}
         <div className="mb-8">
