@@ -7,8 +7,9 @@ export default function VsLoading() {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      next(); // result로 자동 이동
+      next(); // result로 이동
     }, 3000);
+
     return () => clearTimeout(timer);
   }, [next]);
 
@@ -21,9 +22,7 @@ export default function VsLoading() {
       <div className="flex flex-col items-center justify-center mt-[100px] w-[395px] h-[448px] rounded-[100px] bg-main-medium/20">
         <FileIcon
           className="w-[229px] h-[229px] mb-[20px]"
-          style={{
-            animation: "spin 3s linear infinite",
-          }}
+          style={{ animation: "spin 3s linear infinite" }}
           title="로딩 아이콘"
         />
         <p className="text-[36px] font-bold leading-tight">

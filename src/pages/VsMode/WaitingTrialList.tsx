@@ -1,28 +1,36 @@
 import React, { useState } from "react";
-import { mockWaitingCases } from "@/mock/vsModeData";
 import WaitingTrialTable from "@/components/vs-mode/WaitingTrialTable";
 import Pagination from "@/components/vs-mode/Pagination";
 import { useVsModeStore } from "@/stores/vsModeStore";
+import { useWaitingVsCasesQuery } from "@/hooks/vsMode/useWaitingCasesQuery";
 
 const WaitingTrialList: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const { setStep, setCaseId } = useVsModeStore();
   const itemsPerPage = 10;
 
-  // TODO: API 연결 시 useWaitingCasesQuery() 사용
-  // 최신순 정렬 (createdAt 기준 내림차순)
-  const sortedCases = [...mockWaitingCases].sort(
+  // VS 모드 대기중 사건 목록 API
+  const { data, isLoading } = useWaitingVsCasesQuery();
+  const waitingCases = data?.result ?? [];
+
+  // 최신순 정렬
+  const sortedCases = [...waitingCases].sort(
     (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
   );
-  const isLoading = false;
 
-  // 전체 데이터 개수
-  const totalCount = sortedCases.length;
+  // 🔥 여기에서 타입 충돌 방지용 매핑 수행
+  const mappedCases = sortedCases.map((c) => ({
+    caseId: c.caseId,
+    title: c.title,
+    argumentAMain: c.argumentAMain,
+    createdAt: c.createdAt,
+  }));
 
-  // 페이지네이션 계산
+  const totalCount = mappedCases.length;
   const totalPages = Math.ceil(totalCount / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
-  const currentCases = sortedCases.slice(startIndex, startIndex + itemsPerPage);
+
+  const currentCases = mappedCases.slice(startIndex, startIndex + itemsPerPage);
 
   const handleCaseClick = (caseId: number) => {
     setCaseId(caseId);
@@ -46,7 +54,8 @@ const WaitingTrialList: React.FC = () => {
             재판 매칭을 기다리고 있는 주제들이에요!
           </h1>
           <p className="text-gray-500">
-            마음에 드는 논쟁을 골라 반대 입장으로서, 당신의 논리가 대결을 완성합니다!
+            마음에 드는 논쟁을 골라 반대 입장으로서, 당신의 논리가 대결을
+            완성합니다!
           </p>
         </div>
 

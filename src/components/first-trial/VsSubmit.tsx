@@ -3,18 +3,51 @@ import { useNavigate } from "react-router-dom";
 import Button from "@/components/common/Button";
 import Textarea from "@/components/common/textarea";
 import { PATHS } from "@/constants";
+import { firstTrialApi } from "@/apis/firstTrial/firstTrialApi";
 
-export default function Submit() {
+export default function VsSubmit() {
   const navigate = useNavigate();
 
+  const [situation, setSituation] = useState("");
+  const [mainArgument, setMainArgument] = useState("");
+  const [reasoning, setReasoning] = useState("");
+
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = () => {
+    if (!situation.trim() || !mainArgument.trim() || !reasoning.trim()) {
+      alert("모든 내용을 입력해주세요!");
+      return;
+    }
+
     setIsModalOpen(true);
   };
 
-  const handleProceed = () => {
-    navigate(PATHS.MY_PAGE);
+  const handleProceed = async () => {
+    setIsModalOpen(false);
+
+    try {
+      setIsSubmitting(true);
+
+      // vs모드 party 사용
+      const res = await firstTrialApi.postFirstTrialCreate({
+        mode: "PARTY",
+        title: situation,
+        argumentAMain: mainArgument,
+        argumentAReasoning: reasoning,
+      });
+
+      console.log(res);
+
+      // 성공 → 메인페이지로 이동
+      navigate(PATHS.ROOT);
+    } catch (err) {
+      console.error(err);
+      alert("VS 모드 재판 생성 중 오류가 발생했습니다.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleCancel = () => {
@@ -36,6 +69,8 @@ export default function Submit() {
         <Textarea
           placeholder="밸런스 게임의 배경 상황을 설명해주세요."
           className="bg-[#E8F2FF] border-none text-[20px] w-full h-full resize-none outline-none placeholder-[#809AD2]"
+          value={situation}
+          onChange={(e) => setSituation(e.target.value)}
         />
       </div>
 
@@ -47,6 +82,8 @@ export default function Submit() {
           <Textarea
             placeholder="입장을 작성해주세요."
             className="bg-[#E8F2FF] border-none text-[20px] w-full h-full resize-none outline-none placeholder-[#809AD2]"
+            value={mainArgument}
+            onChange={(e) => setMainArgument(e.target.value)}
           />
         </div>
 
@@ -54,6 +91,8 @@ export default function Submit() {
           <Textarea
             placeholder="입장을 뒷받침하는 논리적인 근거를 작성해주세요."
             className="bg-[#E8F2FF] border-none text-[20px] w-full resize-none outline-none placeholder-[#809AD2] leading-[1.6]"
+            value={reasoning}
+            onChange={(e) => setReasoning(e.target.value)}
           />
         </div>
       </div>
@@ -72,6 +111,7 @@ export default function Submit() {
           size="lg"
           className="w-[380px] h-[123px] text-[36px] font-bold rounded-[15px]"
           onClick={handleSubmit}
+          disabled={isSubmitting}
         >
           상대의견 기다리기
         </Button>
@@ -83,7 +123,7 @@ export default function Submit() {
           className="fixed inset-0 flex items-center justify-center z-50"
           style={{ background: "rgba(255, 255, 255, 0.39)" }}
         >
-          {/* 회색 그림자 박스 */}
+          {/* 회색 그림자 */}
           <div
             className="absolute"
             style={{
@@ -95,7 +135,7 @@ export default function Submit() {
             }}
           />
 
-          {/* 안쪽 메인 박스 */}
+          {/* 메인 박스 */}
           <div
             className="relative flex flex-col items-center justify-center"
             style={{
@@ -121,9 +161,8 @@ export default function Submit() {
               {"\n"}계속하시겠습니까?
             </p>
 
-            {/* 버튼 2개 */}
             <div className="flex items-center justify-center gap-[49px]">
-              {/* 취소 버튼 */}
+              {/* 취소 */}
               <button
                 onClick={handleCancel}
                 className="transition-all duration-150"
@@ -138,27 +177,14 @@ export default function Submit() {
                   background: "#AFC5F8",
                   boxShadow: "0px 6px 0px #8FADE8",
                 }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.opacity = "0.85";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.opacity = "1";
-                }}
-                onMouseDown={(e) => {
-                  e.currentTarget.style.transform = "translateY(4px)";
-                  e.currentTarget.style.boxShadow = "0px 2px 0px #8FADE8";
-                }}
-                onMouseUp={(e) => {
-                  e.currentTarget.style.transform = "translateY(0px)";
-                  e.currentTarget.style.boxShadow = "0px 6px 0px #8FADE8";
-                }}
               >
                 취소
               </button>
 
-              {/* 계속 진행하기 버튼 */}
+              {/* 계속 진행 */}
               <button
                 onClick={handleProceed}
+                disabled={isSubmitting}
                 className="transition-all duration-150"
                 style={{
                   width: "200px",
@@ -170,20 +196,6 @@ export default function Submit() {
                   color: "#FFFFFF",
                   background: "#2E4C8F",
                   boxShadow: "0px 6px 0px #1C356B",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.opacity = "0.85";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.opacity = "1";
-                }}
-                onMouseDown={(e) => {
-                  e.currentTarget.style.transform = "translateY(4px)";
-                  e.currentTarget.style.boxShadow = "0px 2px 0px #1C356B";
-                }}
-                onMouseUp={(e) => {
-                  e.currentTarget.style.transform = "translateY(0px)";
-                  e.currentTarget.style.boxShadow = "0px 6px 0px #1C356B";
                 }}
               >
                 계속 진행하기

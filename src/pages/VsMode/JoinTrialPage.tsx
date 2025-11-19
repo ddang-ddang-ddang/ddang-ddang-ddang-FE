@@ -1,14 +1,15 @@
 import React from "react";
 import Button from "@/components/common/Button";
-import { mockWaitingCases } from "@/mock/vsModeData";
 import { useVsModeStore } from "@/stores/vsModeStore";
+import { useJoinCaseQuery } from "@/hooks/vsMode/useJoinCaseQuery";
 
 const JoinTrialPage: React.FC = () => {
   const { caseId, setStep } = useVsModeStore();
 
-  // TODO: API 연결 시 useFirstCaseDetailQuery(caseId) 사용
-  const caseDetail = mockWaitingCases.find((c) => c.caseId === caseId);
-  const isLoading = false;
+  // API: VS 사건 상세 조회
+  const { data, isLoading, isError } = useJoinCaseQuery(caseId);
+
+  const caseDetail = data?.result;
 
   const handleJoinTrial = () => {
     if (!caseId) {
@@ -26,7 +27,7 @@ const JoinTrialPage: React.FC = () => {
     );
   }
 
-  if (!caseDetail) {
+  if (isError || !caseDetail) {
     return (
       <div className="flex flex-col justify-center items-center min-h-screen gap-4">
         <p className="text-main-red font-bold text-xl">
@@ -52,22 +53,22 @@ const JoinTrialPage: React.FC = () => {
 
         {/* 카드 섹션 */}
         <div className="flex space-x-8 justify-center mb-12">
-          {/* 좌측: 상대 입장 (A측) */}
+          {/* 상대 입장 (A측) */}
           <div className="w-[350px] h-[280px] bg-gradient-to-br from-[#7FA7E8] to-[#6B95D6] rounded-3xl flex justify-center items-center flex-col shadow-lg">
             <h2 className="text-2xl font-bold text-white text-center mb-6 px-6">
               상대 입장
             </h2>
             <div className="px-8 space-y-2">
               <p className="text-white text-center text-sm leading-relaxed">
-                {caseDetail.argumentAMain}
+                {caseDetail.argumentA?.mainArgument}
               </p>
               <p className="text-white text-center text-sm leading-relaxed">
-                {caseDetail.argumentAReasoning.slice(0, 80)}...
+                {caseDetail.argumentA?.reasoning?.slice(0, 80)}...
               </p>
             </div>
           </div>
 
-          {/* 우측: 매칭 상대를 기다리는 중 (B측) */}
+          {/* 우측: 매칭 대기 중 */}
           <div className="w-[350px] h-[280px] bg-gradient-to-br from-[#BDBDBD] to-[#9E9E9E] rounded-3xl flex justify-center items-center flex-col shadow-lg">
             <h2 className="text-2xl font-bold text-white text-center mb-8 px-6">
               매칭 상대를 기다리는 중..
@@ -92,14 +93,13 @@ const JoinTrialPage: React.FC = () => {
 
         {/* 하단 정보 및 버튼 */}
         <div className="flex flex-col items-center gap-6 mt-12">
-          {/* 의견 제시한 사람 */}
           <div className="flex gap-4 text-sm text-gray-600">
             <span>의견을 제시한 사람</span>
-            <span className="font-bold text-[#4A7AD8]">칭호</span>
-            <span>{caseDetail.authorNickname}</span>
+            <span className="font-bold text-[#4A7AD8]">
+              {caseDetail.argumentA?.authorId ?? "작성자"}
+            </span>
           </div>
 
-          {/* 참가하기 버튼 */}
           <Button
             variant="trialStart"
             size="lg"
