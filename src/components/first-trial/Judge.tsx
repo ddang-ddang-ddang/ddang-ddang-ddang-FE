@@ -92,11 +92,11 @@ export default function Judge() {
             사건명: {title}
           </p>
 
-          <p className="absolute top-[249px] left-1/2 -translate-x-1/2 w-[420px] text-[15px] leading-[150%] text-center text-[#EBAD27] font-normal font-['Gapyeong_Hanseokbong']">
+          <p className="absolute top-[200px] left-1/2 -translate-x-1/2 w-[420px] text-[15px] leading-[150%] text-center text-[#EBAD27] font-normal font-['Gapyeong_Hanseokbong']">
             {conclusion}
           </p>
 
-          <p className="absolute top-[403px] left-1/2 -translate-x-1/2 w-[420px] text-[15px] font-bold leading-[150%] text-center text-[#EBAD27] font-['Gapyeong_Hanseokbong']">
+          <p className="absolute top-[320px] left-1/2 -translate-x-1/2 w-[420px] text-[15px] font-bold leading-[150%] text-center text-[#EBAD27] font-['Gapyeong_Hanseokbong']">
             {verdict}
           </p>
         </div>
@@ -158,7 +158,9 @@ export default function Judge() {
             // caseId를 localStorage에 저장
             localStorage.setItem("lastCaseId", String(caseId));
             // PATH_BUILDERS 사용하여 경로 생성
-            navigate(PATH_BUILDERS.secondTrialRegister(caseId), { state: { caseId } });
+            navigate(PATH_BUILDERS.secondTrialRegister(caseId), {
+              state: { caseId },
+            });
           }}
         >
           <span className="text-white text-[36px] font-bold leading-normal">
