@@ -57,8 +57,7 @@ export default function Navbar() {
           <div className="hidden md:flex gap-8">
             <Button
               variant="none"
-              // todo: 경로 수정 필요
-              onClick={() => navigate(PATHS.ROOT)}
+              onClick={() => navigate(PATHS.TRIAL_ARCHIVE)}
               className="text-white text-xl"
             >
               재판 아카이브
@@ -89,8 +88,7 @@ export default function Navbar() {
           <div className="hidden md:flex gap-8">
             <Button
               variant="none"
-              // todo: 경로 수정 필요
-              onClick={() => navigate(PATHS.ROOT)}
+              onClick={() => navigate(PATHS.TRIAL_ARCHIVE)}
               className="text-white text-xl"
             >
               재판 아카이브
@@ -137,7 +135,7 @@ export default function Navbar() {
             <>
               <Button
                 variant="none"
-                onClick={() => handleMenuItemClick(() => navigate(PATHS.ROOT))}
+                onClick={() => handleMenuItemClick(() => navigate(PATHS.TRIAL_ARCHIVE))}
                 className="text-white text-lg text-left py-4 px-4 rounded-lg hover:bg-main-medium/30 transition-colors"
               >
                 재판 아카이브
@@ -172,7 +170,7 @@ export default function Navbar() {
             <>
               <Button
                 variant="none"
-                onClick={() => handleMenuItemClick(() => navigate(PATHS.ROOT))}
+                onClick={() => handleMenuItemClick(() => navigate(PATHS.TRIAL_ARCHIVE))}
                 className="text-white text-lg text-left py-4 px-4 rounded-lg hover:bg-main-medium/30 transition-colors"
               >
                 재판 아카이브
