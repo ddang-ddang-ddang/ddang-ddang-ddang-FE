@@ -14,13 +14,11 @@ const getTimeAgo = (createdAt: string): string => {
   const created = new Date(createdAt);
   const diffMs = now.getTime() - created.getTime();
 
-  const diffMinutes = Math.floor(diffMs / (1000 * 60));
+  // 항상 "몇 시간 전"으로만 표시
   const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
-  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
 
-  if (diffMinutes < 60) return `${diffMinutes}분 전`;
-  if (diffHours < 24) return `${diffHours}시간 전`;
-  return `${diffDays}일 전`;
+  if (diffHours <= 0) return "1시간 전";
+  return `${diffHours}시간 전`;
 };
 
 const WaitingTrialItem: React.FC<WaitingTrialItemProps> = ({
