@@ -58,7 +58,7 @@ export default function Judge() {
             <div className="relative w-[316px] h-[78px] bg-white rounded-[30px] shadow-sm flex justify-center items-center px-[55px] py-[21px]">
               <p className="text-black text-[16px] font-normal leading-[150%] text-center">
                 <span className="font-semibold">{winnerMain}</span> 의견이{" "}
-                <span className="font-semibold">{winnerRatio}%</span> 더
+                <span className="font-semibold">{winnerRatio}%</span>로 더
                 논리적입니다.
               </p>
               <div className="absolute left-[50px] bottom-[-20px] w-0 h-0 border-l-[24px] border-l-transparent border-r-[24px] border-r-transparent border-t-[24px] border-t-white"></div>

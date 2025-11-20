@@ -79,7 +79,7 @@ export default function VsJudge() {
           <div className="relative w-[316px] h-[78px] bg-white rounded-[30px] shadow-sm flex justify-center items-center px-[55px] py-[21px]">
             <p className="text-black text-[16px] text-center">
               <span className="font-semibold">{winnerMain}</span> 의견이{" "}
-              <span className="font-semibold">{winnerRatio}%</span> 더
+              <span className="font-semibold">{winnerRatio}%</span>로 더
               논리적입니다.
             </p>
             <div
@@ -122,18 +122,18 @@ export default function VsJudge() {
             사건명: {title}
           </p>
 
-          <p className="absolute top-[249px] w-[420px] text-[15px] text-center font-['Gapyeong_Hanseokbong']">
+          <p className="absolute top-[200px] w-[420px] text-[15px] text-center font-['Gapyeong_Hanseokbong']">
             {conclusion}
           </p>
 
-          <p className="absolute top-[403px] w-[420px] text-[15px] font-bold text-center font-['Gapyeong_Hanseokbong']">
+          <p className="absolute top-[300px] w-[420px] text-[15px] font-bold text-center font-['Gapyeong_Hanseokbong']">
             {verdict}
           </p>
         </div>
       </div>
 
       {/* 승률 박스 */}
-      <div className="mt-[60px] flex justify-center">
+      <div className="mt-[70px] flex justify-center">
         <div className="relative w-[960px] h-[94px] bg-[#EAF1FD] rounded-[15px] flex justify-center items-center px-[32px] text-center shadow-sm">
           <p className="text-[#203C77] text-[20px]">
             땅!땅!땅! 재판부는{" "}
