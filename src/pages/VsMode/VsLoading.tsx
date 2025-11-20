@@ -26,9 +26,9 @@ export default function VsLoading() {
           title="로딩 아이콘"
         />
         <p className="text-[36px] font-bold leading-tight">
-          상대 의견
+          입장문
           <br />
-          기다리는 중
+          제출중
         </p>
       </div>
     </div>
