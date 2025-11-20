@@ -155,7 +155,7 @@ export default function VsJudge() {
             className="absolute left-0 top-0 h-full bg-[#809AD2]"
             style={{ width: `${ratioA}%` }}
           />
-          <div className="relative z-10 flex justify-between items-center px-[20px]">
+          <div className="relative z-10 flex h-full justify-between items-center px-[20px]">
             <p className="text-white text-[16px] font-bold">
               {aMain} {ratioA}%
             </p>
