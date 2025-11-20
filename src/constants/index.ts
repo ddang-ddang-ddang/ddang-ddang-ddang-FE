@@ -10,14 +10,18 @@ export const PATHS = {
   SECOND_TRIAL_FINAL: "/secondtrial/final",
   THIRD_TRIAL: "/third-trial",
   DEBATE: "/debate",
+  VS_MODE_WAITING: "/vs-mode/waiting",
+  VS_MODE_JOIN: "/vs-mode/join",
+  TRIAL_ARCHIVE: "/trial-archive",
+  ONGOING_TRIALS: "/ongoing-trials",
 } as const;
 
 export const PATH_BUILDERS = {
   debateDetail: (id: string | number) => `${PATHS.DEBATE}/${id}`,
-  // 추가: caseId를 받는 2차 재판 경로들
   secondTrialRegister: (caseId: string | number) => `/secondtrial/register/${caseId}`,
   secondTrialRoundOne: (caseId: string | number) => `/secondtrial/1/${caseId}`,
   secondTrialFinal: (caseId: string | number) => `/secondtrial/final/${caseId}`,
+  vsModeJoin: (caseId: string | number) => `/vs-mode/join/${caseId}`,
 } as const;
 
 // 네브바를 숨길 스텝 매핑 (경로별)
