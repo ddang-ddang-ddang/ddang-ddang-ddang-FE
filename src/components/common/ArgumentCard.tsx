@@ -16,7 +16,17 @@ import type {
 import RebuttalItem from "./RebuttalItem";
 import ReportNotification from "./ReportNotification";
 import ReportModal from "./ReportModal";
-import ThumbUpIcon from "@/assets/svgs/thumbs-up.svg";
+import ThumbUpIcon from "@/assets/svgs/thumbs-up.svg?react";
+
+export interface ArgumentData {
+  id: number;
+  userNickname: string;
+  userDgree: string;
+  content: string;
+  likes: number;
+  isBest: boolean;
+  isReplyable: boolean;
+}
 import Siren from "@/assets/svgs/siren.svg";
 
 export interface ArgumentCardProps {
