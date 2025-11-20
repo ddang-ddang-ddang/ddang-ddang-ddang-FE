@@ -36,6 +36,9 @@ export default function VsSubmit() {
         title: situation,
         argumentAMain: mainArgument,
         argumentAReasoning: reasoning,
+        // B측은 더미값으로 자리 확보
+        argumentBMain: "VS_WAITING",
+        argumentBReasoning: "VS_WAITING",
       });
 
       console.log(res);
