@@ -39,11 +39,13 @@ const WaitingTrialItem: React.FC<WaitingTrialItemProps> = ({
         <span className="text-main-medium font-bold text-lg">{index}</span>
       </div>
 
-      <div className="col-span-3 flex items-center">
+      {/* 주장: 가운데 정렬 */}
+      <div className="col-span-3 flex items-center justify-center text-center">
         <span className="font-bold text-main">{argumentAMain}</span>
       </div>
 
-      <div className="col-span-6 flex items-center">
+      {/* 주제: 가운데 정렬 */}
+      <div className="col-span-6 flex items-center justify-center text-center">
         <span className="text-main-medium line-clamp-2">{title}</span>
       </div>
 

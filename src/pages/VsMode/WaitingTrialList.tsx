@@ -1,3 +1,4 @@
+// WaitingTrialList.tsx
 import React, { useState } from "react";
 import WaitingTrialTable from "@/components/vs-mode/WaitingTrialTable";
 import Pagination from "@/components/vs-mode/Pagination";
@@ -9,22 +10,43 @@ const WaitingTrialList: React.FC = () => {
   const { setStep, setCaseId } = useVsModeStore();
   const itemsPerPage = 10;
 
-  // VS 모드 대기중 사건 목록 API
+  /** createdAt: [yyyy, MM, dd, HH, mm, ss, nano] → JS Date */
+  const parseSpringDateArray = (arr: number[] | string) => {
+    if (!arr) return new Date();
+
+    // 배열
+    if (Array.isArray(arr) && arr.length >= 6) {
+      const [y, M, d, h, m, s] = arr;
+      return new Date(y, M - 1, d, h, m, s);
+    }
+  };
+
+  // VS 모드 대기 목록 가져오기
   const { data, isLoading } = useWaitingVsCasesQuery();
   const waitingCases = data?.result ?? [];
 
-  // 최신순 정렬
-  const sortedCases = [...waitingCases].sort(
-    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-  );
+  /** 최신순 정렬 시 new Date() 금지!! 반드시 parseSpringDateArray 사용 */
+  const sortedCases = [...waitingCases].sort((a, b) => {
+    const dateA = parseSpringDateArray(a.createdAt)?.getTime() ?? 0;
+    const dateB = parseSpringDateArray(b.createdAt)?.getTime() ?? 0;
+    return dateB - dateA;
+  });
 
-  // 🔥 여기에서 타입 충돌 방지용 매핑 수행
-  const mappedCases = sortedCases.map((c) => ({
-    caseId: c.caseId,
-    title: c.title,
-    argumentAMain: c.argumentAMain,
-    createdAt: c.createdAt,
-  }));
+  /** 여기서 createdAt은 "진짜 날짜" 문자열로 넘기고,
+   *    몇 분/시간/일 전 텍스트는 WaitingTrialItem.getTimeAgo에서 계산하도록 함
+   */
+  const mappedCases = sortedCases.map((c) => {
+    const date = parseSpringDateArray(c.createdAt);
+    const safeDate = date && !isNaN(date.getTime()) ? date : new Date();
+
+    return {
+      caseId: c.caseId,
+      title: c.title,
+      argumentAMain: c.argumentAMain,
+      // ISO 문자열로 넘기면 WaitingTrialItem에서 new Date(…)로 안전하게 파싱 가능
+      createdAt: safeDate.toISOString(),
+    };
+  });
 
   const totalCount = mappedCases.length;
   const totalPages = Math.ceil(totalCount / itemsPerPage);
@@ -48,7 +70,6 @@ const WaitingTrialList: React.FC = () => {
   return (
     <div className="min-h-screen bg-white py-12">
       <div className="max-w-7xl mx-auto px-4">
-        {/* 헤더 */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-[#203C77] mb-3">
             재판 매칭을 기다리고 있는 주제들이에요!
@@ -59,7 +80,6 @@ const WaitingTrialList: React.FC = () => {
           </p>
         </div>
 
-        {/* 테이블 */}
         <WaitingTrialTable
           cases={currentCases}
           startIndex={startIndex}
@@ -67,7 +87,6 @@ const WaitingTrialList: React.FC = () => {
           onCaseClick={handleCaseClick}
         />
 
-        {/* 페이지네이션 */}
         <Pagination
           currentPage={currentPage}
           totalPages={totalPages}

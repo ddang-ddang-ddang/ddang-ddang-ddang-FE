@@ -5,7 +5,7 @@ interface WaitingCase {
   caseId: number;
   title: string;
   argumentAMain: string;
-  createdAt: string;
+  createdAt: string; // ← 문자열("1일 전") 그대로 표시
 }
 
 interface WaitingTrialTableProps {

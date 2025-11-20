@@ -4,7 +4,7 @@ const BASE = "/api/v1/cases";
 
 /* VS 모드 매칭 대기 목록 */
 export const getWaitingVsCases = async () => {
-  const { data } = await instance.get(`${BASE}?status=PENDING&mode=PARTY`);
+  const { data } = await instance.get(`${BASE}/pending`);
   return data;
 };
 
