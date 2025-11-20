@@ -10,15 +10,25 @@ const WaitingTrialList: React.FC = () => {
   const { setStep, setCaseId } = useVsModeStore();
   const itemsPerPage = 10;
 
-  /** createdAt: [yyyy, MM, dd, HH, mm, ss, nano] → JS Date */
-  const parseSpringDateArray = (arr: number[] | string) => {
-    if (!arr) return new Date();
+  /** createdAt: [yyyy, MM, dd, HH, mm, ss, nano] 또는 ISO 문자열 → JS Date */
+  const parseSpringDateArray = (value: number[] | string) => {
+    if (!value) return new Date();
 
-    // 배열
-    if (Array.isArray(arr) && arr.length >= 6) {
-      const [y, M, d, h, m, s] = arr;
-      return new Date(y, M - 1, d, h, m, s);
+    // 1) 배열 형식 [yyyy, MM, dd, HH, mm, ss, nano]  → UTC 기준으로 해석
+    if (Array.isArray(value) && value.length >= 6) {
+      const [y, M, d, h, m, s] = value;
+      // 백엔드가 UTC 기준으로 보내서 9시간 밀리는 문제를 막기 위해 Date.UTC 사용
+      return new Date(Date.UTC(y, M - 1, d, h, m, s));
     }
+
+    // 2) 문자열 형식 "2025-11-19T15:10:01.802Z" 등
+    if (typeof value === "string") {
+      const d = new Date(value);
+      if (!isNaN(d.getTime())) return d;
+    }
+
+    // 3) 혹시라도 이상하면 현재 시간으로 fallback
+    return new Date();
   };
 
   // VS 모드 대기 목록 가져오기
@@ -27,13 +37,13 @@ const WaitingTrialList: React.FC = () => {
 
   /** 최신순 정렬 시 new Date() 금지!! 반드시 parseSpringDateArray 사용 */
   const sortedCases = [...waitingCases].sort((a, b) => {
-    const dateA = parseSpringDateArray(a.createdAt)?.getTime() ?? 0;
-    const dateB = parseSpringDateArray(b.createdAt)?.getTime() ?? 0;
+    const dateA = parseSpringDateArray(a.createdAt).getTime();
+    const dateB = parseSpringDateArray(b.createdAt).getTime();
     return dateB - dateA;
   });
 
   /** 여기서 createdAt은 "진짜 날짜" 문자열로 넘기고,
-   *    몇 분/시간/일 전 텍스트는 WaitingTrialItem.getTimeAgo에서 계산하도록 함
+   *  몇 분/시간/일 전 텍스트는 WaitingTrialItem.getTimeAgo에서 계산
    */
   const mappedCases = sortedCases.map((c) => {
     const date = parseSpringDateArray(c.createdAt);
