@@ -8,13 +8,7 @@ import type { SecondTrialDetailsResponse, DefenseRequest, DefenseResponse, Defen
 const startSecondTrial = async (caseId: number): Promise<ApiResponse<null>> => {
   const { data } = await instance.patch<ApiResponse<null>>(
     `/api/v1/cases/${caseId}/appeal`,
-    {},
-    {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("accessToken") ?? ""}`,
-      },
-      withCredentials: true,
-    }
+    {}
   );
   return data;
 };
@@ -23,13 +17,7 @@ const startSecondTrial = async (caseId: number): Promise<ApiResponse<null>> => {
 //2차 재판 상세 정보 조회
 const getSecondTrialDetails = async (caseId: number): Promise<ApiResponse<SecondTrialDetailsResponse>> => {
   const { data } = await instance.get<ApiResponse<SecondTrialDetailsResponse>>(
-    `/api/v1/cases/${caseId}/debate`,
-    {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("accessToken") ?? ""}`,
-      },
-      withCredentials: true,
-    }
+    `/api/v1/cases/${caseId}/debate`
   );
   return data;
 };
@@ -38,14 +26,7 @@ const getSecondTrialDetails = async (caseId: number): Promise<ApiResponse<Second
 const postDefense = async (caseId: number, body: DefenseRequest): Promise<ApiResponse<DefenseResponse>> => {
   const { data } = await instance.post<ApiResponse<DefenseResponse>>(
     `/api/v1/cases/${caseId}/defenses`,
-    body,
-    {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("accessToken") ?? ""}`,
-      },
-      withCredentials: true,
-    }
+    body
   );
   return data;
 };
@@ -54,14 +35,7 @@ const postDefense = async (caseId: number, body: DefenseRequest): Promise<ApiRes
 const postVote = async (caseId: number, body: VoteRequest): Promise<ApiResponse<null>> => {
   const { data } = await instance.post<ApiResponse<null>>(
     `/api/v1/cases/${caseId}/vote`,
-    body,
-    {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("accessToken") ?? ""}`,
-      },
-      withCredentials: true,
-    }
+    body
   );
   return data;
 };
@@ -69,13 +43,7 @@ const postVote = async (caseId: number, body: VoteRequest): Promise<ApiResponse<
 //2차재판 투표 결과 조회 swagger 7
 const getVoteResult = async (caseId: number): Promise<ApiResponse<VoteResultResponse>> => {
   const { data } = await instance.get<ApiResponse<VoteResultResponse>>(
-    `/api/v1/cases/${caseId}/vote/result`,
-    {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("accessToken") ?? ""}`,
-      },
-      withCredentials: true,
-    }
+    `/api/v1/cases/${caseId}/vote/result`
   );
   return data;
 };
@@ -90,14 +58,7 @@ const getVoteResult = async (caseId: number): Promise<ApiResponse<VoteResultResp
 const postRebuttal = async (body: RebuttalRequest): Promise<ApiResponse<number>> => {
   const { data } = await instance.post<ApiResponse<number>>(
     `/api/v1/rebuttals`,
-    body,
-    {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("accessToken") ?? ""}`,
-      },
-      withCredentials: true,
-    }
+    body
   );
   return data;
 };
@@ -110,13 +71,7 @@ const postRebuttal = async (body: RebuttalRequest): Promise<ApiResponse<number>>
  */
 const getDefenses = async (caseId: number): Promise<ApiResponse<DefenseItem[]>> => {
   const { data } = await instance.get<ApiResponse<DefenseItem[]>>(
-    `/api/v1/cases/${caseId}/defenses`,
-    {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("accessToken") ?? ""}`,
-      },
-      withCredentials: true,
-    }
+    `/api/v1/cases/${caseId}/defenses`
   );
   return data;
 };
@@ -127,13 +82,7 @@ const getDefenses = async (caseId: number): Promise<ApiResponse<DefenseItem[]>> 
  */
 const getRebuttals = async (defenseId: number): Promise<ApiResponse<RebuttalItem[]>> => {
   const { data } = await instance.get<ApiResponse<RebuttalItem[]>>(
-    `/api/v1/defenses/${defenseId}/rebuttals`,
-    {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("accessToken") ?? ""}`,
-      },
-      withCredentials: true,
-    }
+    `/api/v1/defenses/${defenseId}/rebuttals`
   );
   return data;
 };
