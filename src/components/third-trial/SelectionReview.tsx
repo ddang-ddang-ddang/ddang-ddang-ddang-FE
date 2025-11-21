@@ -7,12 +7,17 @@ import {
   THIRD_TRIAL_STEPS,
 } from "@/constants/thirdTrialStepMeta";
 import ChevronUpIcon from "@/assets/icons/ChevronUpIcon";
+import { useStartThirdTrialMutation } from "@/hooks/thirdTrial/useThirdTrial";
 
 export default function SelectionReview() {
   const selectedArguments = useThirdTrialStore(
     (state) => state.selectedArguments
   );
   const setStep = useThirdTrialStore((state) => state.setStep);
+  const caseId = useThirdTrialStore((state) => state.caseId);
+
+  // 3차 재판 시작 mutation
+  const { mutate: startThirdTrial, isPending } = useStartThirdTrialMutation();
 
   const [openMap, setOpenMap] = useState<Record<string, boolean>>({});
   const toggleOpen = useCallback((id: number) => {
@@ -41,7 +46,26 @@ export default function SelectionReview() {
   );
 
   const handleRetry = () => setStep("adopt");
-  const handleProceed = () => setStep("loading");
+  const handleProceed = () => {
+    if (!caseId) {
+      alert("케이스 ID가 없습니다.");
+      return;
+    }
+
+    // 3차 재판 시작 API 호출
+    startThirdTrial(
+      { caseId },
+      {
+        onSuccess: () => {
+          setStep("loading");
+        },
+        onError: (error) => {
+          console.error("3차 재판 시작 실패:", error);
+          alert("3차 재판 시작에 실패했습니다. 다시 시도해주세요.");
+        },
+      }
+    );
+  };
 
   return (
     <section className="mx-auto flex w-full max-w-[1280px] flex-col gap-[144px] px-6 py-12 text-main">
@@ -126,8 +150,9 @@ export default function SelectionReview() {
           <Button
             className="rounded-[15px] bg-main px-[50px] py-[30px] text-[24px] font-bold text-white hover:opacity-90"
             onClick={handleProceed}
+            disabled={isPending}
           >
-            최종 재판 진행하기
+            {isPending ? "재판 시작 중..." : "최종 재판 진행하기"}
           </Button>
         </div>
       </div>

@@ -4,11 +4,23 @@ import ScaleIcon from "@/assets/svgs/Scale.svg?react";
 import { useThirdTrialStore } from "@/stores/thirdTrialStore";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import { useThirdJudgmentQuery } from "@/hooks/thirdTrial/useThirdTrial";
 
 export default function Verdict() {
   const navigate = useNavigate();
   const reset = useThirdTrialStore((s) => s.reset);
-  
+  const caseId = useThirdTrialStore((s) => s.caseId);
+
+  // 3차 재판 판결 데이터 조회
+  const { data: judgmentData } = useThirdJudgmentQuery(caseId);
+
+  const verdict = judgmentData?.result?.verdict || "A";
+  const conclusion = judgmentData?.result?.conclusion || "더 논리적이었던 건 A!";
+  const ratioA = judgmentData?.result?.ratioA || 60;
+  const ratioB = judgmentData?.result?.ratioB || 40;
+  const finalVerdict = judgmentData?.result?.finalVerdict || "A입장의 근거가 더 논리적이었습니다.";
+  const judgeImage = judgmentData?.result?.judgeIllustrationUrl || judgeIllustrationUrl;
+
   return (
     <div className="flex flex-col items-center bg-white mx-auto w-full max-w-[1440px] min-h-screen pb-[100px] text-[#203C77] font-[Pretendard]">
       {/* 제목 */}
@@ -30,7 +42,7 @@ export default function Verdict() {
           <div className="relative">
             <div className="relative w-[316px] h-[78px] bg-white rounded-[30px] shadow-sm flex justify-center items-center px-[55px] py-[21px]">
               <p className="text-black text-[24px] font-normal leading-[150%] text-center">
-                더 논리적이었던 건 A!
+                {conclusion}
               </p>
 
               <div
@@ -45,7 +57,7 @@ export default function Verdict() {
 
         {/* 판사 이미지 */}
         <img
-          src={judgeIllustrationUrl}
+          src={judgeImage}
           alt="판사 일러스트"
           className="absolute bottom-0 left-[30px] w-[410px] h-[385px]"
         />
@@ -74,26 +86,12 @@ export default function Verdict() {
             판결문
           </h2>
 
-          <p className="absolute top-[150px] left-1/2 -translate-x-1/2 w-[420px] text-[13px] leading-[150%] text-center text-[#EBAD27] font-normal font-['Gapyeong_Hanseokbong']">
-            배경: 어쩌고저쩌고
-            <br />
-            A입장: 어쩌고저쩌고
-            <br />
-            B입장: 어쩌고저쩌고
-          </p>
-
-          <p className="absolute top-[249px] left-1/2 -translate-x-1/2 w-[420px] text-[15px] leading-[150%] text-center text-[#EBAD27] font-normal font-['Gapyeong_Hanseokbong']">
-            A입장의 어쩌고 저쩌고 근거가 더 배경설명과 주제를 납득 어쩌고 저쩌고
-            <br />
-            B입장의 해당 근거는 어쩌고저쩌고이지만 어쩌고 저쩌고 해서 A가 더
-            어쩌고 저쩌고 해서
-            <br />
-            어쩌고 저쩌고 해서 어쩌고 저쩌고 해서 어쩌고 저쩌고 해서 어쩌고
-            저쩌고 해서
+          <p className="absolute top-[150px] left-1/2 -translate-x-1/2 w-[420px] text-[15px] leading-[150%] text-center text-[#EBAD27] font-normal font-['Gapyeong_Hanseokbong'] whitespace-pre-line">
+            {finalVerdict}
           </p>
 
           <p className="absolute top-[403px] left-1/2 -translate-x-1/2 w-[420px] text-[15px] font-bold leading-[150%] text-center text-[#EBAD27] font-['Gapyeong_Hanseokbong']">
-            A입장 논리의 승리! B입장은 불복할 시 재심을 청구할 수 있음
+            {verdict}입장 논리의 승리!
           </p>
         </motion.div>
       </div>
@@ -102,7 +100,7 @@ export default function Verdict() {
       <div className="mt-[60px] flex justify-center">
         <div className="relative w-[960px] h-[94px] bg-[#EAF1FD] rounded-[15px] flex justify-center items-center px-[32px] text-center shadow-sm">
           <p className="text-[#203C77] text-[20px] font-normal leading-[150%]">
-            A 입장의 근거가 B 입장의 근거에 비해 n%정도 더 논리적이었어요!
+            {verdict} 입장의 근거가 {verdict === "A" ? "B" : "A"} 입장의 근거에 비해 {Math.abs(ratioA - ratioB)}%정도 더 논리적이었어요!
           </p>
 
           <div
@@ -119,15 +117,15 @@ export default function Verdict() {
         <div className="relative w-[995px] h-[44px] bg-[rgba(235,146,146,0.46)] rounded-[30px] overflow-hidden flex items-center justify-between px-[20px]">
           <div
             className="absolute left-0 top-0 h-full bg-[#809AD2] rounded-[30px]"
-            style={{ width: "60%" }}
+            style={{ width: `${ratioA}%` }}
           ></div>
 
           <div className="relative z-10 flex w-full justify-between items-center px-[20px]">
             <p className="text-white text-[16px] font-bold leading-[150%]">
-              A입장 n%
+              A입장 {ratioA}%
             </p>
             <p className="text-white text-[16px] font-bold leading-[150%]">
-              B입장 n%
+              B입장 {ratioB}%
             </p>
           </div>
         </div>
