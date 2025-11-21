@@ -1,14 +1,14 @@
-import React, { useMemo, useRef, useState } from "react";
+import React, { useMemo, useRef, useState, useEffect } from "react";
 import {
   useRebuttalsQuery,
   usePostRebuttalMutation,
 } from "@/hooks/secondTrial/useSecondTrial";
-
-import{
+import {
   useToggleRebuttalLikeMutation,
   useToggleDefenseLikeMutation,
 } from "@/hooks/like/useLike";
-
+import { useNotificationStore } from "@/stores/useNotificationStore";
+import { useSearchParams } from "react-router-dom";
 import type {
   RebuttalItem,
   RebuttalRequest,
@@ -16,26 +16,85 @@ import type {
 } from "@/types/apis/secondTrial";
 import ThumbUpIcon from "@/assets/svgs/thumbs-up.svg?react";
 
-export interface ArgumentData {
-  id: number;
-  userNickname: string;
-  userDgree: string;
-  content: string;
-  likes: number;
-  isBest: boolean;
-  isReplyable: boolean;
-}
-
 export interface ArgumentCardProps {
   defenseId: number;
   caseId: number;
   authorNickname?: string;
-  side?: string; // "A" | "B"
+  side?: string;
   content?: string;
   likesCount?: number;
   isLikedByMe?: boolean;
-  badgeLabel?: string; // 상단 왼쪽 칭호/뱃지 텍스트
+  badgeLabel?: string;
 }
+
+// 개별 댓글 컴포넌트 (하이라이트 효과 포함)
+const RebuttalCard: React.FC<{
+  rebuttal: RebuttalItem;
+  onLike: (id: number) => void;
+  isPending: boolean;
+  highlightId: number | null;
+}> = ({ rebuttal, onLike, isPending, highlightId }) => {
+  const rebuttalRef = useRef<HTMLDivElement>(null);
+  const [isHighlighted, setIsHighlighted] = useState(false);
+
+  useEffect(() => {
+    if (highlightId === rebuttal.rebuttalId && rebuttalRef.current) {
+      // 스크롤 이동
+      rebuttalRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+
+      // 깜빡임 효과
+      setIsHighlighted(true);
+      const timer = setTimeout(() => setIsHighlighted(false), 2000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [highlightId, rebuttal.rebuttalId]);
+
+  return (
+    <div
+      ref={rebuttalRef}
+      className={`p-3 rounded-md border transition-all duration-300 ${
+        isHighlighted
+          ? "border-yellow-400 bg-yellow-50 animate-pulse"
+          : "border-gray-200"
+      }`}
+    >
+      <div className="flex justify-between items-start">
+        <div>
+          <div className="text-main font-semibold">
+            {rebuttal.authorNickname} · {rebuttal.type}
+          </div>
+          <div className="mt-1 text-main">{rebuttal.content}</div>
+        </div>
+
+        <button
+          onClick={() => onLike(rebuttal.rebuttalId)}
+          disabled={isPending}
+          className="text-xs px-2 py-1 rounded bg-main-bright text-main disabled:opacity-50"
+        >
+          좋아요 {rebuttal.likesCount}
+        </button>
+      </div>
+
+      {rebuttal.children?.length ? (
+        <div className="mt-2 pl-4 space-y-2">
+          {rebuttal.children.map((child) => (
+            <RebuttalCard
+              key={child.rebuttalId}
+              rebuttal={child}
+              onLike={onLike}
+              isPending={isPending}
+              highlightId={highlightId}
+            />
+          ))}
+        </div>
+      ) : null}
+    </div>
+  );
+};
 
 const ArgumentCard: React.FC<ArgumentCardProps> = ({
   defenseId,
@@ -47,30 +106,39 @@ const ArgumentCard: React.FC<ArgumentCardProps> = ({
   isLikedByMe,
   badgeLabel = "칭호",
 }) => {
+  const [searchParams] = useSearchParams();
   const { data: rebuttalsRes, isLoading: isRebuttalsLoading } = useRebuttalsQuery(defenseId);
   const postRebuttalMutation = usePostRebuttalMutation();
   const toggleRebuttalLikeMutation = useToggleRebuttalLikeMutation();
   const toggleDefenseLikeMutation = useToggleDefenseLikeMutation();
+  
+  const { highlightRebuttalId, setHighlightRebuttal } = useNotificationStore();
 
-  // 방어변론 좋아요 로컬 상태
   const [likedDefense, setLikedDefense] = useState(!!isLikedByMe);
   const [defenseLikes, setDefenseLikes] = useState(likesCount);
-
-  const [localLikes, setLocalLikes] = useState(likesCount);
-  const [liked, setLiked] = useState(!!isLikedByMe);
-
-  // 의견(반론) 조회
-  const rebuttals: RebuttalItem[] = (rebuttalsRes?.result as RebuttalItem[]) ?? [];
-
-  // UI 상태
   const [expanded, setExpanded] = useState(false);
   const [rebuttalContent, setRebuttalContent] = useState("");
-  const [rebuttalType, setRebuttalType] = useState<"A" | "B">(
-    (side as "A" | "B") || "A"
-  );
+  const [rebuttalType, setRebuttalType] = useState<"A" | "B">((side as "A" | "B") || "A");
+  
   const inputRef = useRef<HTMLTextAreaElement | null>(null);
-
+  const rebuttals: RebuttalItem[] = (rebuttalsRes?.result as RebuttalItem[]) ?? [];
   const repliesCount = useMemo(() => rebuttals.length ?? 0, [rebuttals]);
+
+  // URL에서 rebuttalId가 있으면 자동으로 펼치기
+  useEffect(() => {
+    const rebuttalId = searchParams.get("rebuttalId");
+    if (rebuttalId) {
+      setExpanded(true);
+      setHighlightRebuttal(Number(rebuttalId));
+      
+      // 3초 후 하이라이트 제거
+      const timer = setTimeout(() => {
+        setHighlightRebuttal(null);
+      }, 3000);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [searchParams, setHighlightRebuttal]);
 
   const handleToggleExpanded = () => setExpanded((v) => !v);
 
@@ -92,7 +160,7 @@ const ArgumentCard: React.FC<ArgumentCardProps> = ({
       content: trimmed,
     };
     try {
-      await postRebuttalMutation.mutateAsync(body); // defenseId 제거, body만 전달
+      await postRebuttalMutation.mutateAsync(body);
       setRebuttalContent("");
       if (!expanded) setExpanded(true);
     } catch (err) {
@@ -104,7 +172,6 @@ const ArgumentCard: React.FC<ArgumentCardProps> = ({
   const handleToggleDefenseLike = () => {
     if (toggleDefenseLikeMutation.isPending) return;
     const body: LikeRequest = { contentId: defenseId, contentType: "DEFENSE" };
-    // 낙관적 토글
     const nextLiked = !likedDefense;
     setLikedDefense(nextLiked);
     setDefenseLikes((c) => Math.max(0, c + (nextLiked ? 1 : -1)));
@@ -112,7 +179,6 @@ const ArgumentCard: React.FC<ArgumentCardProps> = ({
       { caseId, body },
       {
         onSuccess: (res) => {
-          // 서버 최종 결과(res.result)가 false면 실제 취소되었으므로 동기화
           if (res.result !== nextLiked) {
             setLikedDefense(res.result);
             setDefenseLikes((c) =>
@@ -121,10 +187,9 @@ const ArgumentCard: React.FC<ArgumentCardProps> = ({
           }
         },
         onError: () => {
-          // 롤백
-            setLikedDefense((prev) => !prev);
-            setDefenseLikes((c) => Math.max(0, c + (nextLiked ? -1 : 1)));
-            alert("방어변론 좋아요 처리 실패");
+          setLikedDefense((prev) => !prev);
+          setDefenseLikes((c) => Math.max(0, c + (nextLiked ? -1 : 1)));
+          alert("방어변론 좋아요 처리 실패");
         },
       }
     );
@@ -204,40 +269,13 @@ const ArgumentCard: React.FC<ArgumentCardProps> = ({
             <div className="text-sm text-gray-500">등록된 의견이 없습니다.</div>
           ) : (
             rebuttals.map((r) => (
-              <div key={r.rebuttalId} className="p-3 rounded-md border border-gray-200">
-                <div className="flex justify-between items-start">
-                  <div>
-                    <div className="text-main font-semibold">
-                      {r.authorNickname} · {r.type}
-                    </div>
-                    <div className="mt-1 text-main">{r.content}</div>
-                  </div>
-
-                  <button
-                    onClick={() => handleLikeRebuttal(r.rebuttalId)}
-                    disabled={toggleRebuttalLikeMutation.isPending}
-                    className="text-xs px-2 py-1 rounded bg-main-bright text-main"
-                  >
-                    좋아요 {r.likesCount}
-                  </button>
-                </div>
-
-                {r.children?.length ? (
-                  <div className="mt-2 pl-4 space-y-2">
-                    {r.children.map((child) => (
-                      <div
-                        key={child.rebuttalId}
-                        className="p-2 rounded-md border border-gray-200 bg-white"
-                      >
-                        <div className="text-main text-xs font-semibold">
-                          {child.authorNickname} · {child.type}
-                        </div>
-                        <div className="text-main text-sm">{child.content}</div>
-                      </div>
-                    ))}
-                  </div>
-                ) : null}
-              </div>
+              <RebuttalCard
+                key={r.rebuttalId}
+                rebuttal={r}
+                onLike={handleLikeRebuttal}
+                isPending={toggleRebuttalLikeMutation.isPending}
+                highlightId={highlightRebuttalId}
+              />
             ))
           )}
 
