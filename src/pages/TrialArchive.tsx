@@ -1,18 +1,46 @@
-import React, { useState } from "react";
-import { mockArchivedCases } from "@/mock/vsModeData";
+import React, { useState, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
+import { PATH_BUILDERS } from "@/constants";
 import ArchiveTrialTable from "@/components/trial/ArchiveTrialTable";
 import Pagination from "@/components/vs-mode/Pagination";
+import { useAllArchivedCasesQuery } from "@/hooks/cases/useCases";
 
 const TrialArchive: React.FC = () => {
+  const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
-  // TODO: API 연결 시 useArchivedCasesQuery() 사용
-  // 완료순 정렬 (completedAt 기준 내림차순)
-  const sortedCases = [...mockArchivedCases].sort(
-    (a, b) => new Date(b.completedAt).getTime() - new Date(a.completedAt).getTime()
-  );
-  const isLoading = false;
+  // 전체 아카이브 조회
+  const { data: archivedCasesRes, isLoading } = useAllArchivedCasesQuery();
+  const judgments = archivedCasesRes?.result ?? [];
+
+  // 아카이브 테이블 형식에 맞게 데이터 변환
+  const cases = useMemo(() => {
+    return judgments.map(judgment => ({
+      caseId: judgment.caseId,
+      title: judgment.title || "제목 없음",
+      argumentAMain: "",
+      argumentBMain: "",
+      authorNickname: "",
+      rivalNickname: "",
+      winner: judgment.verdict as "A" | "B" || "A",
+      winnerNickname: "",
+      status: "완료",
+      createdAt: judgment.createdAt || "",
+      completedAt: judgment.completedAt || "",
+    }));
+  }, [judgments]);
+
+  // 완료순 정렬 (completedAt 기준 내림차순, 오래된 순이 아님)
+  const sortedCases = useMemo(() => {
+    return [...cases].sort(
+      (a, b) => {
+        const dateA = a.completedAt ? new Date(a.completedAt).getTime() : 0;
+        const dateB = b.completedAt ? new Date(b.completedAt).getTime() : 0;
+        return dateB - dateA;
+      }
+    );
+  }, [cases]);
 
   // 전체 데이터 개수
   const totalCount = sortedCases.length;
@@ -23,8 +51,8 @@ const TrialArchive: React.FC = () => {
   const currentCases = sortedCases.slice(startIndex, startIndex + itemsPerPage);
 
   const handleCaseClick = (caseId: number) => {
-    // TODO: 재판 결과 상세 페이지로 이동
-    console.log("아카이브 재판 클릭:", caseId);
+    // 2차 재판 결과 페이지로 이동
+    navigate(PATH_BUILDERS.secondTrialFinal(caseId));
   };
 
   if (isLoading) {
