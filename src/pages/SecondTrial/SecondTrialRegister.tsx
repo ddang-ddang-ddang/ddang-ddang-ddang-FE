@@ -9,64 +9,9 @@ import { useFirstCaseDetailQuery } from "@/hooks/firstTrial/useFirstTrial";
 const SecondTrialRegister: React.FC = () => {
   const [duration, setDuration] = useState<string>("");
   const navigate = useNavigate();
-  const params = useParams<{ caseId?: string }>();
-  const location = useLocation();
+  const { caseId: caseIdParam } = useParams<{ caseId: string }>();
+  const caseId = caseIdParam ? Number(caseIdParam) : undefined;
   const startSecond = useStartSecondTrialMutation();
-
-  // 여러 경로에서 caseId 복구: URL param / navigation state / query string / localStorage
-  const getCaseIdFromSearch = (): number | undefined => {
-    try {
-      const search = location.search;
-      if (!search) return undefined;
-      const qs = new URLSearchParams(search);
-      const v = qs.get("caseId") ?? qs.get("id");
-      if (!v) return undefined;
-      const n = Number(v);
-      return Number.isNaN(n) ? undefined : n;
-    } catch {
-      return undefined;
-    }
-  };
-
-  const resolveCaseIdOnce = (): number | undefined => {
-    // 4) localStorage fallback (1차 재판에서 저장해뒀다면)
-    const stored = localStorage.getItem("lastCaseId");
-    if (stored) {
-      const n = Number(stored);
-      if (!Number.isNaN(n)) return n;
-    }
-
-    // 1) URL param
-    if (params?.caseId) {
-      const n = Number(params.caseId);
-      if (!Number.isNaN(n)) return n;
-    }
-
-    // 2) navigation state (navigate('/path', { state: { caseId } }))
-    const stateAny = (location && (location as any).state) || {};
-    const stateCaseId = stateAny?.caseId ?? stateAny?.id ?? stateAny?.case?.id;
-    if (stateCaseId) {
-      const n = Number(stateCaseId);
-      if (!Number.isNaN(n)) return n;
-    }
-
-    // 3) querystring
-    const fromQs = getCaseIdFromSearch();
-    if (fromQs) return fromQs;
-
-    return undefined;
-  };
-
-  const [caseId, setCaseId] = useState<number | undefined>(() => resolveCaseIdOnce());
-
-  // location/state가 페이지 진입 후에 바뀔 수 있으므로 안전하게 재시도
-  useEffect(() => {
-    if (!caseId) {
-      const resolved = resolveCaseIdOnce();
-      if (resolved) setCaseId(resolved);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [location.key, location.search, (location as any).state, params?.caseId]);
 
   // 1차 재판 상세 정보 조회 (title, argumentA, argumentB)
   const { data: caseDetailRes, isLoading: isCaseDetailLoading } = useFirstCaseDetailQuery(caseId);
