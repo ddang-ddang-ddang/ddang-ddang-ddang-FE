@@ -15,6 +15,8 @@ import SignUpPage from "@/pages/SignUp/SignUp";
 import VsModePage from "@/pages/VsMode/VsModePage";
 import TrialArchive from "@/pages/TrialArchive";
 import OngoingTrialList from "@/pages/OngoingTrialList";
+import { useSSE } from "@/hooks/notification/useSSE";
+import NotificationToast from "@/components/common/NotificationToast";
 
 function App() {
   const { pathname } = useLocation();
@@ -23,6 +25,9 @@ function App() {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [pathname]);
+  
+  useSSE(); // SSE 연결
+
   return (
     <>
       {/* 전역 네브바 */}
@@ -59,6 +64,9 @@ function App() {
         <Route path="*" element={<NotFound />} />
         </Routes>
       </div>
+
+      {/* 알림 토스트 */}
+      <NotificationToast />
     </>
   );
 }
