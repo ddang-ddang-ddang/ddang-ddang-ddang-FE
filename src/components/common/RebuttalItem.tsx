@@ -4,8 +4,8 @@ import { useSearchParams } from "react-router-dom";
 import { useNotificationStore } from "@/stores/useNotificationStore";
 import type { RebuttalItem as RebuttalItemType, RebuttalRequest } from "@/types/apis/secondTrial";
 import { renderContentWithMentions } from "@/utils/mentionRenderer";
-import ThumbUpIcon from "@/assets/svgs/thumbs-up.svg";
-import Siren from "@/assets/svgs/siren.svg";
+import ThumbUpIcon from "@/assets/svgs/thumbs-up.svg?react";
+import Siren from "@/assets/svgs/siren.svg?react";
 
 interface RebuttalItemProps {
   rebuttal: RebuttalItemType;
