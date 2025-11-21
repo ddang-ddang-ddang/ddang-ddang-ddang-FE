@@ -16,4 +16,5 @@ export interface NotificationData {
   timestamp: number;
   profileImageUrl?: string; // S3 프로필 이미지 URL
   authorNickname?: string; // 알림을 발생시킨 사용자 닉네임
+  isRead?: boolean; // 추가
 }

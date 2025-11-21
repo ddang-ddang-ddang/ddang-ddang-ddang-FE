@@ -14,7 +14,7 @@ type NotificationState = {
   hideToast: () => void;
   setHighlightRebuttal: (id: number | null) => void;
   markAsRead: (timestamp: number) => void;
-  markAllAsRead: () => void;
+  removeNotification: (timestamp: number) => void;
   clearNotifications: () => void;
 };
 
@@ -28,7 +28,7 @@ export const useNotificationStore = create<NotificationState>()(
 
       addNotification: (notification) =>
         set((state) => ({
-          notifications: [notification, ...state.notifications],
+          notifications: [{ ...notification, isRead: false }, ...state.notifications],
           unreadCount: state.unreadCount + 1,
         })),
 
@@ -42,12 +42,29 @@ export const useNotificationStore = create<NotificationState>()(
         set({ highlightRebuttalId: id }),
 
       markAsRead: (timestamp) =>
-        set((state) => ({
-          unreadCount: Math.max(0, state.unreadCount - 1),
-        })),
+        set((state) => {
+          const notification = state.notifications.find(n => n.timestamp === timestamp);
+          if (notification && !notification.isRead) {
+            return {
+              notifications: state.notifications.map(n =>
+                n.timestamp === timestamp ? { ...n, isRead: true } : n
+              ),
+              unreadCount: Math.max(0, state.unreadCount - 1),
+            };
+          }
+          return state;
+        }),
 
-      markAllAsRead: () =>
-        set({ unreadCount: 0 }),
+      removeNotification: (timestamp) =>
+        set((state) => {
+          const notification = state.notifications.find(n => n.timestamp === timestamp);
+          const wasUnread = notification && !notification.isRead;
+          
+          return {
+            notifications: state.notifications.filter(n => n.timestamp !== timestamp),
+            unreadCount: wasUnread ? Math.max(0, state.unreadCount - 1) : state.unreadCount,
+          };
+        }),
 
       clearNotifications: () =>
         set({ notifications: [], unreadCount: 0 }),
