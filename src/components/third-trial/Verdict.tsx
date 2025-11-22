@@ -1,3 +1,4 @@
+import { useState } from "react";
 import Button from "@/components/common/Button";
 import judgeIllustrationUrl from "@/assets/svgs/FirstJudge.svg?url";
 import ScaleIcon from "@/assets/svgs/Scale.svg?react";
@@ -5,21 +6,25 @@ import { useThirdTrialStore } from "@/stores/thirdTrialStore";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useThirdJudgmentQuery } from "@/hooks/thirdTrial/useThirdTrial";
+import JudgmentHistoryModal from "@/components/common/JudgmentHistoryModal";
 
 export default function Verdict() {
   const navigate = useNavigate();
   const reset = useThirdTrialStore((s) => s.reset);
   const caseId = useThirdTrialStore((s) => s.caseId);
+  const [showHistoryModal, setShowHistoryModal] = useState(false);
 
   // 3차 재판 판결 데이터 조회
   const { data: judgmentData } = useThirdJudgmentQuery(caseId ?? undefined);
 
-  const verdict = judgmentData?.result?.verdict || "A";
-  const conclusion = judgmentData?.result?.conclusion || "더 논리적이었던 건 A!";
-  const ratioA = judgmentData?.result?.ratioA || 60;
-  const ratioB = judgmentData?.result?.ratioB || 40;
-  const finalVerdict = judgmentData?.result?.finalVerdict || "A입장의 근거가 더 논리적이었습니다.";
-  const judgeImage = judgmentData?.result?.judgeIllustrationUrl || judgeIllustrationUrl;
+  const content = judgmentData?.result?.content || "판결문을 불러오는 중입니다.";
+  const ratioA = judgmentData?.result?.ratioA || 50;
+  const ratioB = judgmentData?.result?.ratioB || 50;
+
+  // ratioA와 ratioB 비교하여 승자 결정
+  const verdict = ratioA > ratioB ? "A" : "B";
+  const conclusion = ratioA > ratioB ? "더 논리적이었던 건 A!" : "더 논리적이었던 건 B!";
+  const judgeImage = judgeIllustrationUrl;
 
   return (
     <div className="flex flex-col items-center bg-white mx-auto w-full max-w-[1440px] min-h-screen pb-[100px] text-[#203C77] font-[Pretendard]">
@@ -87,7 +92,7 @@ export default function Verdict() {
           </h2>
 
           <p className="absolute top-[150px] left-1/2 -translate-x-1/2 w-[420px] text-[15px] leading-[150%] text-center text-[#EBAD27] font-normal font-['Gapyeong_Hanseokbong'] whitespace-pre-line">
-            {finalVerdict}
+            {content}
           </p>
 
           <p className="absolute top-[403px] left-1/2 -translate-x-1/2 w-[420px] text-[15px] font-bold leading-[150%] text-center text-[#EBAD27] font-['Gapyeong_Hanseokbong']">
@@ -133,9 +138,19 @@ export default function Verdict() {
 
       {/* 하단 버튼 2개 */}
       <div className="mt-[84px] flex justify-center gap-[32px]">
+        {/* 재판 히스토리 보기 */}
+        <Button onClick={() => setShowHistoryModal(true)}>재판 히스토리 보기</Button>
         {/* 여기서 마치기 → 홈으로 */}
         <Button onClick={() => {reset(); navigate('/');}}>홈으로</Button>
       </div>
+
+      {/* 판결 히스토리 모달 */}
+      {showHistoryModal && caseId && (
+        <JudgmentHistoryModal
+          caseId={caseId}
+          onClose={() => setShowHistoryModal(false)}
+        />
+      )}
     </div>
   );
 }

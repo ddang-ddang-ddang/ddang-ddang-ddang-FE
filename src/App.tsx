@@ -19,15 +19,41 @@ import OngoingTrialList from "@/pages/OngoingTrialList";
 import { useSSE } from "@/hooks/notification/useSSE";
 import NotificationToast from "@/components/common/NotificationToast";
 import UserOngoingList from "@/pages/UserOngoingList";
+import { useAuthStore } from "@/stores/useAuthStore";
+import { userApi } from "@/apis/user/userApi";
 
 function App() {
   const { pathname } = useLocation();
+  const isLogin = useAuthStore((state) => state.isLogin);
+  const userId = useAuthStore((state) => state.userId);
 
   // 페이지 전환 시 항상 스크롤을 상단으로
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [pathname]);
-  
+
+  // 로그인되어 있지만 userId가 없는 경우 getUserInfo 호출
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      if (isLogin && userId === null) {
+        try {
+          const userInfoRes = await userApi.getUserInfo();
+          if (userInfoRes.isSuccess && userInfoRes.result) {
+            useAuthStore.getState().setLogin({
+              accessToken: useAuthStore.getState().accessToken!,
+              userId: userInfoRes.result.userId,
+              rank: userInfoRes.result.rank,
+            });
+          }
+        } catch (error) {
+          console.error('Failed to fetch user info on app init:', error);
+        }
+      }
+    };
+
+    fetchUserInfo();
+  }, [isLogin, userId]);
+
   useSSE(); // SSE 연결
 
   return (

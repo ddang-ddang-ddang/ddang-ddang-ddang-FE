@@ -23,14 +23,14 @@ export type ThirdTrialDetailResponse = ApiResponse<{
   secondTrialVerdict?: string;
 }>;
 
-// 3차 재판 판결 조회 응답
+// 3차 재판 판결 조회 응답 (최종 재판 API)
 export type ThirdTrialJudgmentResponse = ApiResponse<{
-  judgeIllustrationUrl: string;
-  verdict: string;
-  conclusion: string;
+  judgmentId: number;
+  content: string;
   ratioA: number;
   ratioB: number;
-  finalVerdict: string;
+  adoptedDefenses: number[];
+  adoptedRebuttals: number[];
 }>;
 
 // 3차 재판 상태 변경 요청
@@ -40,3 +40,6 @@ export type ThirdTrialPatchStatusRequest = {
 
 // 3차 재판 상태 변경 응답
 export type ThirdTrialPatchStatusResponse = ApiResponse<null>;
+
+// 최종 판결 상태 조회 응답
+export type JudgeStatusResponse = ApiResponse<"BEFORE" | "AFTER">;

@@ -6,6 +6,7 @@ import type {
   ThirdTrialJudgmentResponse,
   ThirdTrialPatchStatusRequest,
   ThirdTrialPatchStatusResponse,
+  JudgeStatusResponse,
 } from "@/types/apis/thirdTrial";
 
 const BASE = "/api/v1/cases";
@@ -27,10 +28,10 @@ const getThirdTrialDetail = async (caseId: number) => {
   return data;
 };
 
-// 3차 재판 판결 조회
+// 3차 재판 판결 조회 (최종 재판 API)
 const getThirdTrialJudgment = async (caseId: number) => {
   const { data } = await instance.get<ThirdTrialJudgmentResponse>(
-    `${BASE}/${caseId}/third-trial/judgment`
+    `/api/final/judge/${caseId}`
   );
   return data;
 };
@@ -47,11 +48,20 @@ const patchThirdTrialStatus = async (
   return data;
 };
 
+// 최종 판결 상태 조회
+const getJudgeStatus = async (caseId: number) => {
+  const { data } = await instance.get<JudgeStatusResponse>(
+    `/api/final/judge/${caseId}/judgeStatus`
+  );
+  return data;
+};
+
 export const thirdTrialApi = {
   postThirdTrialStart,
   getThirdTrialDetail,
   getThirdTrialJudgment,
   patchThirdTrialStatus,
+  getJudgeStatus,
 } as const;
 
 export type ThirdTrialApi = typeof thirdTrialApi;

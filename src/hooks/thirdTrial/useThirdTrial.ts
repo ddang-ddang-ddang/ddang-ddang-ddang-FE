@@ -112,3 +112,11 @@ export const useBestAdoptItemsQuery = (caseId?: number) =>
     queryFn: () => adoptApi.getBestAdoptItems(caseId as number),
     enabled: !!caseId,
   });
+
+// 최종 판결 상태 조회 훅
+export const useJudgeStatusQuery = (caseId?: number) =>
+  useQuery({
+    queryKey: ["third-trial", "judge-status", caseId],
+    queryFn: () => thirdTrialApi.getJudgeStatus(caseId as number),
+    enabled: !!caseId,
+  });

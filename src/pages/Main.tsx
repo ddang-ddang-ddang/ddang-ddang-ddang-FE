@@ -90,6 +90,7 @@ const MainPage = () => {
   const navigate = useNavigate();
   const accessToken = useAuthStore((s) => s.accessToken);
   const isLogin = useAuthStore((s) => s.isLogin);
+  const userRank = useAuthStore((s) => s.rank);
 
   // 메인 페이지 API
   const hotQ = useHotCasesQuery();
@@ -272,7 +273,7 @@ const MainPage = () => {
                         <div className="h-full flex flex-col justify-between">
                           <div className="flex flex-col gap-4">
                             <span className="text-sm px-5 py-1 bg-main-medium rounded-2xl w-fit">
-                              {userProfile.current_grade ?? "등급 정보 없음"}
+                              {userRank ?? userProfile.current_grade ?? "등급 정보 없음"}
                             </span>
                             <p className="text-2xl font-bold">
                               {userProfile.nickname} 님 환영합니다

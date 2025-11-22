@@ -19,7 +19,7 @@ const ArchiveTrialItem: React.FC<ArchiveTrialItemProps> = ({
   return (
     <div
       onClick={onClick}
-      className="grid grid-cols-12 gap-0 px-6 py-5 hover:bg-main-bright/30 transition-colors cursor-pointer items-center"
+      className="grid grid-cols-12 gap-4 px-6 py-5 hover:bg-main-bright/30 transition-colors cursor-pointer items-center"
     >
       {/* 순서 */}
       <div className="col-span-1 text-center text-main font-semibold border-r border-gray-300 flex items-center justify-center">
@@ -27,12 +27,12 @@ const ArchiveTrialItem: React.FC<ArchiveTrialItemProps> = ({
       </div>
 
       {/* 주제 */}
-      <div className="col-span-4 text-main font-medium pl-4 border-r border-gray-300 flex items-center">
+      <div className="col-span-4 text-main font-medium border-r border-gray-300 flex items-center">
         {title}
       </div>
 
       {/* A 주장 */}
-      <div className="col-span-3 text-gray-700 text-sm truncate pr-4 border-r border-gray-300 flex items-center">
+      <div className="col-span-3 text-gray-700 text-sm truncate border-r border-gray-300 flex items-center">
         {argumentAMain}
       </div>
 

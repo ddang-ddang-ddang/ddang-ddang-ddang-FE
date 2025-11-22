@@ -4,6 +4,8 @@ import Button from "@/components/common/Button";
 import ArgumentCheck from "@/components/third-trial/ArgumentCheck";
 import { useThirdTrialStore } from "@/stores/thirdTrialStore";
 import { useBestAdoptItemsQuery } from "@/hooks/thirdTrial/useThirdTrial";
+import { useSecondTrialDetailsQuery } from "@/hooks/secondTrial/useSecondTrial";
+import { useUserProfileQuery } from "@/hooks/api/useUserQuery";
 import type { AdoptableItemDto } from "@/types/apis/adopt";
 import type { ArgumentData } from "@/components/common/ArgumentCard";
 import {
@@ -28,6 +30,13 @@ export default function Adopt() {
   const { data: bestItemsRes, isLoading } = useBestAdoptItemsQuery(caseId ?? undefined);
   const bestItems = bestItemsRes?.result?.items ?? [];
 
+  // 2차 재판 세부 정보 조회 (authorId 확인용)
+  const { data: detailsRes, isLoading: isDetailsLoading } = useSecondTrialDetailsQuery(caseId ?? undefined);
+  const details = detailsRes?.result;
+
+  // 유저 정보 가져오기
+  const { data: userProfile, isLoading: isUserLoading } = useUserProfileQuery({ enabled: true });
+
   // API 데이터를 ArgumentData 형태로 변환하는 헬퍼 함수
   const mapToArgumentData = (item: AdoptableItemDto): ArgumentData => ({
     id: item.itemType === "DEFENSE" ? item.defenseId : item.id,
@@ -40,22 +49,32 @@ export default function Adopt() {
   });
 
   // 데이터를 debateSide별로 그룹화 (A = first, B = second)
+  // 유저가 작성자인 의견만 필터링
   const argumentsByDebateSide = useMemo(() => {
     const grouped: Record<"first" | "second", ArgumentData[]> = {
       first: [],
       second: [],
     };
 
+    if (!details || !userProfile) return grouped;
+
+    const userId = userProfile.user_id;
+    const isAuthorA = userId === details.argumentA.authorId;
+    const isAuthorB = userId === details.argumentB.authorId;
+
     bestItems.forEach((item) => {
-      if (item.debateSide === "A") {
+      // A 의견 작성자인 경우 A 의견만 포함
+      if (item.debateSide === "A" && isAuthorA) {
         grouped.first.push(mapToArgumentData(item));
-      } else if (item.debateSide === "B") {
+      }
+      // B 의견 작성자인 경우 B 의견만 포함
+      if (item.debateSide === "B" && isAuthorB) {
         grouped.second.push(mapToArgumentData(item));
       }
     });
 
     return grouped;
-  }, [bestItems]);
+  }, [bestItems, details, userProfile]);
 
   const currentStepKey =
     THIRD_TRIAL_STEPS[Math.min(currentStepIndex, THIRD_TRIAL_STEPS.length - 1)];
@@ -89,18 +108,31 @@ export default function Adopt() {
   );
 
   const handleNext = () => {
-    const isLastStep = currentStepIndex >= THIRD_TRIAL_STEPS.length - 1;
-    if (!isLastStep) {
-      setCurrentStepIndex((prev) => prev + 1);
+    if (!details || !userProfile) return;
+
+    const userId = userProfile.user_id;
+    const isAuthorA = userId === details.argumentA.authorId;
+    const isAuthorB = userId === details.argumentB.authorId;
+
+    // 두 의견 모두 작성자인 경우: first 채택 후 second로, second 채택 후 review로
+    if (isAuthorA && isAuthorB) {
+      const isLastStep = currentStepIndex >= THIRD_TRIAL_STEPS.length - 1;
+      if (!isLastStep) {
+        setCurrentStepIndex((prev) => prev + 1);
+        return;
+      }
+      setStep("review");
       return;
     }
+
+    // 하나만 작성자인 경우: 바로 review로
     setStep("review");
   };
 
   const selectedCountText = `선택된 변론 ${selectedForStep.length}개 / ${MAX_SELECTION_PER_STEP}개`;
 
   // 로딩 상태
-  if (isLoading) {
+  if (isLoading || isDetailsLoading || isUserLoading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
         <p className="text-main font-bold">채택 가능한 변론을 불러오는 중...</p>
