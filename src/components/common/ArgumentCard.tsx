@@ -1,4 +1,5 @@
-import React, { useMemo, useRef, useState } from "react";
+import React, { useMemo, useRef, useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import {
   useRebuttalsQuery,
   usePostRebuttalMutation,
@@ -8,6 +9,7 @@ import {
   useToggleDefenseLikeMutation,
 } from "@/hooks/like/useLike";
 import { useUserProfileQuery } from "@/hooks/api/useUserQuery";
+import { useNotificationStore } from "@/stores/useNotificationStore";
 import type {
   RebuttalItem as RebuttalItemType,
   RebuttalRequest,
@@ -17,6 +19,7 @@ import RebuttalItem from "./RebuttalItem";
 import ReportNotification from "./ReportNotification";
 import ReportModal from "./ReportModal";
 import ThumbUpIcon from "@/assets/svgs/thumbs-up.svg?react";
+import Siren from "@/assets/svgs/Siren.svg?react";
 
 export interface ArgumentData {
   id: number;
@@ -50,6 +53,9 @@ const ArgumentCard: React.FC<ArgumentCardProps> = ({
   isLikedByMe,
   badgeLabel = "칭호",
 }) => {
+  const [searchParams] = useSearchParams();
+  const { setHighlightRebuttal } = useNotificationStore();
+  
   // Queries & Mutations
   const { data: rebuttalsRes, isLoading: isRebuttalsLoading } = useRebuttalsQuery(defenseId);
   const postRebuttalMutation = usePostRebuttalMutation();
@@ -68,11 +74,9 @@ const ArgumentCard: React.FC<ArgumentCardProps> = ({
   const [reportTarget, setReportTarget] = useState<{ 
     contentId: number; 
     contentType: "DEFENSE" | "REBUTTAL";
-    content?: string; // 추가
+    content?: string;
   } | null>(null);
   
-  // 활성 입력란 관리: null | rebuttalId
-  // null이면 부모 댓글 입력란 표시, rebuttalId가 있으면 해당 대댓글 입력란만 표시
   const [activeReplyInput, setActiveReplyInput] = useState<number | null>(null);
   
   const inputRef = useRef<HTMLTextAreaElement | null>(null);
@@ -100,13 +104,29 @@ const ArgumentCard: React.FC<ArgumentCardProps> = ({
     return countReplies(rawRebuttals);
   }, [rawRebuttals]);
 
+  // URL에서 rebuttalId가 있으면 자동으로 펼치기
+  useEffect(() => {
+    const rebuttalId = searchParams.get("rebuttalId");
+    if (rebuttalId) {
+      setExpanded(true);
+      setHighlightRebuttal(Number(rebuttalId));
+      
+      // 3초 후 하이라이트 제거
+      const timer = setTimeout(() => {
+        setHighlightRebuttal(null);
+      }, 3000);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [searchParams, setHighlightRebuttal]);
+
   // 핸들러들
   const handleToggleExpanded = () => setExpanded((v) => !v);
 
   const handleFocusWrite = () => {
     if (!expanded) setExpanded(true);
     setRebuttalContent("");
-    setActiveReplyInput(null); // 부모 댓글 입력란으로 리셋
+    setActiveReplyInput(null);
     setTimeout(() => {
       inputRef.current?.focus();
       inputRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -197,7 +217,6 @@ const ArgumentCard: React.FC<ArgumentCardProps> = ({
           </div>
           
           <div className="flex items-center gap-2">
-            {/* 헤더의 신고 버튼 수정 */}
             <button
               onClick={() => handleReport(defenseId, "DEFENSE", content)}
               className="flex items-center gap-1 text-xs px-2 py-1 text-red-500 hover:text-red-700"
@@ -259,7 +278,7 @@ const ArgumentCard: React.FC<ArgumentCardProps> = ({
                   isLikePending={toggleRebuttalLikeMutation.isPending}
                   postRebuttalMutation={postRebuttalMutation}
                   defaultRebuttalType={rebuttalType}
-                  onReport={(rebuttalId, rebuttalContent) => handleReport(rebuttalId, "REBUTTAL", rebuttalContent)}
+                  onReport={(rebuttalId) => handleReport(rebuttalId, "REBUTTAL")} 
                   currentUserNickname={currentUserNickname}
                   activeReplyInput={activeReplyInput}
                   setActiveReplyInput={setActiveReplyInput}
@@ -267,7 +286,7 @@ const ArgumentCard: React.FC<ArgumentCardProps> = ({
               ))
             )}
 
-            {/* 최상위 의견 입력 - activeReplyInput이 null일 때만 표시 */}
+            {/* 최상위 의견 입력 */}
             {activeReplyInput === null && (
               <div className="mt-2 p-3 rounded-md bg-main-bright">
                 <div className="flex items-center gap-2 mb-2">
@@ -310,7 +329,7 @@ const ArgumentCard: React.FC<ArgumentCardProps> = ({
         <ReportModal
           contentId={reportTarget.contentId}
           contentType={reportTarget.contentType}
-          content={reportTarget.content} // 추가
+          content={reportTarget.content}
           onClose={() => {
             setShowReportModal(false);
             setReportTarget(null);
