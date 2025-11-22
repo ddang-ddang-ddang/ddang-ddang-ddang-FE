@@ -29,11 +29,14 @@ const SecondTrialRegister: React.FC = () => {
     }
 
     try {
-      // TODO: duration을 서버에 전달하는 로직이 필요하다면 여기서 추가 API 호출
-      // 예: await updateTrialDuration({ caseId, duration: Number(duration) });
-      
-      await startSecond.mutateAsync(caseId);
-      // 성공 시 기존 동작(페이지 이동) 유지
+      // hoursToAdd를 요청 바디에 포함하여 2차 재판 시작
+      await startSecond.mutateAsync({
+        caseId,
+        body: {
+          hoursToAdd: Number(duration),
+        },
+      });
+      // 성공 시 페이지 이동
       navigate(`${PATHS.SECOND_TRIAL_ROUND_ONE}/${caseId}`);
     } catch (err) {
       console.error("2차 재판 시작 실패:", err);

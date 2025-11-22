@@ -1,14 +1,14 @@
 import instance from "@/apis/instance";
 import type { ApiResponse } from "@/types/common/api";
-import type { SecondTrialDetailsResponse, DefenseRequest, DefenseResponse, DefenseItem, LikeRequest, VoteRequest, VoteResultResponse, RebuttalRequest, RebuttalItem } from "@/types/apis/secondTrial";
+import type { SecondTrialDetailsResponse, StartSecondTrialRequest, DefenseRequest, DefenseResponse, DefenseItem, LikeRequest, VoteRequest, VoteResultResponse, RebuttalRequest, RebuttalItem } from "@/types/apis/secondTrial";
 
 {/* 2차 재판 관련 API 모음 swagger (1 o, 2 o, 3 o, 4 o, 5 o, 6 o,7 o, 8 o) */}
 
 //2차 재판 시작 swagger 5
-const startSecondTrial = async (caseId: number): Promise<ApiResponse<null>> => {
+const startSecondTrial = async (caseId: number, body: StartSecondTrialRequest): Promise<ApiResponse<null>> => {
   const { data } = await instance.patch<ApiResponse<null>>(
     `/api/v1/cases/${caseId}/appeal`,
-    {}
+    body
   );
   return data;
 };

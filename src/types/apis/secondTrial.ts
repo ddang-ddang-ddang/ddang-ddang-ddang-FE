@@ -11,6 +11,10 @@ export interface UserVote {
   choice: string;
 }
 
+export interface StartSecondTrialRequest {
+  hoursToAdd: number;
+}
+
 export interface DefenseRequest {
   side: "A" | "B" | string;
   content: string;
