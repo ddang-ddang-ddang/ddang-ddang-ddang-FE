@@ -12,7 +12,7 @@ export default function Verdict() {
   const caseId = useThirdTrialStore((s) => s.caseId);
 
   // 3차 재판 판결 데이터 조회
-  const { data: judgmentData } = useThirdJudgmentQuery(caseId);
+  const { data: judgmentData } = useThirdJudgmentQuery(caseId ?? undefined);
 
   const verdict = judgmentData?.result?.verdict || "A";
   const conclusion = judgmentData?.result?.conclusion || "더 논리적이었던 건 A!";

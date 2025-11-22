@@ -9,7 +9,7 @@ export default function Loading() {
 
   // 3차 재판 판결 조회 (3초마다 폴링)
   const { data: judgmentData, isSuccess } = useThirdJudgmentQuery(
-    caseId,
+    caseId ?? undefined,
     3000
   );
 

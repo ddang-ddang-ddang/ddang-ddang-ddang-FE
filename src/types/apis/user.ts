@@ -72,7 +72,7 @@ export type UserRankResponse = ApiResponse<{
 export type CaseRecord = {
   caseId: number;
   title: string;
-  status: "DONE" | "SECOND" | "PENDING"; // 상태
+  status: "PENDING" | "FIRST" | "SECOND" | "THIRD" | "DONE"; // 상태
   caseResult: "WIN" | "LOSE" | "PENDING"; // 결과
   mainArguments: string[]; // 주요 주장
 };
