@@ -6,8 +6,6 @@ interface ArchiveTrialItemProps {
   title: string;
   argumentAMain: string;
   argumentBMain: string;
-  winner: string;
-  winnerNickname: string;
   onClick: () => void;
 }
 
@@ -16,14 +14,12 @@ const ArchiveTrialItem: React.FC<ArchiveTrialItemProps> = ({
   title,
   argumentAMain,
   argumentBMain,
-  winner,
-  winnerNickname,
   onClick,
 }) => {
   return (
     <div
       onClick={onClick}
-      className="grid grid-cols-12 gap-4 px-6 py-5 hover:bg-main-bright/30 transition-colors cursor-pointer items-center"
+      className="grid grid-cols-12 gap-0 px-6 py-5 hover:bg-main-bright/30 transition-colors cursor-pointer items-center"
     >
       {/* 순서 */}
       <div className="col-span-1 text-center text-main font-semibold">
@@ -31,29 +27,18 @@ const ArchiveTrialItem: React.FC<ArchiveTrialItemProps> = ({
       </div>
 
       {/* 주제 */}
-      <div className="col-span-4 text-main font-medium">
+      <div className="col-span-4 text-main font-medium pl-4">
         {title}
       </div>
 
       {/* A 주장 */}
-      <div className="col-span-3 text-gray-700 text-sm truncate">
+      <div className="col-span-3 text-gray-700 text-sm truncate pr-4">
         {argumentAMain}
       </div>
 
       {/* B 주장 */}
-      <div className="col-span-3 text-gray-700 text-sm truncate">
+      <div className="col-span-4 text-gray-700 text-sm truncate">
         {argumentBMain}
-      </div>
-
-      {/* 승자 */}
-      <div className="col-span-1 text-center">
-        <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${
-          winner === "A"
-            ? "bg-blue-100 text-blue-700"
-            : "bg-red-100 text-red-700"
-        }`}>
-          {winner}
-        </span>
       </div>
     </div>
   );

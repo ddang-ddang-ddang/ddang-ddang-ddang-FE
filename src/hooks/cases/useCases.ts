@@ -16,9 +16,9 @@ export const useFinalJudgmentHistoryQuery = (caseId: number) =>
     enabled: !!caseId,
   });
 
-// 전체 아카이브 조회 훅
-export const useAllArchivedCasesQuery = () =>
+// 완료된 재판 목록 조회 훅
+export const useFinishedCasesQuery = () =>
   useQuery({
-    queryKey: ["cases", "archived", "all"],
-    queryFn: () => casesApi.getAllArchivedCases(),
+    queryKey: ["cases", "finished"],
+    queryFn: () => casesApi.getFinishedCases(),
   });

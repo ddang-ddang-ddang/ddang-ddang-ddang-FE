@@ -8,8 +8,6 @@ interface ArchivedCase {
   argumentBMain: string;
   authorNickname: string;
   rivalNickname: string;
-  winner: string;
-  winnerNickname: string;
   status: string;
   createdAt: string;
   completedAt: string;
@@ -31,12 +29,11 @@ const ArchiveTrialTable: React.FC<ArchiveTrialTableProps> = ({
   return (
     <div className="bg-white rounded-lg overflow-hidden">
       {/* 테이블 헤더 */}
-      <div className="grid grid-cols-12 gap-4 bg-main-bright px-6 py-4 font-bold text-main-medium">
+      <div className="grid grid-cols-12 gap-0 bg-main-bright px-6 py-4 font-bold text-main-medium">
         <div className="col-span-1 text-center">순서</div>
-        <div className="col-span-4 text-center">주제</div>
+        <div className="col-span-4 text-left pl-4">주제</div>
         <div className="col-span-3 text-center">A 주장</div>
-        <div className="col-span-3 text-center">B 주장</div>
-        <div className="col-span-1 text-center">승자</div>
+        <div className="col-span-4 text-center">B 주장</div>
       </div>
 
       {/* 테이블 바디 */}
@@ -54,8 +51,6 @@ const ArchiveTrialTable: React.FC<ArchiveTrialTableProps> = ({
               title={caseItem.title}
               argumentAMain={caseItem.argumentAMain}
               argumentBMain={caseItem.argumentBMain}
-              winner={caseItem.winner}
-              winnerNickname={caseItem.winnerNickname}
               onClick={() => onCaseClick(caseItem.caseId)}
             />
           ))}

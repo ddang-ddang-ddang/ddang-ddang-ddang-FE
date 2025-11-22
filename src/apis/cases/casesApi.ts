@@ -1,7 +1,8 @@
 import instance from "@/apis/instance";
 import type {
-  OngoingCasesResponse,
+  FinishedCasesResponse,
   JudgmentHistoryResponse,
+  OngoingCasesResponse,
 } from "@/types/apis/cases";
 
 const BASE = "/api/v1/cases";
@@ -15,7 +16,6 @@ const getOngoingCases = async (): Promise<OngoingCasesResponse> => {
 };
 
 // 최종 판결 히스토리 조회 (아카이브)
-// 특정 케이스의 판결 히스토리를 조회
 const getFinalJudgmentHistory = async (caseId: number): Promise<JudgmentHistoryResponse> => {
   const { data } = await instance.get<JudgmentHistoryResponse>(
     `/api/final/judge/${caseId}/history`
@@ -23,12 +23,10 @@ const getFinalJudgmentHistory = async (caseId: number): Promise<JudgmentHistoryR
   return data;
 };
 
-// 전체 아카이브 조회 (모든 완료된 케이스)
-// TODO: 백엔드에서 전체 완료된 케이스 목록 API가 필요할 수 있음
-const getAllArchivedCases = async (): Promise<JudgmentHistoryResponse> => {
-  // 임시로 전체 히스토리를 조회하는 엔드포인트 (실제 API 스펙에 맞게 수정 필요)
-  const { data } = await instance.get<JudgmentHistoryResponse>(
-    `/api/final/judge/history`
+// 완료된 재판 목록 조회
+const getFinishedCases = async (): Promise<FinishedCasesResponse> => {
+  const { data } = await instance.get<FinishedCasesResponse>(
+    `/api/v1/finished`
   );
   return data;
 };
@@ -36,7 +34,7 @@ const getAllArchivedCases = async (): Promise<JudgmentHistoryResponse> => {
 export const casesApi = {
   getOngoingCases,
   getFinalJudgmentHistory,
-  getAllArchivedCases,
+  getFinishedCases,
 } as const;
 
 export type CasesApi = typeof casesApi;
