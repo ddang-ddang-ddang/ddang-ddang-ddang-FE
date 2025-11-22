@@ -19,12 +19,12 @@ export const PATHS = {
 
 // Route의 path 속성에 사용하는 패턴 (플레이스홀더 포함)
 export const PATH_PATTERNS = {
-  // 재판 관련
-  firstTrial: `${PATHS.FIRST_TRIAL}/:caseId`,
+  // 재판 관련 (caseId를 optional로 설정하여 새 재판 시작도 지원)
+  firstTrial: `${PATHS.FIRST_TRIAL}/:caseId?`,
   secondTrialRegister: `${PATHS.SECOND_TRIAL_REGISTER}/:caseId`,
   secondTrialRoundOne: `${PATHS.SECOND_TRIAL_ROUND_ONE}/:caseId`,
   secondTrialFinal: `${PATHS.SECOND_TRIAL_FINAL}/:caseId`,
-  thirdTrial: `${PATHS.THIRD_TRIAL}/:caseId`,
+  thirdTrial: `${PATHS.THIRD_TRIAL}/:caseId?`,
 
   // 기타
   debateDetail: `${PATHS.DEBATE}/:id`,

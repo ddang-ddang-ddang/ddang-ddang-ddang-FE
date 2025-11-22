@@ -26,7 +26,18 @@ export default function FirstTrialPage() {
 
   // URL 파라미터에서 caseId를 가져와 store에 설정하고, 서버 데이터로 step 복원
   useEffect(() => {
-    if (!caseId || isCaseLoading || isJudgmentLoading || isInitialized) return;
+    // 이미 초기화되었으면 리턴
+    if (isInitialized) return;
+
+    // caseId가 없으면 새로운 재판 시작
+    if (!caseId) {
+      setStep("start");
+      setIsInitialized(true);
+      return;
+    }
+
+    // caseId가 있으면 로딩 완료될 때까지 대기
+    if (isCaseLoading || isJudgmentLoading) return;
 
     // store에 caseId 설정
     if (caseId !== storedCaseId) {
