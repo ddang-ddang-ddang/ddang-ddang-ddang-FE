@@ -22,7 +22,7 @@ export default function Judge() {
 
   const title = detail?.result?.title ?? "사건";
   const aMain = detail?.result?.argumentA.mainArgument ?? "A입장";
-  const bMain = detail?.result?.argumentB.mainArgument ?? "B입장";
+  const bMain = detail?.result?.argumentB?.mainArgument ?? "B입장";
   const verdict = judgment?.result?.verdict ?? "판결";
   const conclusion = judgment?.result?.conclusion ?? "";
   const ratioA = Math.round(judgment?.result?.ratioA ?? 50);

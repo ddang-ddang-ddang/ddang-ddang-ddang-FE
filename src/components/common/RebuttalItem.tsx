@@ -1,9 +1,11 @@
 // src/components/common/RebuttalItem.tsx
 import React, { useState, useRef, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
+import { useNotificationStore } from "@/stores/useNotificationStore";
 import type { RebuttalItem as RebuttalItemType, RebuttalRequest } from "@/types/apis/secondTrial";
 import { renderContentWithMentions } from "@/utils/mentionRenderer";
-import ThumbUpIcon from "@/assets/svgs/thumbs-up.svg";
-import Siren from "@/assets/svgs/siren.svg";
+import ThumbUpIcon from "@/assets/svgs/thumbs-up.svg?react";
+import Siren from "@/assets/svgs/Siren.svg?react";
 
 interface RebuttalItemProps {
   rebuttal: RebuttalItemType;
@@ -13,7 +15,7 @@ interface RebuttalItemProps {
   isLikePending: boolean;
   postRebuttalMutation: any;
   defaultRebuttalType: "A" | "B";
-  onReport: (rebuttalId: number) => void; // 수정
+  onReport: (rebuttalId: number) => void;
   currentUserNickname?: string;
   activeReplyInput: number | null;
   setActiveReplyInput: (id: number | null) => void;
@@ -32,19 +34,44 @@ const RebuttalItem: React.FC<RebuttalItemProps> = ({
   activeReplyInput,
   setActiveReplyInput,
 }) => {
+  const [searchParams] = useSearchParams();
+  const { highlightRebuttalId, setHighlightRebuttal } = useNotificationStore();
   const [replyContent, setReplyContent] = useState("");
   const [replyType, setReplyType] = useState<"A" | "B">(defaultRebuttalType);
+  const [isHighlighted, setIsHighlighted] = useState(false);
   const replyInputRef = useRef<HTMLTextAreaElement | null>(null);
+  const rebuttalRef = useRef<HTMLDivElement>(null);
 
   const isMyComment = currentUserNickname === rebuttal.authorNickname;
   const typeColorClass = rebuttal.type === "A" ? "text-white" : "text-white";
   const typeBgClass = rebuttal.type === "A" ? "bg-main-medium" : "bg-main-red";
   
-  // 이 댓글의 입력란이 활성화되어 있는지
   const isThisInputActive = activeReplyInput === rebuttal.rebuttalId;
 
+  // 하이라이트 효과
+  useEffect(() => {
+    const rebuttalIdFromUrl = searchParams.get("rebuttalId");
+    const targetId = rebuttalIdFromUrl ? Number(rebuttalIdFromUrl) : highlightRebuttalId;
+    
+    if (targetId === rebuttal.rebuttalId && rebuttalRef.current) {
+      // 스크롤 이동
+      rebuttalRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+
+      // 하이라이트 효과
+      setIsHighlighted(true);
+      const timer = setTimeout(() => {
+        setIsHighlighted(false);
+        setHighlightRebuttal(null);
+      }, 1500); 
+      return () => clearTimeout(timer);
+    }
+  }, [searchParams, highlightRebuttalId, rebuttal.rebuttalId, setHighlightRebuttal]);
+
   const handleReplyClick = () => {
-    setActiveReplyInput(rebuttal.rebuttalId); // 이 댓글의 입력란만 활성화
+    setActiveReplyInput(rebuttal.rebuttalId);
     setReplyContent(`@${rebuttal.authorNickname} `);
   };
 
@@ -92,7 +119,14 @@ const RebuttalItem: React.FC<RebuttalItemProps> = ({
   
   return (
     <div style={{ paddingLeft: depth > 0 ? `${depth * 24}px` : '0px' }}>
-      <div className="p-3 rounded-lg bg-main-bright">
+      <div 
+        ref={rebuttalRef}
+        className={`p-3 rounded-lg transition-all duration-300 ${
+          isHighlighted 
+            ? 'bg-yellow-100 border-2 border-yellow-400 animate-pulse' 
+            : 'bg-main-bright'
+        }`}
+      >
         <div className="flex justify-between items-start">
           <div className="flex-1">
             <div className="flex items-center gap-2 text-main font-semibold">

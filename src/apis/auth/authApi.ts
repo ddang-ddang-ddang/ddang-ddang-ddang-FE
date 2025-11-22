@@ -1,5 +1,8 @@
+import axios from "axios";
+
 import instance from "@/apis/instance";
 import { useAuthStore } from "@/stores/useAuthStore";
+import { userApi } from "@/apis/user/userApi";
 import type {
   LoginRequest,
   LoginResponse,
@@ -15,14 +18,6 @@ import type {
 
 const AUTH_BASE_PATH = "/api/v1/auth";
 
-const syncAccessToken = (token?: string | null) => {
-  if (!token) {
-    return;
-  }
-
-  useAuthStore.getState().setLogin({ accessToken: token });
-};
-
 const postSignup = async (payload: SignupRequest): Promise<SignupResponse> => {
   const { data } = await instance.post<SignupResponse>(
     `${AUTH_BASE_PATH}/signup`,
@@ -33,27 +28,79 @@ const postSignup = async (payload: SignupRequest): Promise<SignupResponse> => {
 };
 
 const postLogin = async (payload: LoginRequest): Promise<LoginResponse> => {
-  const { data } = await instance.post<LoginResponse>(
-    `${AUTH_BASE_PATH}/login`,
-    payload
-  );
+  try {
+    const { data } = await instance.post<LoginResponse>(
+      `${AUTH_BASE_PATH}/login`,
+      payload
+    );
 
-  syncAccessToken(data.result?.accessToken ?? null);
+    if (!data.isSuccess || !data.result?.accessToken || !data.result.refreshToken) {
+      throw new Error(data.message || "로그인에 실패했습니다.");
+    }
 
-  return data;
+    // 토큰 임시 저장
+    useAuthStore.getState().setLogin({
+      accessToken: data.result.accessToken,
+      refreshToken: data.result.refreshToken,
+      email: payload.email,
+    });
+
+    // 유저 정보 조회 후 userId, rank 저장
+    try {
+      const userInfoRes = await userApi.getUserInfo();
+      if (userInfoRes.isSuccess && userInfoRes.result) {
+        useAuthStore.getState().setLogin({
+          accessToken: data.result.accessToken,
+          refreshToken: data.result.refreshToken,
+          email: payload.email,
+          userId: userInfoRes.result.userId,
+          rank: userInfoRes.result.rank,
+        });
+      }
+    } catch (userInfoError) {
+      console.error("Failed to fetch user info:", userInfoError);
+      // userId, rank 조회 실패해도 로그인은 성공으로 처리
+    }
+
+    return data;
+  } catch (error) {
+    if (axios.isAxiosError<LoginResponse>(error)) {
+      throw new Error(error.response?.data?.message || "로그인에 실패했습니다.");
+    }
+
+    throw error instanceof Error
+      ? error
+      : new Error("로그인에 실패했습니다.");
+  }
 };
 
 const postTokenRefresh = async (
   payload: TokenRefreshRequest
 ): Promise<TokenRefreshResponse> => {
-  const { data } = await instance.post<TokenRefreshResponse>(
-    `${AUTH_BASE_PATH}/refresh`,
-    payload
-  );
+  try {
+    const { data } = await instance.post<TokenRefreshResponse>(
+      `${AUTH_BASE_PATH}/refresh`,
+      payload
+    );
 
-  syncAccessToken(data.result?.accessToken ?? null);
+    if (!data.isSuccess || !data.result?.accessToken) {
+      throw new Error(data.message || "토큰 재발급에 실패했습니다.");
+    }
 
-  return data;
+    useAuthStore.getState().setLogin({ accessToken: data.result.accessToken });
+
+    return data;
+  } catch (error) {
+    if (axios.isAxiosError<TokenRefreshResponse>(error)) {
+      throw new Error(
+        error.response?.data?.message || "토큰 재발급에 실패했습니다."
+      );
+    }
+
+    throw error instanceof Error
+      ? error
+      : new Error("토큰 재발급에 실패했습니다.");
+  }
 };
 
 const postSendEmailCode = async (

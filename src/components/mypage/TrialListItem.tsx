@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Button from '@/components/common/Button';
 import { PATHS } from '@/constants';
 
-export type CaseStatus = "DONE" | "SECOND" | "PENDING" | "FIRST";
+export type CaseStatus = "DONE" | "SECOND" | "THIRD" | "PENDING" | "FIRST";
 export type CaseResult = "WIN" | "LOSE" | "PENDING";
 
 export type TrialData = {
@@ -85,16 +85,25 @@ const TrialListItem = ({ trial }: TrialListItemProps) => {
         }
         
         if (trial.status === "SECOND") {
-            return { 
-                text: "진행중", 
+            return {
+                text: "진행중",
                 bgClass: "bg-gray-400 text-white",
                 isOngoing: true,
                 roundText: "2차 재판 진행중"
             };
         }
-        
-        return { 
-            text: "진행중", 
+
+        if (trial.status === "THIRD") {
+            return {
+                text: "진행중",
+                bgClass: "bg-gray-400 text-white",
+                isOngoing: true,
+                roundText: "최종심 진행중"
+            };
+        }
+
+        return {
+            text: "진행중",
             bgClass: "bg-gray-400 text-white",
             isOngoing: true,
             roundText: "1차 재판 진행중"
@@ -108,6 +117,8 @@ const TrialListItem = ({ trial }: TrialListItemProps) => {
 
         if (trial.status === "SECOND") {
             navigate(`${PATHS.SECOND_TRIAL_ROUND_ONE}/${trial.id}`);
+        } else if (trial.status === "THIRD") {
+            navigate(`${PATHS.THIRD_TRIAL}/${trial.id}`);
         } else {
             navigate(`${PATHS.FIRST_TRIAL}?caseId=${trial.id}`);
         }

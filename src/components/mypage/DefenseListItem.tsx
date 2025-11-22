@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { MyDefenseItem } from '@/types/apis/home';
 import { PATHS } from '@/constants';
-import ThumbUpIcon from '@/assets/svgs/thumbs-up.svg';
+import ThumbUpIcon from '@/assets/svgs/thumbs-up.svg?react';
 import Button from '@/components/common/Button';
 import { useQuery } from '@tanstack/react-query';
 import instance from '@/apis/instance';
