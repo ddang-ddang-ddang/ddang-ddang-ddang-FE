@@ -59,9 +59,9 @@ const TrialArchive: React.FC = () => {
     setSelectedCaseId(null);
   };
 
-  const getTrialLabel = (index: number) => {
-    // 첫 번째는 1차 재판, 나머지는 전부 3차 재판
-    if (index === 0) {
+  const getTrialLabel = (index: number, totalLength: number) => {
+    // 역순이므로 마지막 항목이 1차 재판
+    if (index === totalLength - 1) {
       return "1차 재판 (초심)";
     }
     return "3차 재판 (최종심)";
@@ -138,12 +138,12 @@ const TrialArchive: React.FC = () => {
                   </div>
                 ) : (
                   <div className="space-y-6">
-                    {judgmentHistory.map((judgment, index) => (
+                    {[...judgmentHistory].reverse().map((judgment, index) => (
                       <div
                         key={index}
                         className={clsx(
                           "border-2 rounded-xl p-6",
-                          index === judgmentHistory.length - 1
+                          index === 0
                             ? "border-yellow-400 bg-yellow-50"
                             : "border-gray-300 bg-gray-50"
                         )}
@@ -151,11 +151,11 @@ const TrialArchive: React.FC = () => {
                         {/* 재판 단계 */}
                         <div className="flex justify-between items-center mb-4">
                           <h3 className="text-xl font-bold text-main">
-                            {getTrialLabel(index)}
+                            {getTrialLabel(index, judgmentHistory.length)}
                           </h3>
-                          {index === judgmentHistory.length - 1 && (
+                          {index === 0 && (
                             <span className="bg-yellow-400 text-white text-sm px-3 py-1 rounded-full font-semibold">
-                              최종 판결
+                              최근 판결
                             </span>
                           )}
                         </div>
