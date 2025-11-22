@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import Button from '@/components/common/Button';
 import Textarea from '@/components/common/textarea';
 import ArgumentCard from '@/components/common/ArgumentCard';
-import clsx from 'clsx'; 
+import clsx from 'clsx';
 import { PATHS } from '@/constants';
 import {
   useSecondTrialDetailsQuery,
@@ -11,6 +11,7 @@ import {
   usePostVoteMutation
 } from '@/hooks/secondTrial/useSecondTrial';
 import type { DefenseRequest, VoteRequest } from '@/types/apis/secondTrial';
+import { parseLocalDateTimeArray, formatDateTime, isDeadlinePassed } from '@/utils/dateUtils';
 
 // 탭 상태 타입
 type Tab = 'all' | 'A' | 'B';
@@ -46,8 +47,9 @@ const SecondTrial_1 = () => {
         return defenses;
     }, [currentTab, defenses]);
 
-    // 투표 가능 여부 판단 (deadline 기준)
-    const isVoteTime = details?.deadline ? new Date(details.deadline) > new Date() : false;
+    // deadline 파싱 및 투표 가능 여부 판단
+    const deadlineDate = details?.deadline ? parseLocalDateTimeArray(details.deadline) : null;
+    const isVoteTime = deadlineDate && details?.deadline ? !isDeadlinePassed(details.deadline) : false;
     {/*
     // 변론 가능 여부에 대한 시간제한은 빼기로 했음.
     const isArgumentTime = isVoteTime; // 변론도 동일 조건으로 가정
@@ -134,8 +136,8 @@ const SecondTrial_1 = () => {
                 <div className="flex justify-between items-center pb-4 mb-6">
                     <h1 className="text-3xl font-bold text-main">2차 재판</h1>
                     <span className="bg-main-bright p-4 rounded-lg text-md font-medium text-main">
-                        {details.deadline 
-                            ? `마감: ${new Date(details.deadline).toLocaleString()}` 
+                        {deadlineDate
+                            ? `마감: ${formatDateTime(deadlineDate)}`
                             : '마감 시간 정보 없음'}
                     </span>
                 </div>

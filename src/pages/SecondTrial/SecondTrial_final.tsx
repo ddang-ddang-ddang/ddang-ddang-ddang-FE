@@ -4,7 +4,6 @@ import { PATHS } from '@/constants';
 import clsx from 'clsx';
 import Button from '@/components/common/Button';
 import { useSecondTrialDetailsQuery, useVoteResultQuery } from "@/hooks/secondTrial/useSecondTrial";
-import { useFirstCaseDetailQuery } from "@/hooks/firstTrial/useFirstTrial";
 
 const SecondTrial_final: React.FC = () => {
   const { caseId: caseIdParam } = useParams<{ caseId?: string }>();
@@ -18,12 +17,8 @@ const SecondTrial_final: React.FC = () => {
   const { data: voteResultRes, isLoading: isVoteResultLoading } = useVoteResultQuery(caseId);
   const voteResult = voteResultRes?.result;
 
-  // 1차 재판 정보 (A/B 주장 및 근거)
-  const { data: caseDetailRes, isLoading: isCaseDetailLoading } = useFirstCaseDetailQuery(caseId);
-  const caseDetail = caseDetailRes?.result;
-
   // 로딩
-  if (isDetailsLoading || isVoteResultLoading || isCaseDetailLoading) {
+  if (isDetailsLoading || isVoteResultLoading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
         <p className="text-main font-bold">로딩 중...</p>
@@ -32,7 +27,7 @@ const SecondTrial_final: React.FC = () => {
   }
 
   // 데이터 없음 처리
-  if (!details || !voteResult || !caseDetail) {
+  if (!details || !voteResult) {
     return (
       <div className="flex flex-col justify-center items-center min-h-screen gap-4">
         <p className="text-main-red font-bold text-xl">데이터를 받아오지 못했습니다</p>
@@ -52,11 +47,11 @@ const SecondTrial_final: React.FC = () => {
   // 어느 쪽이 이겼는지 판단
   const aWins = ratioA > ratioB;
 
-  // 1차 재판의 A/B 주장 및 근거
-  const aMainArgument = caseDetail.argumentA.mainArgument;
-  const aReasoning = caseDetail.argumentA.reasoning;
-  const bMainArgument = caseDetail.argumentB?.mainArgument;
-  const bReasoning = caseDetail.argumentB?.reasoning;
+  // 2차 재판 API의 A/B 주장 및 근거
+  const aMainArgument = details.argumentA.mainArgument;
+  const aReasoning = details.argumentA.reasoning;
+  const bMainArgument = details.argumentB.mainArgument;
+  const bReasoning = details.argumentB.reasoning;
 
   return (
     <div className="bg-white min-h-screen pt-12 pb-20">
@@ -71,7 +66,7 @@ const SecondTrial_final: React.FC = () => {
 
         {/* 사건 제목 */}
         <p className="font-medium mb-8 text-main">
-          {caseDetail.title}
+          {details.caseTitle}
         </p>
 
         {/* A/B 카드 */}

@@ -33,7 +33,7 @@ export interface DefenseItem {
 export interface SecondTrialDetailsResponse {
   caseId: number;
   caseTitle: string;
-  deadline: string; // ISO datetime string
+  deadline: number[]; // LocalDateTime array [year, month, day, hour, minute, second, nanoseconds]
   defenses: DefenseItem[];
   userVote: UserVote | null;
   currentJudgment: {
