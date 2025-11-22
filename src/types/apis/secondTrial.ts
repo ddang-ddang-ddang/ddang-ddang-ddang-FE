@@ -27,13 +27,32 @@ export interface DefenseItem {
   content: string;
   likesCount: number;
   isLikedByMe: boolean;
+  rebuttals?: RebuttalItem[];
 }
 
 export interface SecondTrialDetailsResponse {
+  caseId: number;
   caseTitle: string;
   deadline: string; // ISO datetime string
   defenses: DefenseItem[];
   userVote: UserVote | null;
+  currentJudgment: {
+    judgeIllustrationUrl: string;
+    verdict: string;
+    conclusion: string;
+    ratioA: number;
+    ratioB: number;
+  } | null;
+  argumentA: {
+    mainArgument: string;
+    reasoning: string;
+    authorId: number;
+  };
+  argumentB: {
+    mainArgument: string;
+    reasoning: string;
+    authorId: number;
+  };
 }
 
 /* 좋아요 */

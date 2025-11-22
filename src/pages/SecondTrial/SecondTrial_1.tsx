@@ -5,13 +5,11 @@ import Textarea from '@/components/common/textarea';
 import ArgumentCard from '@/components/common/ArgumentCard';
 import clsx from 'clsx'; 
 import { PATHS } from '@/constants';
-import { 
-  useSecondTrialDetailsQuery, 
-  useDefensesQuery, 
-  usePostDefenseMutation, 
-  usePostVoteMutation 
+import {
+  useSecondTrialDetailsQuery,
+  usePostDefenseMutation,
+  usePostVoteMutation
 } from '@/hooks/secondTrial/useSecondTrial';
-import { useFirstCaseDetailQuery } from '@/hooks/firstTrial/useFirstTrial';
 import type { DefenseRequest, VoteRequest } from '@/types/apis/secondTrial';
 
 // 탭 상태 타입
@@ -22,16 +20,12 @@ const SecondTrial_1 = () => {
     const caseId = caseIdParam ? Number(caseIdParam) : undefined;
     const navigate = useNavigate();
 
-    // API 훅들
+    // API 훅 - 2차 재판 상세 정보 (argumentA, argumentB, defenses 모두 포함)
     const { data: detailsRes, isLoading: isDetailsLoading } = useSecondTrialDetailsQuery(caseId);
     const details = detailsRes?.result;
-    
-    const { data: defensesRes, isLoading: isDefensesLoading } = useDefensesQuery(caseId);
-    const defenses = defensesRes?.result ?? [];
 
-    // 1차 재판 정보 (A/B 입장)
-    const { data: caseDetailRes, isLoading: isCaseDetailLoading } = useFirstCaseDetailQuery(caseId);
-    const caseDetail = caseDetailRes?.result;
+    // defenses는 details에 포함됨
+    const defenses = details?.defenses ?? [];
 
     const postDefenseMutation = usePostDefenseMutation();
     const postVoteMutation = usePostVoteMutation();
@@ -112,7 +106,7 @@ const SecondTrial_1 = () => {
     };
 
     // 로딩 상태
-    if (isDetailsLoading || isDefensesLoading || isCaseDetailLoading) {
+    if (isDetailsLoading) {
         return (
             <div className="flex justify-center items-center min-h-screen">
                 <p className="text-main font-bold">로딩 중...</p>
@@ -121,7 +115,7 @@ const SecondTrial_1 = () => {
     }
 
     // 데이터 로드 실패
-    if (!caseDetail || !details) {
+    if (!details) {
         return (
             <div className="flex flex-col justify-center items-center min-h-screen">
                 <p className="text-main-red font-bold text-xl mb-4">데이터를 받아오지 못했습니다</p>
@@ -148,29 +142,29 @@ const SecondTrial_1 = () => {
 
                 {/* 2. 상황 설명 */}
                 <p className="font-medium mb-8 text-main">
-                    {caseDetail.title}
+                    {details.caseTitle}
                 </p>
 
                 {/* 3. 주장 선택 카드 */}
                 <div className="flex space-x-8 justify-center mb-12">
                     {/* A. 찬성 블록 */}
-                    <div 
+                    <div
                         onClick={() => isVoteTime && setSelectedSide('A')}
                         className={clsx(
                             "w-[513px] h-[447px] bg-main-medium rounded-[30px] flex justify-center items-center flex-col",
                             isVoteTime ? 'cursor-pointer' : 'cursor-default',
                             selectedSide === 'A' ? 'border-4 border-blue-500 shadow-lg scale-[1.02]' : 'border-4 border-transparent hover:border-blue-400',
-                            !isVoteTime && 'opacity-70' 
+                            !isVoteTime && 'opacity-70'
                         )}
                     >
-                        <h2 className="text-2xl font-bold text-center text-white mb-4">{caseDetail.argumentA.mainArgument}</h2>
+                        <h2 className="text-2xl font-bold text-center text-white mb-4">{details.argumentA.mainArgument}</h2>
                         <p className="px-20 py-10 text-white text-center">
-                            {caseDetail.argumentA.reasoning}
+                            {details.argumentA.reasoning}
                         </p>
                     </div>
-                    
+
                     {/* B. 반대 블록 */}
-                    <div 
+                    <div
                         onClick={() => isVoteTime && setSelectedSide('B')}
                         className={clsx(
                             "w-[513px] h-[447px] bg-main-red rounded-[30px] flex justify-center items-center flex-col",
@@ -179,9 +173,9 @@ const SecondTrial_1 = () => {
                             !isVoteTime && 'opacity-70'
                         )}
                     >
-                        <h2 className="text-2xl font-bold text-center text-white mb-4">{caseDetail.argumentB?.mainArgument}</h2>
+                        <h2 className="text-2xl font-bold text-center text-white mb-4">{details.argumentB.mainArgument}</h2>
                         <p className="px-20 py-10 text-white text-center">
-                            {caseDetail.argumentB?.reasoning}
+                            {details.argumentB.reasoning}
                         </p>
                     </div>
                 </div>
