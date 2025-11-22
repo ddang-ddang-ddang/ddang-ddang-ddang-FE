@@ -1,6 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { thirdTrialApi } from "@/apis/thirdTrial/thirdTrialApi";
+import { adoptApi } from "@/apis/adopt/adoptApi";
 import type { ThirdTrialStartRequest } from "@/types/apis/thirdTrial";
+import type { AdoptRequestDto } from "@/types/apis/adopt";
 
 // 3차 재판 시작 훅
 export const useStartThirdTrialMutation = () => {
@@ -49,3 +51,64 @@ export const usePatchThirdCaseDone = () => {
     },
   });
 };
+
+// ==================== Adopt API Hooks ====================
+
+// 채택된 변론/반론 조회 훅
+export const useAdoptedItemsQuery = (caseId?: number) =>
+  useQuery({
+    queryKey: ["adopt", "case", caseId],
+    queryFn: () => adoptApi.getAdoptedItems(caseId as number),
+    enabled: !!caseId,
+  });
+
+// 수동 채택 훅
+export const useAdoptItemsMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ caseId, body }: { caseId: number; body: AdoptRequestDto }) =>
+      adoptApi.postAdoptItems(caseId, body),
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: ["adopt", "case", variables.caseId],
+      });
+    },
+  });
+};
+
+// 최종심으로 사건 상태 변경 훅 (3차 재판 시작)
+export const useChangeToThirdTrialMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (caseId: number) => adoptApi.postStartThirdTrial(caseId),
+    onSuccess: (_data, caseId) => {
+      queryClient.invalidateQueries({
+        queryKey: ["adopt", "case", caseId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["third-trial", "case", caseId],
+      });
+    },
+  });
+};
+
+// 자동 채택 훅
+export const useAutoAdoptMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (caseId: number) => adoptApi.postAutoAdopt(caseId),
+    onSuccess: (_data, caseId) => {
+      queryClient.invalidateQueries({
+        queryKey: ["adopt", "case", caseId],
+      });
+    },
+  });
+};
+
+// 좋아요 많은 순으로 변론/반론 조회 훅
+export const useBestAdoptItemsQuery = (caseId?: number) =>
+  useQuery({
+    queryKey: ["adopt", "best", caseId],
+    queryFn: () => adoptApi.getBestAdoptItems(caseId as number),
+    enabled: !!caseId,
+  });
