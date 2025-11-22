@@ -1,6 +1,7 @@
 export interface Defense {
   defenseId: number;
   authorNickname: string;
+  authorRank?: string; // 추가
   side: string;
   content: string;
   likesCount: number;
@@ -9,6 +10,10 @@ export interface Defense {
 
 export interface UserVote {
   choice: string;
+}
+
+export interface StartSecondTrialRequest {
+  hoursToAdd: number;
 }
 
 export interface DefenseRequest {
@@ -23,17 +28,37 @@ export interface DefenseResponse {
 export interface DefenseItem {
   defenseId: number;
   authorNickname: string;
-  side: string; // "A" | "B"
+  authorRank?: string; // 추가
+  side: string;
   content: string;
   likesCount: number;
   isLikedByMe: boolean;
+  rebuttals?: RebuttalItem[];
 }
 
 export interface SecondTrialDetailsResponse {
+  caseId: number;
   caseTitle: string;
-  deadline: string; // ISO datetime string
+  deadline: number[]; // LocalDateTime array [year, month, day, hour, minute, second, nanoseconds]
   defenses: DefenseItem[];
   userVote: UserVote | null;
+  currentJudgment: {
+    judgeIllustrationUrl: string;
+    verdict: string;
+    conclusion: string;
+    ratioA: number;
+    ratioB: number;
+  } | null;
+  argumentA: {
+    mainArgument: string;
+    reasoning: string;
+    authorId: number;
+  };
+  argumentB: {
+    mainArgument: string;
+    reasoning: string;
+    authorId: number;
+  };
 }
 
 /* 좋아요 */
@@ -65,11 +90,13 @@ export interface RebuttalRequest {
 
 export interface RebuttalItem {
   rebuttalId: number;
+  defenseId: number;
   parentId: number | null;
   authorNickname: string;
-  type: string; // "A" | "B"
+  authorRank?: string; // authorDegree → authorRank로 변경
+  type: "A" | "B";
   content: string;
-  likesCount: number;
-  isLikedByMe: boolean;
-  children?: RebuttalItem[]; // 중첩 반론(대댓글)
+  likesCount?: number;
+  isLikedByMe?: boolean;
+  children?: RebuttalItem[];
 }
