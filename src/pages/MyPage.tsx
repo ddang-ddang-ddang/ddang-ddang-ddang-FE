@@ -261,9 +261,9 @@ const MyPage = () => {
 
   if (!isAuthenticated) { 
     return (
-      <div className="text-center py-20 min-h-screen bg-white">
-        <h1 className="text-3xl font-bold text-main mb-4">로그인이 필요합니다.</h1>
-        <p className="text-lg text-gray-600 mb-6">마이페이지는 회원만 접근 가능합니다.</p>
+      <div className="text-center py-12 md:py-20 min-h-screen bg-white px-4">
+        <h1 className="text-2xl md:text-3xl font-bold text-main mb-4">로그인이 필요합니다.</h1>
+        <p className="text-base md:text-lg text-gray-600 mb-6">마이페이지는 회원만 접근 가능합니다.</p>
         <Button variant="primary" size="lg" onClick={() => window.location.href = "/login"}>
           로그인 페이지로 이동
         </Button>
@@ -272,90 +272,100 @@ const MyPage = () => {
   }
 
   if (isLoading) {
-    return <div className="text-center py-20 text-main font-bold">사용자 정보를 불러오는 중입니다...</div>;
+    return <div className="text-center py-12 md:py-20 text-main font-bold px-4">사용자 정보를 불러오는 중입니다...</div>;
   }
 
   if (isError) {
     console.error("Error fetching user profile:", error);
-    return <div className="text-center py-20 text-main-red font-bold">오류 발생: {error?.message}</div>;
+    return <div className="text-center py-12 md:py-20 text-main-red font-bold px-4">오류 발생: {error?.message}</div>;
   }
 
   return (
-    <div className="min-h-screen bg-white py-12">
-      <div className="max-w-6xl mx-auto px-4 flex flex-col"> 
+    <div className="min-h-screen bg-white py-6 md:py-12">
+      <div className="max-w-6xl mx-auto px-4 md:px-6 lg:px-4 flex flex-col"> 
         <div className="w-full">
-          <h2 className="text-[38px] font-bold text-main mb-4 pb-2">마이페이지</h2>
-          <div className={`${PROFILE_BG_COLOR} px-8 pt-4 rounded-xl flex items-center mb-10`}>
+          <h2 className="text-2xl md:text-[38px] font-bold text-main mb-3 md:mb-4 pb-2">마이페이지</h2>
+          <div className={`${PROFILE_BG_COLOR} px-4 md:px-8 pt-3 md:pt-4 rounded-xl flex items-center justify-between mb-6 md:mb-10`}>
             <div className="flex-grow">              
-              <h2 className="text-white text-3xl font-extrabold mb-2">{nickname}님의 법정</h2>
-              <p className="text-white text-lg">
+              <h2 className="text-white text-xl md:text-2xl lg:text-3xl font-extrabold mb-1 md:mb-2">{nickname}님의 법정</h2>
+              <p className="text-white text-sm md:text-base lg:text-lg">
                 <span className="font-bold">{wins}</span>승 <span className="font-bold">{losses}</span>패
               </p>
             </div>
-            <img src={judgeIllustrationUrl} alt="판사 아이콘" className="bottom-0 w-[201px] h-auto text-white " /> 
+            <img 
+              src={judgeIllustrationUrl} 
+              alt="판사 아이콘" 
+              className="bottom-0 w-[120px] md:w-[160px] lg:w-[201px] h-auto text-white" 
+            /> 
           </div>
         </div>
 
-        <div className="flex w-full">
-          <div className="w-1/4 pr-8 pt-8">
-            <nav className="flex flex-col space-y-2">
+        <div className="flex flex-col lg:flex-row w-full gap-6 lg:gap-0">
+          {/* 사이드바 네비게이션 */}
+          <div className="w-full lg:w-1/4 lg:pr-8 lg:pt-8">
+            <nav className="flex flex-row lg:flex-col overflow-x-auto lg:overflow-x-visible space-x-2 lg:space-x-0 lg:space-y-2 pb-2 lg:pb-0">
               <Button 
                 variant={selectedMenu === "profile" ? "bright_main" : "ghost"} 
-                className="text-md transition duration-150 ease-in-out flex items-center gap-2" 
+                className="text-sm md:text-md transition duration-150 ease-in-out flex items-center gap-2 whitespace-nowrap flex-shrink-0" 
                 onClick={() => setSelectedMenu("profile")}
               >
-                <UserIcon className="w-5 h-5" />
-                내 정보 조회/수정
+                <UserIcon className="w-4 h-4 md:w-5 md:h-5" />
+                <span className="hidden sm:inline">내 정보 조회/수정</span>
+                <span className="sm:hidden">정보</span>
               </Button>
               
               <Button 
                 variant={selectedMenu === "exp" ? "bright_main" : "ghost"} 
-                className="text-md transition duration-150 ease-in-out flex items-center gap-2" 
+                className="text-sm md:text-md transition duration-150 ease-in-out flex items-center gap-2 whitespace-nowrap flex-shrink-0" 
                 onClick={() => setSelectedMenu("exp")}
               >
-                <ExpIcon className="w-5 h-5" />
-                경험치 및 칭호 조회
+                <ExpIcon className="w-4 h-4 md:w-5 md:h-5" />
+                <span className="hidden sm:inline">경험치 및 칭호 조회</span>
+                <span className="sm:hidden">칭호</span>
               </Button>
               
               <Button 
                 variant={selectedMenu === "achievements" ? "bright_main" : "ghost"} 
-                className="text-md transition duration-150 ease-in-out flex items-center gap-2" 
+                className="text-sm md:text-md transition duration-150 ease-in-out flex items-center gap-2 whitespace-nowrap flex-shrink-0" 
                 onClick={() => setSelectedMenu("achievements")}
               >
-                <MedalIcon className="w-5 h-5" />
-                업적 조회하기
+                <MedalIcon className="w-4 h-4 md:w-5 md:h-5" />
+                <span className="hidden sm:inline">업적 조회하기</span>
+                <span className="sm:hidden">업적</span>
               </Button>
               
               <Button 
                 variant={selectedMenu === "participate" ? "bright_main": "ghost"} 
-                className="text-md transition duration-150 ease-in-out flex items-center gap-2" 
+                className="text-sm md:text-md transition duration-150 ease-in-out flex items-center gap-2 whitespace-nowrap flex-shrink-0" 
                 onClick={() => setSelectedMenu("participate")}
               >
-                <MypageHammerIcon className="w-5 h-5" />
-                현재까지 참여한 재판
+                <MypageHammerIcon className="w-4 h-4 md:w-5 md:h-5" />
+                <span className="hidden sm:inline">현재까지 참여한 재판</span>
+                <span className="sm:hidden">재판</span>
               </Button>
             </nav>
           </div>
 
-          <div className="w-3/4 pl-8 pt-8">
+          {/* 메인 콘텐츠 */}
+          <div className="w-full lg:w-3/4 lg:pl-8 lg:pt-8">
             {selectedMenu === "profile" && (
               <div>
-                <h3 className="text-2xl font-bold text-main mb-6 border-b pb-2">내 정보 조회/수정</h3>
+                <h3 className="text-xl md:text-2xl font-bold text-main mb-4 md:mb-6 border-b pb-2">내 정보 조회/수정</h3>
 
-                <div className="flex items-center justify-between mb-10">
-                  <div className="flex items-center space-x-6">
+                <div className="flex flex-col sm:flex-row items-center sm:justify-between gap-4 mb-6 md:mb-10">
+                  <div className="flex items-center space-x-4 md:space-x-6">
                     {/* ProfileIcon 대신 실제 이미지 표시 */}
                     {userData?.profileImageUrl ? (
                       <img 
                         src={userData.profileImageUrl} 
                         alt="프로필 사진" 
-                        className="w-24 h-24 rounded-full object-cover border-2 border-main"
+                        className="w-20 h-20 md:w-24 md:h-24 rounded-full object-cover border-2 border-main"
                       />
                     ) : (
-                      <ProfileIcon className="w-24 h-24 text-main bg-gray-100 rounded-full p-1" title="프로필 사진" />
+                      <ProfileIcon className="w-20 h-20 md:w-24 md:h-24 text-main bg-gray-100 rounded-full p-1" title="프로필 사진" />
                     )}
                     <input ref={fileInputRef} type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
-                    {uploadImageMutation.isPending && <p className="text-main text-sm">이미지 업로드 중...</p>}
+                    {uploadImageMutation.isPending && <p className="text-main text-xs md:text-sm">이미지 업로드 중...</p>}
                   </div>
 
                   {isEditMode && (
@@ -363,7 +373,7 @@ const MyPage = () => {
                       <Button
                         variant="bright_main"
                         size="md"
-                        className="px-4 py-2"
+                        className="px-3 py-2 md:px-4 md:py-2 text-sm md:text-base"
                         onClick={triggerFileInput}
                         disabled={uploadImageMutation.isPending}
                       >
@@ -373,50 +383,57 @@ const MyPage = () => {
                   )}
                 </div>
 
-                <div className={`${isEditMode ? "bg-main-bright p-3 rounded-md" : "border-b-2 border-main focus:border-main outline-none"} mb-6`}>
-                  <label htmlFor="nickname" className="block text-main text-lg font-medium mb-2">닉네임</label>
+                <div className={`${isEditMode ? "bg-main-bright p-3 rounded-md" : "border-b-2 border-main focus:border-main outline-none"} mb-4 md:mb-6`}>
+                  <label htmlFor="nickname" className="block text-main text-base md:text-lg font-medium mb-2">닉네임</label>
                   <input
                     type="text"
                     id="nickname"
-                    className="w-full  pb-2 text-lg text-main bg-transparent"
+                    className="w-full pb-2 text-base md:text-lg text-main bg-transparent"
                     value={nickname}
                     onChange={(e) => setNickname(e.target.value)}
                     disabled={!isEditMode}
                   />
                 </div>
 
-                <div className={`${isEditMode ? "" : "border-b-2 border-main focus:border-main outline-none"} mb-6`}>
-                  <label htmlFor="email" className="block text-main text-lg font-medium mb-2">이메일 주소</label>
+                <div className={`${isEditMode ? "" : "border-b-2 border-main focus:border-main outline-none"} mb-4 md:mb-6`}>
+                  <label htmlFor="email" className="block text-main text-base md:text-lg font-medium mb-2">이메일 주소</label>
                   <textarea
                     id="email"
                     rows={1}
-                    className="w-full pb-2 text-lg text-main bg-transparent resize-none rounded-md"
+                    className="w-full pb-2 text-base md:text-lg text-main bg-transparent resize-none rounded-md"
                     value={email}
                     readOnly
                   />
                 </div>
 
-                {/*
-                <div className={`${isEditMode ? "bg-main-bright p-3 rounded-md" : "border-b-2 border-main focus:border-main outline-none"} mb-6`}>
-                  <label htmlFor="phone" className="block text-main text-lg font-medium mb-2">전화번호</label>
-                  <input
-                    type="tel"
-                    id="phone"
-                    className="w-full pb-2 text-lg text-gray-800 bg-transparent"
-                    value={phoneNumber}
-                    onChange={(e) => setPhoneNumber(e.target.value)}
-                    disabled={!isEditMode}
-                  />
-                </div>
-                */}
-
-                <div className="flex justify-end gap-4 mt-10">
+                <div className="flex flex-col sm:flex-row justify-end gap-3 md:gap-4 mt-6 md:mt-10">
                   {!isEditMode ? (
-                    <Button variant="bright_main" size="lg" className="px-8 py-3 rounded-md" onClick={handleEditMode}>정보 수정하기</Button>
+                    <Button 
+                      variant="bright_main" 
+                      size="lg" 
+                      className="px-6 py-2 md:px-8 md:py-3 rounded-md text-sm md:text-base w-full sm:w-auto" 
+                      onClick={handleEditMode}
+                    >
+                      정보 수정하기
+                    </Button>
                   ) : (
                     <>
-                      <Button variant="ghost" size="lg" className="px-8 py-3 rounded-md  text-main" onClick={handleCancelEdit} disabled={updateProfileMutation.isPending || uploadImageMutation.isPending}>취소</Button>
-                      <Button variant="bright_main" size="md" className="px-8 py-3 rounded-md" onClick={handleUpdateInfo} disabled={updateProfileMutation.isPending || uploadImageMutation.isPending}>
+                      <Button 
+                        variant="ghost" 
+                        size="lg" 
+                        className="px-6 py-2 md:px-8 md:py-3 rounded-md text-main text-sm md:text-base w-full sm:w-auto" 
+                        onClick={handleCancelEdit} 
+                        disabled={updateProfileMutation.isPending || uploadImageMutation.isPending}
+                      >
+                        취소
+                      </Button>
+                      <Button 
+                        variant="bright_main" 
+                        size="md" 
+                        className="px-6 py-2 md:px-8 md:py-3 rounded-md text-sm md:text-base w-full sm:w-auto" 
+                        onClick={handleUpdateInfo} 
+                        disabled={updateProfileMutation.isPending || uploadImageMutation.isPending}
+                      >
                         {updateProfileMutation.isPending ? "저장 중..." : "정보 수정 완료"}
                       </Button>
                     </>
@@ -427,43 +444,50 @@ const MyPage = () => {
 
             {selectedMenu === "exp" && (
               <div className="pt-4">
-                <h3 className="text-2xl font-bold text-main ">현재 칭호</h3>
-                <span className="text-main mb-6">{currentRank}</span>
-                <p className="text-xl font-bold text-main mb-4 pt-8">현재 경험치: <span className="text-main">{currentExp}</span></p>
-                <div className="w-full bg-gray-200 rounded-full h-4 mb-4">
-                  <div className="bg-main h-4 rounded-full transition-all duration-500" style={{ width: `${Math.min((currentExp / 2000) * 100, 100)}%` }} />
+                <h3 className="text-xl md:text-2xl font-bold text-main">현재 칭호</h3>
+                <span className="text-main mb-4 md:mb-6 text-sm md:text-base">{currentRank}</span>
+                <p className="text-lg md:text-xl font-bold text-main mb-3 md:mb-4 pt-6 md:pt-8">
+                  현재 경험치: <span className="text-main">{currentExp}</span>
+                </p>
+                <div className="w-full bg-gray-200 rounded-full h-3 md:h-4 mb-4">
+                  <div 
+                    className="bg-main h-3 md:h-4 rounded-full transition-all duration-500" 
+                    style={{ width: `${Math.min((currentExp / 2000) * 100, 100)}%` }} 
+                  />
                 </div>
               </div>
             )}
             
             {selectedMenu === "achievements" && (
               <div className="pt-4">
-                <h3 className="text-2xl font-bold text-main mb-6 border-b pb-2">업적 조회하기</h3>
+                <h3 className="text-xl md:text-2xl font-bold text-main mb-4 md:mb-6 border-b pb-2">업적 조회하기</h3>
                 {achievementsData?.result && achievementsData.result.length > 0 ? (
-                  <div className="space-y-4">
+                  <div className="space-y-3 md:space-y-4">
                     {achievementsData.result.map(achievement => (
-                      <div key={achievement.achievementId} className="p-4 bg-gray-50 rounded-lg">
-                        <h4 className="font-bold text-main mb-2">{achievement.achievementName}</h4>
-                        <p className="text-gray-600 text-sm">{achievement.achievementDescription}</p>
+                      <div key={achievement.achievementId} className="p-3 md:p-4 bg-gray-50 rounded-lg">
+                        <h4 className="font-bold text-main mb-1 md:mb-2 text-sm md:text-base">{achievement.achievementName}</h4>
+                        <p className="text-gray-600 text-xs md:text-sm">{achievement.achievementDescription}</p>
                         <p className="text-gray-500 text-xs mt-2">{new Date(achievement.achievementTime).toLocaleDateString()}</p>
                       </div>
                     ))}
                   </div>
                 ) : (
-                  <div className="p-6 bg-gray-50 rounded-lg"><p className="text-main-medium">획득한 업적이 없습니다.</p></div>
+                  <div className="p-4 md:p-6 bg-gray-50 rounded-lg">
+                    <p className="text-main-medium text-sm md:text-base">획득한 업적이 없습니다.</p>
+                  </div>
                 )}
               </div>
             )}
 
             {selectedMenu === "participate" && (
               <div className="pt-4">
-                <h3 className="text-2xl font-bold text-main mb-6">참여한 재판 목록</h3>
+                <h3 className="text-xl md:text-2xl font-bold text-main mb-4 md:mb-6">참여한 재판 목록</h3>
                 
                 {/* 탭 네비게이션 + 정렬 */}
-                <div className="flex justify-between items-center mb-6 border-b border-gray-300">
-                  <div className="flex gap-2">
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4 md:mb-6 border-b border-gray-300 pb-2">
+                  <div className="flex gap-2 overflow-x-auto w-full sm:w-auto">
                     <button
-                      className={`px-4 py-2 font-semibold transition-colors ${
+                      className={`px-3 md:px-4 py-2 font-semibold transition-colors text-sm md:text-base whitespace-nowrap ${
                         participateTab === "전체"
                           ? "text-main border-b-2 border-main"
                           : "text-gray-500 hover:text-main"
@@ -473,7 +497,7 @@ const MyPage = () => {
                       전체
                     </button>
                     <button
-                      className={`px-4 py-2 font-semibold transition-colors ${
+                      className={`px-3 md:px-4 py-2 font-semibold transition-colors text-sm md:text-base whitespace-nowrap ${
                         participateTab === "진행중"
                           ? "text-main border-b-2 border-main"
                           : "text-gray-500 hover:text-main"
@@ -483,7 +507,7 @@ const MyPage = () => {
                       내가 진행중인 재판
                     </button>
                     <button
-                      className={`px-4 py-2 font-semibold transition-colors ${
+                      className={`px-3 md:px-4 py-2 font-semibold transition-colors text-sm md:text-base whitespace-nowrap ${
                         participateTab === "변호전적"
                           ? "text-main border-b-2 border-main"
                           : "text-gray-500 hover:text-main"
@@ -499,7 +523,7 @@ const MyPage = () => {
                     <select 
                       value={sortType} 
                       onChange={(e) => setSortType(e.target.value as CaseResult | '정렬')} 
-                      className="p-2 rounded-md bg-main-bright text-main-medium cursor-pointer mb-2"
+                      className="p-2 rounded-md bg-main-bright text-main-medium cursor-pointer text-sm md:text-base w-full sm:w-auto"
                     >
                       <option value="정렬">정렬</option>
                       <option value="WIN">승리</option>
@@ -512,7 +536,7 @@ const MyPage = () => {
                     <select 
                       value={sortType} 
                       onChange={(e) => setSortType(e.target.value as CaseResult | '정렬')} 
-                      className="p-2 rounded-md bg-main-bright text-main-medium cursor-pointer mb-2"
+                      className="p-2 rounded-md bg-main-bright text-main-medium cursor-pointer text-sm md:text-base w-full sm:w-auto"
                     >
                       <option value="정렬">정렬</option>
                       <option value="WIN">승리</option>
@@ -525,7 +549,7 @@ const MyPage = () => {
                     <select 
                       value={defenseSortType} 
                       onChange={(e) => setDefenseSortType(e.target.value as '정렬' | 'WIN' | 'LOSE' | 'PENDING' | 'LIKE')} 
-                      className="p-2 rounded-md bg-main-bright text-main-medium cursor-pointer mb-2"
+                      className="p-2 rounded-md bg-main-bright text-main-medium cursor-pointer text-sm md:text-base w-full sm:w-auto"
                     >
                       <option value="정렬">정렬</option>
                       <option value="LIKE">좋아요순</option>
@@ -539,15 +563,15 @@ const MyPage = () => {
                 {/* 전체 탭 */}
                 {participateTab === "전체" && (
                   <>
-                    <div className="mb-4">
-                      <span className="text-lg text-main">({allItems.length}개 항목)</span>
+                    <div className="mb-3 md:mb-4">
+                      <span className="text-base md:text-lg text-main">({allItems.length}개 항목)</span>
                     </div>
-                    <div className="space-y-4">
+                    <div className="space-y-3 md:space-y-4">
                       {paginatedAllItems.length > 0 ? (
                         <>
                           {paginatedAllItems.map((item, idx) => (
                             <div key={`all-${idx}`}>
-                              <p className="text-sm text-main mb-2">
+                              <p className="text-xs md:text-sm text-main mb-2">
                                 {item.type === 'ongoing' 
                                   ? `내가 진행중인 재판 - ${(item as any).mode || '솔로모드'}`
                                   : '나의 변호 전적'
@@ -569,7 +593,9 @@ const MyPage = () => {
                           )}
                         </>
                       ) : (
-                        <div className="text-center py-10 text-gray-500 bg-gray-50 rounded-lg">참여한 내역이 없습니다.</div>
+                        <div className="text-center py-8 md:py-10 text-gray-500 bg-gray-50 rounded-lg text-sm md:text-base">
+                          참여한 내역이 없습니다.
+                        </div>
                       )}
                     </div>
                   </>
@@ -578,15 +604,15 @@ const MyPage = () => {
                 {/* 진행중 탭 */}
                 {participateTab === "진행중" && (
                   <>
-                    <div className="mb-4">
-                      <span className="text-lg text-main">({filteredOngoingTrials.length}개의 재판)</span>
+                    <div className="mb-3 md:mb-4">
+                      <span className="text-base md:text-lg text-main">({filteredOngoingTrials.length}개의 재판)</span>
                     </div>
-                    <div className="space-y-4">
+                    <div className="space-y-3 md:space-y-4">
                       {paginatedOngoingTrials.length > 0 ? (
                         <>
                           {paginatedOngoingTrials.map((trial, idx) => (
                             <div key={`ongoing-${idx}`}>
-                              <p className="text-sm text-main mb-2">
+                              <p className="text-xs md:text-sm text-main mb-2">
                                 내가 진행중인 재판 - {trial.mode || '솔로모드'}
                               </p>
                               <TrialListItem trial={trial} />
@@ -601,7 +627,9 @@ const MyPage = () => {
                           )}
                         </>
                       ) : (
-                        <div className="text-center py-10 text-gray-500 bg-gray-50 rounded-lg">진행중인 재판이 없습니다.</div>
+                        <div className="text-center py-8 md:py-10 text-gray-500 bg-gray-50 rounded-lg text-sm md:text-base">
+                          진행중인 재판이 없습니다.
+                        </div>
                       )}
                     </div>
                   </>
@@ -610,15 +638,15 @@ const MyPage = () => {
                 {/* 변호전적 탭 */}
                 {participateTab === "변호전적" && (
                   <>
-                    <div className="mb-4">
-                      <span className="text-lg text-main">({filteredDefenseList.length}개의 변론/반론)</span>
+                    <div className="mb-3 md:mb-4">
+                      <span className="text-base md:text-lg text-main">({filteredDefenseList.length}개의 변론/반론)</span>
                     </div>
-                    <div className="space-y-4">
+                    <div className="space-y-3 md:space-y-4">
                       {paginatedDefenseList.length > 0 ? (
                         <>
                           {paginatedDefenseList.map((defense, idx) => (
                             <div key={`defense-${idx}`}>
-                              <p className="text-sm text-main mb-2">나의 변호 전적</p>
+                              <p className="text-xs md:text-sm text-main mb-2">나의 변호 전적</p>
                               <DefenseListItem defense={defense} />
                             </div>
                           ))}
@@ -631,7 +659,9 @@ const MyPage = () => {
                           )}
                         </>
                       ) : (
-                        <div className="text-center py-10 text-gray-500 bg-gray-50 rounded-lg">작성한 변론이 없습니다.</div>
+                        <div className="text-center py-8 md:py-10 text-gray-500 bg-gray-50 rounded-lg text-sm md:text-base">
+                          작성한 변론이 없습니다.
+                        </div>
                       )}
                     </div>
                   </>
