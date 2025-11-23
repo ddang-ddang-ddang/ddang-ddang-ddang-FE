@@ -1,6 +1,9 @@
 // src/components/mypage/tabs/ExpTab.tsx
-import React from "react";
+import React, { useState } from "react";
 import { getRankNicknameFrame } from "@/utils/rankImageMapper";
+import ChevronUpIcon from "@/assets/icons/ChevronUpIcon";
+import Pagination from "@/components/vs-mode/Pagination";
+import { useUserExpHistoryQuery } from "@/hooks/api/useUserQuery";
 
 interface ExpTabProps {
   currentRank: string;
@@ -68,6 +71,13 @@ const rankCategories = [
 
 export const ExpTab: React.FC<ExpTabProps> = ({ currentRank, currentExp, nickname }) => {
   const nicknameFrameImage = getRankNicknameFrame(currentRank);
+  const [showExpHistory, setShowExpHistory] = useState(false);
+  const [historyPage, setHistoryPage] = useState(1);
+  const ITEMS_PER_PAGE = 10;
+
+  // 경험치 내역 조회
+  const { data: expHistoryData, isLoading: isExpHistoryLoading } = useUserExpHistoryQuery({ enabled: showExpHistory });
+  const expHistory = expHistoryData?.result ?? [];
 
   // 현재 칭호의 경험치 범위 계산
   const currentRankIndex = rankData.findIndex(r => r.name === currentRank);
@@ -81,7 +91,13 @@ export const ExpTab: React.FC<ExpTabProps> = ({ currentRank, currentExp, nicknam
   
   // 현재 구간에서의 진행도
   const progressInRange = currentExp - rangeStart;
-  const progressPercentage = Math.min((progressInRange / rangeTotal) * 100, 100);
+  const progressPercentage = !nextRankData ? 100 : Math.min((progressInRange / rangeTotal) * 100, 100);
+
+  // 페이지네이션 - 실제 API 데이터 사용
+  const totalPages = Math.ceil(expHistory.length / ITEMS_PER_PAGE);
+  const startIndex = (historyPage - 1) * ITEMS_PER_PAGE;
+  const endIndex = startIndex + ITEMS_PER_PAGE;
+  const paginatedHistory = expHistory.slice(startIndex, endIndex);
 
   return (
     <div className="pt-4">
@@ -108,9 +124,13 @@ export const ExpTab: React.FC<ExpTabProps> = ({ currentRank, currentExp, nicknam
       
       {/* 경험치 바 */}
       <div className="mb-2">
-        <div className="w-full bg-gray-200 rounded-full h-3 md:h-4 relative">
+        <div className="w-full bg-gray-200 rounded-full h-3 md:h-4 relative overflow-hidden">
           <div 
-            className="bg-main h-3 md:h-4 rounded-full transition-all duration-500" 
+            className={`h-3 md:h-4 rounded-full transition-all duration-500 ${
+              !nextRankData 
+                ? 'bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-400 animate-pulse' 
+                : 'bg-main'
+            }`}
             style={{ width: `${progressPercentage}%` }} 
           />
         </div>
@@ -121,12 +141,73 @@ export const ExpTab: React.FC<ExpTabProps> = ({ currentRank, currentExp, nicknam
         </div>
       </div>
 
-      {nextRankData && (
-        <p className="text-sm md:text-base text-gray-600 mb-6 md:mb-8">
+      {nextRankData ? (
+        <p className="text-sm md:text-base text-gray-600 mb-3">
           다음 칭호 <span className="font-bold text-main">{nextRankData.name}</span>까지{' '}
           <span className="font-bold text-main">{rangeEnd - currentExp}</span> 경험치 필요
         </p>
+      ) : (
+        <p className="text-sm md:text-base text-yellow-600 font-bold mb-3">
+          🏆 최고 칭호 달성! 축하합니다!
+        </p>
       )}
+
+      {/* 경험치 획득 내역 */}
+      <div className="mb-6 md:mb-8">
+        <button
+          onClick={() => setShowExpHistory(!showExpHistory)}
+          className="flex items-center gap-2 text-main text-sm md:text-base cursor-pointer"
+        >
+          <span>경험치 획득 내역 {showExpHistory ? '접기' : '펼쳐보기'}</span>
+          <ChevronUpIcon 
+            className={`w-4 h-4 md:w-5 md:h-5 transition-transform duration-300 ${
+              showExpHistory ? '' : 'rotate-180'
+            }`}
+          />
+        </button>
+
+        {showExpHistory && (
+          <div className="mt-4">
+            {isExpHistoryLoading ? (
+              <div className="bg-main-bright rounded-lg p-4 text-center text-gray-500">
+                로딩 중...
+              </div>
+            ) : expHistory.length > 0 ? (
+              <div className="bg-main-bright rounded-lg p-4">
+                <div className="space-y-2">
+                  {paginatedHistory.map((item) => (
+                    <div 
+                      key={item.id} 
+                      className="flex justify-between items-center py-2 border-b border-gray-200 last:border-b-0"
+                    >
+                      <div className="flex-1">
+                        <p className="text-main font-medium">{item.description}</p>
+                        <p className="text-xs text-gray-500">{item.createdAt}</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-main font-bold">+{item.amount} EXP</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* 페이지네이션 */}
+                {totalPages > 1 && (
+                  <Pagination
+                    currentPage={historyPage}
+                    totalPages={totalPages}
+                    onPageChange={setHistoryPage}
+                  />
+                )}
+              </div>
+            ) : (
+              <div className="bg-main-bright rounded-lg p-4 text-center text-gray-500">
+                경험치 획득 내역이 없습니다.
+              </div>
+            )}
+          </div>
+        )}
+      </div>
 
       {/* 칭호 단계 */}
       <div className="mb-6">
