@@ -57,28 +57,29 @@ const JoinTrialPage: React.FC = () => {
         {/* 카드 섹션 */}
         <div className="flex flex-col md:flex-row md:space-x-8 space-y-6 md:space-y-0 justify-center mb-12">
           {/* 상대 입장 (A측) */}
-          <div className="w-full md:w-[492px] h-auto md:h-[291px] bg-[#94B0EB] rounded-3xl flex flex-col items-center pt-[32px] md:pt-[45px] shadow-lg px-4">
-            <h2 className="text-xl md:text-2xl font-bold text-white text-center mb-[20px] md:mb-[28px] px-2 md:px-6">
-              상대 입장
-            </h2>
-            <div className="px-2 md:px-8 space-y-2">
-              <p className="text-white text-center text-base md:text-lg leading-relaxed break-keep">
+          <div className="w-full md:w-[492px] h-auto md:h-[291px] bg-main-medium rounded-[20px] md:rounded-[30px] pt-[3px] pb-[16px] md:pt-[4px] md:pb-[24px] px-[4px] md:px-[6px] shadow-lg hover:ring-2 hover:ring-blue-400 transition-all">
+            <div className="w-full h-full bg-[#94B0EB] rounded-[17px] md:rounded-[26px] flex justify-center items-center flex-col px-4 md:px-8 lg:px-12 py-6 md:py-8 transition-all">
+              <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-center text-white mb-2 md:mb-4">
+                상대 입장
+              </h2>
+              <p className="text-sm md:text-base text-white text-center leading-relaxed break-keep mb-1">
                 {caseDetail.argumentA?.mainArgument}
               </p>
-              <p className="text-white text-center text-sm md:text-lg leading-relaxed break-keep">
+              <p className="text-xs md:text-sm text-white text-center leading-relaxed break-keep">
                 {caseDetail.argumentA?.reasoning?.slice(0, 80)}...
               </p>
             </div>
           </div>
 
           {/* 우측: 매칭 대기 중 */}
-          <div className="w-full md:w-[492px] h-auto md:h-[291px] bg-[#DFDFDF] rounded-3xl flex flex-col items-center pt-[32px] md:pt-[45px] shadow-lg px-4">
-            <h2 className="text-xl md:text-2xl font-bold text-[#797979] text-center px-2 md:px-6">
-              매칭 상대를 기다리는 중..
-            </h2>
-            <div className="flex justify-center items-center mt-6 md:mt-9">
+          <div className="w-full md:w-[492px] h-auto md:h-[291px] bg-[#B0B0B0] rounded-[20px] md:rounded-[30px] pt-[3px] pb-[16px] md:pt-[4px] md:pb-[24px] px-[4px] md:px-[6px] shadow-lg">
+            <div className="w-full h-full bg-[#DFDFDF] rounded-[17px] md:rounded-[26px] flex flex-col items-center px-4 md:px-6 lg:px-8 pt-6 md:pt-8 pb-4 md:pb-6">
+              <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-[#797979] text-center mb-4">
+                매칭 상대를 기다리는 중..
+              </h2>
+              {/* mt-auto로 아이콘을 안쪽 상자 하단에 붙이기 */}
               <UserIcon
-                className="w-[96px] h-[120px] md:w-[136px] md:h-[170px] shrink-0"
+                className="mt-auto mb-1 w-[96px] h-[120px] md:w-[136px] md:h-[170px] shrink-0"
                 title="매칭 상대 아이콘"
               />
             </div>
