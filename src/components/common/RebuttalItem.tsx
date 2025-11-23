@@ -4,8 +4,10 @@ import { useSearchParams } from "react-router-dom";
 import { useNotificationStore } from "@/stores/useNotificationStore";
 import type { RebuttalItem as RebuttalItemType, RebuttalRequest } from "@/types/apis/secondTrial";
 import { renderContentWithMentions } from "@/utils/mentionRenderer";
+import { getRankNicknameFrame } from "@/utils/rankImageMapper";
 import ThumbUpIcon from "@/assets/svgs/thumbs-up.svg?react";
 import Siren from "@/assets/svgs/Siren.svg?react";
+import RankBadge from "./RankBadge";
 
 interface RebuttalItemProps {
   rebuttal: RebuttalItemType;
@@ -47,6 +49,9 @@ const RebuttalItem: React.FC<RebuttalItemProps> = ({
   const typeBgClass = rebuttal.type === "A" ? "bg-main-medium" : "bg-main-red";
   
   const isThisInputActive = activeReplyInput === rebuttal.rebuttalId;
+  
+  // 칭호 명패 이미지
+  const rankFrameImage = getRankNicknameFrame(rebuttal.authorRank || "말싸움 풋내기");
 
   // 하이라이트 효과
   useEffect(() => {
@@ -130,11 +135,11 @@ const RebuttalItem: React.FC<RebuttalItemProps> = ({
         <div className="flex justify-between items-start">
           <div className="flex-1">
             <div className="flex items-center gap-2 text-main font-semibold">
-              {/* API에서 가져온 칭호 */}
-              <span className="inline-block px-2 py-0.5 rounded-full border border-main text-main text-xs font-bold">
-                {rebuttal.authorRank || "칭호"}
-              </span>
-              <span>{rebuttal.authorNickname}</span>
+              <RankBadge 
+                rank={rebuttal.authorRank || "말싸움 풋내기"} 
+                nickname={rebuttal.authorNickname}
+                size="sm"
+              />
               <span className={`px-2 py-0.5 rounded-xl text-xs font-semibold ${typeColorClass} ${typeBgClass}`}>
                 {rebuttal.type} 의견
               </span>
