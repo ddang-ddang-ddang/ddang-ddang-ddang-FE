@@ -53,6 +53,10 @@ const RebuttalItem: React.FC<RebuttalItemProps> = ({
   // 칭호 명패 이미지
   const rankFrameImage = getRankNicknameFrame(rebuttal.authorRank || "말싸움 풋내기");
 
+  // 디버깅
+  console.log('Rebuttal authorRank:', rebuttal.authorRank);
+  console.log('Rebuttal rankFrameImage:', rankFrameImage);
+
   // 하이라이트 효과
   useEffect(() => {
     const rebuttalIdFromUrl = searchParams.get("rebuttalId");

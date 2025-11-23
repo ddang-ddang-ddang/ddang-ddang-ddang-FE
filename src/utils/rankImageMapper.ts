@@ -46,10 +46,10 @@ const rankToNicknameFrame: Record<string, string> = {
   '법대생 1학년': 'lawStu1',
 
   // 말싸움 (4개)
-  '말싸움 고수': 'arguing4',
-  '말싸움 중수': 'arguing3',
-  '말싸움 하수': 'arguing2',
   '말싸움 풋내기': 'arguing1',
+  '말싸움 하수': 'arguing2',
+  '말싸움 중수': 'arguing3',
+  '말싸움 고수': 'arguing4',
 };
 
 export const getRankProfileImage = (rank: string): string => {
