@@ -91,10 +91,6 @@ export const ExpTab: React.FC<ExpTabProps> = ({ currentRank, currentExp, nicknam
                   const isActive = rankName === currentRank;
                   const frameImage = getRankNicknameFrame(rankName);
                   
-                  // 현재 칭호의 인덱스 찾기
-                  const currentIndex = categoryData.ranks.findIndex(r => r === currentRank);
-                  const isPassed = index <= currentIndex;
-                  
                   return (
                     <div 
                       key={rankName} 
@@ -102,7 +98,7 @@ export const ExpTab: React.FC<ExpTabProps> = ({ currentRank, currentExp, nicknam
                     >
                       <div 
                         className={`relative w-20 md:w-24 transition-all ${
-                          isActive ? 'scale-110' : isPassed ? '' : 'opacity-50'
+                          isActive ? 'scale-110 opacity-100' : 'opacity-50'
                         }`}
                       >
                         <img 
@@ -112,7 +108,7 @@ export const ExpTab: React.FC<ExpTabProps> = ({ currentRank, currentExp, nicknam
                         />
                         <div className="absolute inset-0 flex items-center justify-center">
                           <p className="text-main font-bold text-[8px] md:text-[10px] text-center px-1">
-                            칭호 {rankName.split(' ')[1]}
+                            {rankName}
                           </p>
                         </div>
                       </div>
