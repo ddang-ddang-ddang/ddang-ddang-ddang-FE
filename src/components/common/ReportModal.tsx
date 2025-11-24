@@ -1,6 +1,7 @@
 // src/components/common/ReportModal.tsx
 import React, { useState } from "react";
 import type { ReportReason, ReportContentType } from "@/types/apis/report";
+import { useToast } from "@/hooks/useToast";
 import { usePostReportMutation } from "@/hooks/report/useReport";
 
 interface ReportModalProps {
@@ -28,14 +29,15 @@ const ReportModal: React.FC<ReportModalProps> = ({
 }) => {
   const [selectedReason, setSelectedReason] = useState<ReportReason>("PROFANITY");
   const [customReason, setCustomReason] = useState("");
-  
+  const { showWarning, showError } = useToast();
+
   const reportMutation = usePostReportMutation();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!selectedReason) {
-      alert("신고 사유를 선택해주세요.");
+      showWarning("신고 사유를 선택해주세요.");
       return;
     }
 
@@ -52,7 +54,7 @@ const ReportModal: React.FC<ReportModalProps> = ({
       onClose();
     } catch (err) {
       console.error("신고 제출 실패:", err);
-      alert("신고 제출에 실패했습니다. 다시 시도해 주세요.");
+      showError("신고 제출에 실패했습니다. 다시 시도해 주세요.");
     }
   };
 

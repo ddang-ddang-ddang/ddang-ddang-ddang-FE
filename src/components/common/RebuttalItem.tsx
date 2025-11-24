@@ -1,6 +1,7 @@
 // src/components/common/RebuttalItem.tsx
 import React, { useState, useRef, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
+import { useToast } from "@/hooks/useToast";
 import { useNotificationStore } from "@/stores/useNotificationStore";
 import type { RebuttalItem as RebuttalItemType, RebuttalRequest } from "@/types/apis/secondTrial";
 import { renderContentWithMentions } from "@/utils/mentionRenderer";
@@ -37,6 +38,7 @@ const RebuttalItem: React.FC<RebuttalItemProps> = ({
   setActiveReplyInput,
 }) => {
   const [searchParams] = useSearchParams();
+  const { showError } = useToast();
   const { highlightRebuttalId, setHighlightRebuttal } = useNotificationStore();
   const [replyContent, setReplyContent] = useState("");
   const [replyType, setReplyType] = useState<"A" | "B">(defaultRebuttalType);
@@ -122,7 +124,7 @@ const RebuttalItem: React.FC<RebuttalItemProps> = ({
       setActiveReplyInput(null); // 입력란 닫기
     } catch (err) {
       console.error("답글 등록 실패:", err);
-      alert("답글 등록에 실패했습니다. 다시 시도해 주세요.");
+      showError("답글 등록에 실패했습니다. 다시 시도해 주세요.");
     }
   };
   

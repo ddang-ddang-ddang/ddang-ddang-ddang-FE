@@ -1,5 +1,6 @@
 import React, { useMemo, useRef, useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
+import { useToast } from "@/hooks/useToast";
 import {
   useRebuttalsQuery,
   usePostRebuttalMutation,
@@ -55,11 +56,12 @@ const ArgumentCard: React.FC<ArgumentCardProps> = ({
   isLikedByMe,
 }) => {
   const [searchParams] = useSearchParams();
+  const { showError } = useToast();
   const { setHighlightRebuttal } = useNotificationStore();
-  
+
   // 칭호 명패 이미지
   const rankFrameImage = getRankNicknameFrame(authorRank);
-  
+
   // Queries & Mutations
   const { data: rebuttalsRes, isLoading: isRebuttalsLoading } = useRebuttalsQuery(defenseId);
   const postRebuttalMutation = usePostRebuttalMutation();
@@ -154,7 +156,7 @@ const ArgumentCard: React.FC<ArgumentCardProps> = ({
       if (!expanded) setExpanded(true);
     } catch (err) {
       console.error("반론 등록 실패:", err);
-      alert("의견 등록에 실패했습니다. 다시 시도해 주세요.");
+      showError("의견 등록에 실패했습니다. 다시 시도해 주세요.");
     }
   };
 
@@ -181,7 +183,7 @@ const ArgumentCard: React.FC<ArgumentCardProps> = ({
         onError: () => {
           setLikedDefense((prev) => !prev);
           setDefenseLikes((c) => Math.max(0, c + (nextLiked ? -1 : 1)));
-          alert("방어변론 좋아요 처리 실패");
+          showError("방어변론 좋아요 처리 실패");
         },
       }
     );
@@ -193,7 +195,7 @@ const ArgumentCard: React.FC<ArgumentCardProps> = ({
     toggleRebuttalLikeMutation.mutate(
       { defenseId, body },
       {
-        onError: () => alert("반론 좋아요 처리 실패"),
+        onError: () => showError("반론 좋아요 처리 실패"),
       }
     );
   };
