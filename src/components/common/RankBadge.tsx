@@ -24,36 +24,47 @@ const RankBadge: React.FC<RankBadgeProps> = ({
   // 크기별 스타일 정의
   const sizeStyles = {
     sm: {
-      container: "h-5 md:h-6 min-w-[64px] max-w-[160px]",
+      container: "h-5 md:h-6 min-w-[50px] max-w-[120px]",
       text: "text-[7px] md:text-[9px]",
-      padding: "px-3 md:px-4"
+      padding: "px-2 md:px-3",
+      nicknameText: "text-xs md:text-sm"
     },
     md: {
-      container: "h-6 md:h-8 min-w-[80px] max-w-[200px]",
+      container: "h-6 md:h-8 min-w-[60px] max-w-[140px]",
       text: "text-[8px] md:text-[10px]",
-      padding: "px-4 md:px-6"
+      padding: "px-3 md:px-4",
+      nicknameText: "text-sm md:text-base"
     },
     lg: {
-      container: "h-8 md:h-10 min-w-[100px] max-w-[240px]",
+      container: "h-8 md:h-10 min-w-[80px] max-w-[160px]",
       text: "text-[10px] md:text-xs",
-      padding: "px-5 md:px-7"
+      padding: "px-4 md:px-5",
+      nicknameText: "text-base md:text-lg"
     }
   };
 
   const styles = sizeStyles[size];
 
   return (
-    <div className={`relative inline-flex items-center ${styles.container} ${className}`}>
-      <img 
-        src={frameImage} 
-        alt={rank}
-        className="absolute inset-0 w-full h-full object-fill"
-      />
-      <div className={`relative z-10 w-full flex items-center justify-center ${styles.padding}`}>
-        <p className={`${textColorClass} font-bold text-center whitespace-nowrap ${styles.text}`}>
-          {rank} {nickname}
-        </p>
+    <div className={`inline-flex items-center gap-2 ${className}`}>
+      {/* 명패 (칭호만) */}
+      <div className={`relative inline-flex items-center ${styles.container}`}>
+        <img 
+          src={frameImage} 
+          alt={rank}
+          className="absolute inset-0 w-full h-full object-fill"
+        />
+        <div className={`relative z-10 w-full flex items-center justify-center ${styles.padding}`}>
+          <p className={`${textColorClass} font-bold text-center whitespace-nowrap ${styles.text}`}>
+            {rank}
+          </p>
+        </div>
       </div>
+      
+      {/* 닉네임 (명패 밖) */}
+      <span className={`font-semibold text-main ${styles.nicknameText}`}>
+        {nickname}
+      </span>
     </div>
   );
 };
