@@ -12,14 +12,16 @@ import {
 } from '@/hooks/secondTrial/useSecondTrial';
 import type { DefenseRequest, VoteRequest } from '@/types/apis/secondTrial';
 import { parseLocalDateTimeArray, formatDateTime, isDeadlinePassed } from '@/utils/dateUtils';
+import { useToast } from '@/hooks/useToast';
 
 // 탭 상태 타입
 type Tab = 'all' | 'A' | 'B';
 
 const SecondTrial_1 = () => {
-    const { caseId: caseIdParam } = useParams<{ caseId: string }>(); 
+    const { caseId: caseIdParam } = useParams<{ caseId: string }>();
     const caseId = caseIdParam ? Number(caseIdParam) : undefined;
     const navigate = useNavigate();
+    const { showSuccess, showError, showWarning } = useToast();
 
     // API 훅 - 2차 재판 상세 정보 (argumentA, argumentB, defenses 모두 포함)
     const { data: detailsRes, isLoading: isDetailsLoading } = useSecondTrialDetailsQuery(caseId);
@@ -54,40 +56,40 @@ const SecondTrial_1 = () => {
     // 투표 처리
     const handleVote = async () => {
         if (!isVoteTime) {
-            alert('투표 시간이 마감되었습니다.');
+            showWarning('투표 시간이 마감되었습니다.');
             return;
         }
         if (!selectedSide || !caseId) {
-          alert('A 의견 또는 B 의견 중 하나를 먼저 선택해 주세요.');
+          showWarning('A 의견 또는 B 의견 중 하나를 먼저 선택해 주세요.');
           return;
         }
-        
+
         try {
             const body: VoteRequest = { choice: selectedSide };
             await postVoteMutation.mutateAsync({ caseId, body });
             setIsVoted(true);
-            alert(`투표가 반영되었습니다. (마감 전까지 재투표 가능)`);
+            showSuccess(`투표가 반영되었습니다. (마감 전까지 재투표 가능)`);
         } catch (err) {
             console.error('투표 실패:', err);
-            alert('투표에 실패했습니다. 다시 시도해 주세요.');
+            showError('투표에 실패했습니다. 다시 시도해 주세요.');
         }
     };
 
     // 새 논거 제출
     const handleSubmitArgument = async () => {
         if (!newArgument.trim()) {
-            alert('변론 내용을 입력해 주세요.');
+            showWarning('변론 내용을 입력해 주세요.');
             return;
         }
         if (newArgumentSide === '') {
-            alert('논거 제출 입장을 선택해 주세요.');
+            showWarning('논거 제출 입장을 선택해 주세요.');
             return;
         }
         if (!caseId) {
-            alert('케이스 ID가 없습니다.');
+            showError('케이스 ID가 없습니다.');
             return;
         }
-        
+
         try {
             const body: DefenseRequest = {
                 side: newArgumentSide,
@@ -96,10 +98,10 @@ const SecondTrial_1 = () => {
             await postDefenseMutation.mutateAsync({ caseId, body });
             setNewArgument('');
             setNewArgumentSide('');
-            alert('변론이 성공적으로 제출되었습니다!');
+            showSuccess('변론이 성공적으로 제출되었습니다!');
         } catch (err) {
             console.error('변론 제출 실패:', err);
-            alert('변론 제출에 실패했습니다. 다시 시도해 주세요.');
+            showError('변론 제출에 실패했습니다. 다시 시도해 주세요.');
         }
     };
 
