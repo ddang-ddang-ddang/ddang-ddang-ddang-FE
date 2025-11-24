@@ -13,7 +13,7 @@ export interface ReportRequest {
   contentType: ReportContentType;
   reason: ReportReason;
   customReason?: string;
-  content?: string; // 신고 대상 콘텐츠 내용 추가
+  // content 필드 제거
 }
 
 export interface ReportResponse {

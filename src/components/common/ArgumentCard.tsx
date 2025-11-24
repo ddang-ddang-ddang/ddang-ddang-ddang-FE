@@ -10,6 +10,7 @@ import {
 } from "@/hooks/like/useLike";
 import { useUserProfileQuery } from "@/hooks/api/useUserQuery";
 import { useNotificationStore } from "@/stores/useNotificationStore";
+import { getRankNicknameFrame } from "@/utils/rankImageMapper";
 import type {
   RebuttalItem as RebuttalItemType,
   RebuttalRequest,
@@ -20,6 +21,7 @@ import ReportNotification from "./ReportNotification";
 import ReportModal from "./ReportModal";
 import ThumbUpIcon from "@/assets/svgs/thumbs-up.svg?react";
 import Siren from "@/assets/svgs/Siren.svg?react";
+import RankBadge from "./RankBadge";
 
 export interface ArgumentData {
   id: number;
@@ -46,7 +48,7 @@ const ArgumentCard: React.FC<ArgumentCardProps> = ({
   defenseId,
   caseId,
   authorNickname = "닉네임",
-  authorRank = "칭호", // authorDegree → authorRank로 변경
+  authorRank = "칭호",
   side,
   content,
   likesCount = 0,
@@ -54,6 +56,9 @@ const ArgumentCard: React.FC<ArgumentCardProps> = ({
 }) => {
   const [searchParams] = useSearchParams();
   const { setHighlightRebuttal } = useNotificationStore();
+  
+  // 칭호 명패 이미지
+  const rankFrameImage = getRankNicknameFrame(authorRank);
   
   // Queries & Mutations
   const { data: rebuttalsRes, isLoading: isRebuttalsLoading } = useRebuttalsQuery(defenseId);
@@ -208,10 +213,11 @@ const ArgumentCard: React.FC<ArgumentCardProps> = ({
         {/* 헤더 */}
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-4">
-            <span className="inline-block px-2 py-0.5 rounded-full border border-main text-main text-xs font-bold">
-              {authorRank}
-            </span>
-            <span className="inline-block px-3 py-1 rounded-full text-main">{authorNickname}</span>
+            <RankBadge 
+              rank={authorRank} 
+              nickname={authorNickname}
+              size="md"
+            />
             <span className={`inline-block px-3 py-1 rounded-xl text-sm font-semibold ${sideColorClass} ${sideBgClass}`}>
               {side} 의견
             </span>
@@ -291,7 +297,7 @@ const ArgumentCard: React.FC<ArgumentCardProps> = ({
             {activeReplyInput === null && (
               <div className="mt-2 p-3 rounded-md bg-main-bright">
                 <div className="flex items-center gap-2 mb-2">
-                  <label className="text-sm text-main">타입</label>
+                  <label className="text-sm text-main">의견</label>
                   <select
                     value={rebuttalType}
                     onChange={(e) => setRebuttalType(e.target.value as "A" | "B")}

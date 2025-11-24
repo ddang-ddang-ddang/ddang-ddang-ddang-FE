@@ -263,7 +263,7 @@ const MainPage = () => {
   return (
     <div className="bg-white min-h-screen w-full flex items-center flex-col">
       {/* 상단 영역 */}
-      <section className="flex flex-col md:flex-row items-center w-full max-w-7xl p-4 justify-center gap-[30px] min-h-[calc(100vh-98px)]">
+      <section className="flex flex-col md:flex-row items-center w-full max-w-7xl p-4 justify-center gap-[30px] my-10">
         {/* 왼쪽: 슬로건 + 로그인 박스 (UI 데코) */}
         <div className="flex flex-col gap-[32px] w-full md:w-[380px]">
           <h1 className="text-main font-bold text-[36px] leading-[150%] text-center md:text-left">
@@ -302,7 +302,7 @@ const MainPage = () => {
                           <Button
                             variant="white"
                             className="w-full rounded-xl bg-white/90 py-3 text-main hover:bg-white"
-                            onClick={() => navigate(PATHS.USER_ONGOING_TRIALS)}
+                            onClick={() => navigate(`${PATHS.MY_PAGE}?tab=participate&subtab=진행중`)}
                           >
                             <div className="px-1 py-1 w-full flex justify-between items-center">
                               <span className="text-base font-bold text-main">
@@ -314,7 +314,7 @@ const MainPage = () => {
                           <Button
                             variant="white"
                             className="w-full rounded-xl bg-white/90 py-3 text-main hover:bg-white"
-                            onClick={() => navigate(PATHS.MY_PAGE)}
+                            onClick={() => navigate(`${PATHS.MY_PAGE}?tab=participate&subtab=변호전적`)}
                           >
                             <div className="px-1 py-1 w-full flex justify-between items-center">
                               <span className="text-base font-bold text-main">
