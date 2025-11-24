@@ -3,9 +3,11 @@ import Button from "@/components/common/Button";
 import { useVsModeStore } from "@/stores/vsModeStore";
 import { useJoinCaseQuery } from "@/hooks/vsMode/useJoinCaseQuery";
 import UserIcon from "@/assets/svgs/User.svg?react";
+import { useToast } from "@/hooks/useToast";
 
 const JoinTrialPage: React.FC = () => {
   const { caseId, setStep } = useVsModeStore();
+  const { showError } = useToast();
 
   // API: VS 사건 상세 조회
   const { data, isLoading, isError } = useJoinCaseQuery(caseId);
@@ -14,7 +16,7 @@ const JoinTrialPage: React.FC = () => {
 
   const handleJoinTrial = () => {
     if (!caseId) {
-      alert("재판 ID가 없습니다.");
+      showError("재판 ID가 없습니다.");
       return;
     }
     setStep("submit");

@@ -6,10 +6,12 @@ import { PATHS } from "@/constants";
 import { useVsModeStore } from "@/stores/vsModeStore";
 import { useJoinCaseQuery } from "@/hooks/vsMode/useJoinCaseQuery";
 import { useSubmitVsArgument } from "@/hooks/vsMode/useSubmitVsArgument";
+import { useToast } from "@/hooks/useToast";
 
 export default function RivalVsSubmit() {
   const navigate = useNavigate();
   const { caseId, setStep } = useVsModeStore();
+  const { showWarning, showError } = useToast();
 
   const [mainArgument, setMainArgument] = useState("");
   const [reasoning, setReasoning] = useState("");
@@ -24,7 +26,7 @@ export default function RivalVsSubmit() {
 
   const handleSubmit = () => {
     if (!mainArgument.trim() || !reasoning.trim()) {
-      alert("입장 및 근거를 입력해주세요.");
+      showWarning("입장 및 근거를 입력해주세요.");
       return;
     }
     setIsModalOpen(true);
@@ -46,7 +48,7 @@ export default function RivalVsSubmit() {
       setStep("loading");
     } catch (err) {
       console.error(err);
-      alert("제출 중 오류가 발생했습니다.");
+      showError("제출 중 오류가 발생했습니다.");
     }
   };
 

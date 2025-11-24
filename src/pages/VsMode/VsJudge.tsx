@@ -6,10 +6,12 @@ import { useNavigate } from "react-router-dom";
 import { PATHS } from "@/constants";
 import { useQuery } from "@tanstack/react-query";
 import instance from "@/apis/instance";
+import { useToast } from "@/hooks/useToast";
 
 export default function VsJudge() {
   const { caseId } = useVsModeStore();
   const navigate = useNavigate();
+  const { showError } = useToast();
 
   /* VS 모드 판결문 API */
   const { data: judgmentData } = useQuery({
@@ -178,7 +180,7 @@ export default function VsJudge() {
         className="w-full max-w-[395px] h-[80px] md:h-[123px] mt-[32px] md:mt-[40px] text-[20px] md:text-[24px] font-semibold rounded-[24px] md:rounded-[30px]"
         onClick={() => {
           if (!caseId) {
-            alert("케이스 ID가 없습니다.");
+            showError("케이스 ID가 없습니다.");
             return;
           }
           localStorage.setItem("lastCaseId", String(caseId));
