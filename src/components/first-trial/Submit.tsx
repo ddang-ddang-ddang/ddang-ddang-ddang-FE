@@ -4,10 +4,10 @@ import Textarea from "@/components/common/textarea";
 import { useFirstTrialStore } from "@/stores/firstTrialStore";
 import { isAxiosError } from "axios";
 import { useCreateFirstCaseMutation } from "@/hooks/firstTrial/useFirstTrial";
+import { useToast } from "@/hooks/useToast";
 
 export default function Submit() {
   const [selectedSide, setSelectedSide] = useState<"A" | "B" | null>(null);
-  const [errorMessage, setErrorMessage] = useState("");
   const { setStep, setCaseId } = useFirstTrialStore();
 
   const [title, setTitle] = useState("");
@@ -16,6 +16,7 @@ export default function Submit() {
   const [bMain, setBMain] = useState("");
   const [bReason, setBReason] = useState("");
 
+  const { showError, showWarning } = useToast();
   const createMut = useCreateFirstCaseMutation();
 
   const handleSelect = (side: "A" | "B") => {
@@ -24,16 +25,15 @@ export default function Submit() {
       return;
     }
     setSelectedSide(side);
-    setErrorMessage("");
   };
 
   const handleSubmit = async () => {
     if (!selectedSide) {
-      setErrorMessage("입장을 선택해주세요");
+      showWarning("입장을 선택해주세요");
       return;
     }
     if (!title || !aMain || !aReason || !bMain || !bReason) {
-      setErrorMessage("모든 내용을 입력해주세요");
+      showWarning("모든 내용을 입력해주세요");
       return;
     }
 
@@ -57,7 +57,7 @@ export default function Submit() {
         : e instanceof Error
         ? e.message
         : "제출에 실패했습니다.";
-      setErrorMessage(msg);
+      showError(msg);
     }
   };
 
@@ -162,17 +162,11 @@ export default function Submit() {
         </div>
       )}
 
-      {/* 안내/에러 */}
+      {/* 안내 */}
       <div className="mt-[48px] md:mt-[64px] h-[32px] text-center px-4">
-        {errorMessage ? (
-          <p className="text-[18px] md:text-[24px] text-[#809AD2]">
-            {errorMessage}
-          </p>
-        ) : (
-          <p className="text-[18px] md:text-[24px] text-[#809AD2]">
-            제출후에는 의견 수정이 불가능합니다
-          </p>
-        )}
+        <p className="text-[18px] md:text-[24px] text-[#809AD2]">
+          제출후에는 의견 수정이 불가능합니다
+        </p>
       </div>
 
       {/* 제출 */}

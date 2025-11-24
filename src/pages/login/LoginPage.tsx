@@ -10,19 +10,16 @@ export default function LoginPage() {
   // 입력 상태
   const [userId, setUserId] = useState("");
   const [password, setPassword] = useState("");
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const navigate = useNavigate();
   const { showError } = useToast();
 
   const { mutate: postLogin, isPending } = usePostLoginMutation({
     onSuccess: () => {
-      setErrorMessage(null);
       navigate(PATHS.ROOT);
     },
     onError: (error) => {
       const message = error.message || "로그인에 실패했습니다.";
-      setErrorMessage(message);
       showError(message);
     },
   });
@@ -32,7 +29,6 @@ export default function LoginPage() {
   // 폼 제출 핸들러(연동 지점)
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setErrorMessage(null);
 
     postLogin({
       email: userId,
@@ -100,13 +96,6 @@ export default function LoginPage() {
                   회원가입
                 </div>
               </Link>
-
-              {/* 오류 메시지 */}
-              {errorMessage && (
-                <p className="mt-2 text-sm text-main-red" role="alert">
-                  {errorMessage}
-                </p>
-              )}
 
               {/* 로그인 버튼 */}
               <button
