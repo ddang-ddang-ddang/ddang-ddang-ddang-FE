@@ -4,22 +4,23 @@ import { Link, useNavigate } from "react-router-dom";
 import Logo from "@/assets/svgs/logo.svg?react";
 import { PATHS } from "@/constants";
 import { usePostLoginMutation } from "@/hooks/auth/useAuthMutations";
+import { useToast } from "@/hooks/useToast";
 
 export default function LoginPage() {
   // 입력 상태
   const [userId, setUserId] = useState("");
   const [password, setPassword] = useState("");
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const navigate = useNavigate();
+  const { showError } = useToast();
 
   const { mutate: postLogin, isPending } = usePostLoginMutation({
     onSuccess: () => {
-      setErrorMessage(null);
       navigate(PATHS.ROOT);
     },
     onError: (error) => {
-      setErrorMessage(error.message || "로그인에 실패했습니다.");
+      const message = error.message || "로그인에 실패했습니다.";
+      showError(message);
     },
   });
 
@@ -28,7 +29,6 @@ export default function LoginPage() {
   // 폼 제출 핸들러(연동 지점)
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setErrorMessage(null);
 
     postLogin({
       email: userId,
@@ -96,13 +96,6 @@ export default function LoginPage() {
                   회원가입
                 </div>
               </Link>
-
-              {/* 오류 메시지 */}
-              {errorMessage && (
-                <p className="mt-2 text-sm text-main-red" role="alert">
-                  {errorMessage}
-                </p>
-              )}
 
               {/* 로그인 버튼 */}
               <button

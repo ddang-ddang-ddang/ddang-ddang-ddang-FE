@@ -4,9 +4,11 @@ import Button from "@/components/common/Button";
 import Textarea from "@/components/common/textarea";
 import { PATHS } from "@/constants";
 import { firstTrialApi } from "@/apis/firstTrial/firstTrialApi";
+import { useToast } from "@/hooks/useToast";
 
 export default function VsSubmit() {
   const navigate = useNavigate();
+  const { showWarning, showError } = useToast();
 
   const [situation, setSituation] = useState("");
   const [mainArgument, setMainArgument] = useState("");
@@ -17,7 +19,7 @@ export default function VsSubmit() {
 
   const handleSubmit = () => {
     if (!situation.trim() || !mainArgument.trim() || !reasoning.trim()) {
-      alert("모든 내용을 입력해주세요!");
+      showWarning("모든 내용을 입력해주세요!");
       return;
     }
 
@@ -47,7 +49,7 @@ export default function VsSubmit() {
       navigate(PATHS.ROOT);
     } catch (err) {
       console.error(err);
-      alert("VS 모드 재판 생성 중 오류가 발생했습니다.");
+      showError("VS 모드 재판 생성 중 오류가 발생했습니다.");
     } finally {
       setIsSubmitting(false);
     }

@@ -10,6 +10,7 @@ import {
   THIRD_TRIAL_STEPS,
 } from "@/constants/thirdTrialStepMeta";
 import ChevronUpIcon from "@/assets/icons/ChevronUpIcon";
+import { useToast } from "@/hooks/useToast";
 
 export default function SelectionReview() {
   const selectedArguments = useThirdTrialStore(
@@ -17,6 +18,7 @@ export default function SelectionReview() {
   );
   const setStep = useThirdTrialStore((state) => state.setStep);
   const caseId = useThirdTrialStore((state) => state.caseId);
+  const { showError } = useToast();
 
   // 채택 가능한 항목 조회
   const { data: bestItemsRes, isLoading: isLoadingItems } = useBestAdoptItemsQuery(caseId ?? undefined);
@@ -132,7 +134,7 @@ export default function SelectionReview() {
 
   const handleProceed = async () => {
     if (!caseId || !details || userId === null) {
-      alert("케이스 정보가 없습니다.");
+      showError("케이스 정보가 없습니다.");
       return;
     }
 
@@ -188,7 +190,7 @@ export default function SelectionReview() {
       }
     } catch (error) {
       console.error("채택 또는 3차 재판 시작 실패:", error);
-      alert("재판 진행에 실패했습니다. 다시 시도해주세요.");
+      showError("재판 진행에 실패했습니다. 다시 시도해주세요.");
     }
   };
 
@@ -203,7 +205,7 @@ export default function SelectionReview() {
           setStep("loading");
         } catch (error) {
           console.error("3차 재판 시작 실패:", error);
-          alert("재판 진행에 실패했습니다. 다시 시도해주세요.");
+          showError("재판 진행에 실패했습니다. 다시 시도해주세요.");
           setIsPolling(false);
         }
       })();

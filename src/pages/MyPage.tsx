@@ -18,11 +18,13 @@ import { AchievementsTab } from "@/components/mypage/tabs/AchievementsTab";
 import { ParticipateTab } from "@/components/mypage/tabs/ParticipateTab";
 import { CaseResult } from "@/components/mypage/TrialListItem";
 import { getRankProfileImage } from "@/utils/rankImageMapper";
+import { useToast } from "@/hooks/useToast";
 
 const MyPage = () => {
   const authStore = useAuthStore();
   const isAuthenticated = !!authStore.accessToken;
   const [searchParams, setSearchParams] = useSearchParams();
+  const { showSuccess, showError, showWarning } = useToast();
 
   const {
     userData,
@@ -154,24 +156,22 @@ const MyPage = () => {
     }
   };
 
-  // 🔧 여기만 수정
   const handleUpdateInfo = async () => {
     if (!nickname.trim()) {
-      alert("닉네임을 입력해주세요.");
+      showWarning("닉네임을 입력해주세요.");
       return;
     }
 
     try {
       await updateProfileMutation.mutateAsync({
-        // 닉네임만 변경
         nickname: nickname.trim(),
       });
 
-      alert("정보가 성공적으로 수정되었습니다.");
+      showSuccess("정보가 성공적으로 수정되었습니다.");
       setIsEditMode(false);
     } catch (err) {
       console.error("정보 수정 실패:", err);
-      alert("정보 수정 중 오류가 발생했습니다.");
+      showError("정보 수정 중 오류가 발생했습니다.");
     }
   };
 
@@ -180,23 +180,23 @@ const MyPage = () => {
     if (!file) return;
 
     if (file.size > 5 * 1024 * 1024) {
-      alert("파일 크기는 5MB 이하여야 합니다.");
+      showWarning("파일 크기는 5MB 이하여야 합니다.");
       return;
     }
 
     if (!file.type.startsWith("image/")) {
-      alert("이미지 파일만 업로드 가능합니다.");
+      showWarning("이미지 파일만 업로드 가능합니다.");
       return;
     }
 
     try {
       await uploadImageMutation.mutateAsync(file);
-      alert("프로필 사진이 성공적으로 변경되었습니다.");
+      showSuccess("프로필 사진이 성공적으로 변경되었습니다.");
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
       }
     } catch (err: any) {
-      alert(
+      showError(
         `프로필 사진 업로드 중 오류가 발생했습니다: ${
           err.response?.data?.message || err.message
         }`

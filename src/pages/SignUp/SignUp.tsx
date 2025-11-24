@@ -9,6 +9,7 @@ import {
   usePostSignupMutation,
 } from "@/hooks/auth/useAuthMutations";
 import { isAxiosError } from "axios";
+import { useToast } from "@/hooks/useToast";
 
 const EMAIL_DOMAIN_OPTIONS = ["naver.com", "gmail.com", "daum.net"];
 
@@ -34,6 +35,7 @@ export default function SignupPage() {
   const nav = useNavigate();
   const emailLocalRef = useRef<HTMLInputElement | null>(null);
   const emailDomainRef = useRef<HTMLSelectElement | null>(null);
+  const { showSuccess, showError } = useToast();
 
   const email = useMemo(
     () =>
@@ -57,9 +59,9 @@ export default function SignupPage() {
     if (!canSendCode || !email) return;
     try {
       await sendCodeMut.mutateAsync({ email });
-      alert("인증코드가 이메일로 전송되었습니다.");
+      showSuccess("인증코드가 이메일로 전송되었습니다.");
     } catch (e: unknown) {
-      alert(getErrorMessage(e));
+      showError(getErrorMessage(e));
     }
   };
 
@@ -109,10 +111,10 @@ export default function SignupPage() {
       await verifyCodeMut.mutateAsync({ email, code });
       await signupMut.mutateAsync({ nickname: name, email, password: pw });
 
-      alert("회원가입 완료!");
+      showSuccess("회원가입 완료!");
       nav(PATHS.LOGIN);
     } catch (e: unknown) {
-      alert(getErrorMessage(e));
+      showError(getErrorMessage(e));
     }
   };
 
