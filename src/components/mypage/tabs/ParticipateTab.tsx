@@ -143,7 +143,7 @@ export const ParticipateTab: React.FC<ParticipateTabProps> = ({
                   <div key={`all-${idx}`}>
                     <p className="text-xs md:text-sm text-main mb-2">
                       {item.type === 'ongoing' 
-                        ? `내가 진행중인 재판 - ${(item as any).mode || '솔로모드'}`
+                        ? `내가 진행중인 재판`
                         : '나의 변호 전적'
                       }
                     </p>
@@ -182,7 +182,7 @@ export const ParticipateTab: React.FC<ParticipateTabProps> = ({
                 {paginatedOngoingTrials.map((trial, idx) => (
                   <div key={`ongoing-${idx}`}>
                     <p className="text-xs md:text-sm text-main mb-2">
-                      내가 진행중인 재판 - {trial.mode || '솔로모드'}
+                      내가 진행중인 재판
                     </p>
                     <TrialListItem trial={trial} />
                   </div>
