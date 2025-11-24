@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import Logo from "@/assets/svgs/logo.svg?react";
 import { PATHS } from "@/constants";
 import { usePostLoginMutation } from "@/hooks/auth/useAuthMutations";
+import { useToast } from "@/hooks/useToast";
 
 export default function LoginPage() {
   // 입력 상태
@@ -12,6 +13,7 @@ export default function LoginPage() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const navigate = useNavigate();
+  const { showError } = useToast();
 
   const { mutate: postLogin, isPending } = usePostLoginMutation({
     onSuccess: () => {
@@ -19,7 +21,9 @@ export default function LoginPage() {
       navigate(PATHS.ROOT);
     },
     onError: (error) => {
-      setErrorMessage(error.message || "로그인에 실패했습니다.");
+      const message = error.message || "로그인에 실패했습니다.";
+      setErrorMessage(message);
+      showError(message);
     },
   });
 
