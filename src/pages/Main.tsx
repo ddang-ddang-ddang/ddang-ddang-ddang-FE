@@ -35,6 +35,7 @@ const CARD_WIDTH = 340;
 const CARD_GAP = 16;
 const AUTO_SLIDE_INTERVAL = 4000;
 const CAROUSEL_TRANSITION_MS = 500;
+const MOBILE_MAX_WIDTH = 768; // tailwind md breakpoint 이하를 모바일로 간주
 const CAROUSEL_BREAKPOINTS = [
   { minWidth: 1280, visibleCount: 4 },
   { minWidth: 1024, visibleCount: 3 },
@@ -47,6 +48,8 @@ const DEFAULT_VISIBLE_COUNT =
 
 const getVisibleCountForWidth = (width: number | null | undefined) => {
   if (!width && width !== 0) return DEFAULT_VISIBLE_COUNT;
+  // md 이하에서는 모바일 뷰로 1개만 노출
+  if (width <= MOBILE_MAX_WIDTH) return 1;
 
   return (
     CAROUSEL_BREAKPOINTS.find((bp) => width >= bp.minWidth)?.visibleCount ??
@@ -58,6 +61,9 @@ const MainPage = () => {
   // 캐러셀 시작 인덱스
   const [startIndex, setStartIndex] = useState(0);
   const [cardWidth, setCardWidth] = useState(CARD_WIDTH);
+  const [isMobile, setIsMobile] = useState(() =>
+    typeof window === "undefined" ? false : window.innerWidth <= MOBILE_MAX_WIDTH
+  );
   const [visibleCount, setVisibleCount] = useState(() =>
     typeof window === "undefined"
       ? getVisibleCountForWidth(null)
@@ -81,10 +87,14 @@ const MainPage = () => {
     if (typeof window === "undefined") return;
 
     const handleResize = () => {
-      const nextVisibleCount = getVisibleCountForWidth(window.innerWidth);
+      const width = window.innerWidth;
+      const nextVisibleCount = getVisibleCountForWidth(width);
+      const nextIsMobile = width <= MOBILE_MAX_WIDTH;
+
       setVisibleCount((prev) =>
         prev === nextVisibleCount ? prev : nextVisibleCount
       );
+      setIsMobile(nextIsMobile);
     };
 
     handleResize();
@@ -222,7 +232,7 @@ const MainPage = () => {
     }
     buttonCooldownRef.current = setTimeout(() => {
       setIsButtonDisabled(false);
-    }, 300); // 1초 쿨타임
+    }, 500); // 1초 쿨타임
   }, []);
 
   // cleanup
@@ -242,12 +252,12 @@ const MainPage = () => {
   }, []);
 
   const startAutoSlide = useCallback(() => {
-    if (!shouldLoop || totalSlides === 0) return;
+    if (!shouldLoop || totalSlides === 0 || isMobile) return;
     clearAutoSlide();
     autoSlideTimerRef.current = window.setInterval(() => {
       setStartIndex((prev) => prev + 1);
     }, AUTO_SLIDE_INTERVAL);
-  }, [clearAutoSlide, shouldLoop, totalSlides]);
+  }, [clearAutoSlide, shouldLoop, totalSlides, isMobile]);
 
   const restartAutoSlide = useCallback(() => {
     if (!shouldLoop || totalSlides === 0) return;
@@ -512,9 +522,15 @@ const MainPage = () => {
       <section className="bg-main-bright w-full py-4 md:pt-8 md:pb-20">
         {/* 제목 + 전체 재판 보기 버튼 */}
         <div className="flex px-4 md:px-[120px] justify-between items-center p-2 md:pt-10 flex-col md:flex-row gap-4 md:gap-0 text-center md:text-left">
-          <h2 className="text-3xl font-bold text-main">
-            현재 진행중인 가장 핫한 재판에 참여해보세요
-          </h2>
+          {isMobile ? (
+            <h2 className="text-3xl font-bold text-main">
+              현재 진행중인 가장 핫한 재판에 참여해보세요
+            </h2>
+          ) : (
+            <h2 className="text-2xl font-bold text-main">
+              진행중인 가장 핫한 재판
+            </h2>
+          )}
           <Button
             variant="bright_main"
             className="
@@ -524,6 +540,7 @@ const MainPage = () => {
               active:translate-y-[2px]
               active:shadow-[0_4px_0_0_rgba(62,116,214,0.8)]
               transition-all
+              text-lg font-bold
             "
             onClick={() => navigate(PATHS.ONGOING_TRIALS)}
           >
