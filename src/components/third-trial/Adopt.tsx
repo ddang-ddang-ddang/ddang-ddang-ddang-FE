@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import clsx from "clsx";
 import Button from "@/components/common/Button";
 import ArgumentCheck from "@/components/third-trial/ArgumentCheck";
@@ -24,7 +24,6 @@ export default function Adopt() {
   const updateSelectedArguments = useThirdTrialStore(
     (state) => state.updateSelectedArguments
   );
-  const [currentStepIndex, setCurrentStepIndex] = useState(0);
 
   // 좋아요 많은 순으로 채택 가능한 항목 조회
   const { data: bestItemsRes, isLoading } = useBestAdoptItemsQuery(caseId ?? undefined);
@@ -36,6 +35,24 @@ export default function Adopt() {
 
   // 유저 정보 가져오기 (authStore에서)
   const userId = useAuthStore((state) => state.userId);
+
+  const [currentStepIndex, setCurrentStepIndex] = useState(0);
+  const [isInitialStepSet, setIsInitialStepSet] = useState(false);
+
+  // details가 로드된 후 초기 단계 설정
+  useEffect(() => {
+    if (isInitialStepSet || !details || userId === null) return;
+
+    const isAuthorA = userId === details.argumentA.authorId;
+    const isAuthorB = userId === details.argumentB.authorId;
+
+    // B만 작성자인 경우 second 단계(인덱스 1)부터 시작
+    if (!isAuthorA && isAuthorB) {
+      setCurrentStepIndex(1);
+    }
+
+    setIsInitialStepSet(true);
+  }, [details, userId, isInitialStepSet]);
 
   // API 데이터를 ArgumentData 형태로 변환하는 헬퍼 함수
   const mapToArgumentData = (item: AdoptableItemDto): ArgumentData => ({

@@ -6,10 +6,12 @@ import { PATHS } from "@/constants";
 import { useVsModeStore } from "@/stores/vsModeStore";
 import { useJoinCaseQuery } from "@/hooks/vsMode/useJoinCaseQuery";
 import { useSubmitVsArgument } from "@/hooks/vsMode/useSubmitVsArgument";
+import { useToast } from "@/hooks/useToast";
 
 export default function RivalVsSubmit() {
   const navigate = useNavigate();
   const { caseId, setStep } = useVsModeStore();
+  const { showWarning, showError } = useToast();
 
   const [mainArgument, setMainArgument] = useState("");
   const [reasoning, setReasoning] = useState("");
@@ -24,7 +26,7 @@ export default function RivalVsSubmit() {
 
   const handleSubmit = () => {
     if (!mainArgument.trim() || !reasoning.trim()) {
-      alert("입장 및 근거를 입력해주세요.");
+      showWarning("입장 및 근거를 입력해주세요.");
       return;
     }
     setIsModalOpen(true);
@@ -46,7 +48,7 @@ export default function RivalVsSubmit() {
       setStep("loading");
     } catch (err) {
       console.error(err);
-      alert("제출 중 오류가 발생했습니다.");
+      showError("제출 중 오류가 발생했습니다.");
     }
   };
 
@@ -128,7 +130,9 @@ export default function RivalVsSubmit() {
       {/* 안내 문구 */}
       <div className="mt-[60px] md:mt-[80px] h-[32px] text-center px-4">
         <p className="text-[18px] md:text-[24px] text-[#809AD2]">
-          제출 후에는 의견 수정이 불가능합니다
+          {submitMut.isPending
+            ? "재판을 시작하는 중입니다. 잠시만 기다려주세요..."
+            : "제출 후에는 의견 수정이 불가능합니다"}
         </p>
       </div>
 
@@ -139,8 +143,9 @@ export default function RivalVsSubmit() {
           size="lg"
           className="w-full max-w-[380px] h-[72px] md:h-[123px] text-[24px] md:text-[36px] font-bold rounded-[15px]"
           onClick={handleSubmit}
+          disabled={submitMut.isPending}
         >
-          재판 시작하기
+          {submitMut.isPending ? "처리 중..." : "재판 시작하기"}
         </Button>
       </div>
 
@@ -192,7 +197,8 @@ export default function RivalVsSubmit() {
               {/* 취소 */}
               <button
                 onClick={handleCancel}
-                className="transition-all duration-150 w-full sm:w-[200px]"
+                disabled={submitMut.isPending}
+                className="transition-all duration-150 w-full sm:w-[200px] disabled:opacity-50 disabled:cursor-not-allowed"
                 style={{
                   height: "70px",
                   borderRadius: "15px",
@@ -210,7 +216,8 @@ export default function RivalVsSubmit() {
               {/* 계속 진행하기 */}
               <button
                 onClick={handleProceed}
-                className="transition-all duration-150 w-full sm:w-[200px]"
+                disabled={submitMut.isPending}
+                className="transition-all duration-150 w-full sm:w-[200px] disabled:opacity-50 disabled:cursor-not-allowed"
                 style={{
                   height: "70px",
                   borderRadius: "15px",
@@ -222,7 +229,7 @@ export default function RivalVsSubmit() {
                   boxShadow: "0px 6px 0px #1C356B",
                 }}
               >
-                계속 진행하기
+                {submitMut.isPending ? "처리 중..." : "계속 진행하기"}
               </button>
             </div>
           </div>

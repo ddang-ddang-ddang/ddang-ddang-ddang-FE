@@ -16,6 +16,7 @@ import {
 import { useUserProfileQuery } from "@/hooks/api/useUserQuery";
 import { usePostLoginMutation } from "@/hooks/auth/useAuthMutations";
 import CircleArrowIcon from "@/assets/icons/CircleArrow";
+import { useToast } from "@/hooks/useToast";
 
 
 // HOT 재판 더미 데이터 (API 실패 시 사용)
@@ -65,10 +66,11 @@ const MainPage = () => {
   const [isTransitionEnabled, setIsTransitionEnabled] = useState(true);
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
-  const [loginError, setLoginError] = useState<string | null>(null);
   // 로그인 모달
   const [showLoginModal, setShowLoginModal] = useState(false);
   const viewportRef = useRef<HTMLDivElement | null>(null);
+
+  const { showError } = useToast();
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -109,12 +111,11 @@ const MainPage = () => {
     isPending: isMainLoginPending,
   } = usePostLoginMutation({
     onSuccess: () => {
-      setLoginError(null);
       setLoginPassword("");
       setLoginEmail("");
     },
     onError: (error) => {
-      setLoginError(error.message || "로그인에 실패했습니다.");
+      showError(error.message || "로그인에 실패했습니다.");
     },
   });
 
@@ -122,7 +123,6 @@ const MainPage = () => {
     e.preventDefault();
     if (!loginEmail.trim() || !loginPassword.trim() || isMainLoginPending)
       return;
-    setLoginError(null);
     mainLoginMutate({ email: loginEmail, password: loginPassword });
   };
 
@@ -302,7 +302,7 @@ const MainPage = () => {
                           <Button
                             variant="white"
                             className="w-full rounded-xl bg-white/90 py-3 text-main hover:bg-white"
-                            onClick={() => navigate(PATHS.USER_ONGOING_TRIALS)}
+                            onClick={() => navigate(`${PATHS.MY_PAGE}?tab=participate&subtab=진행중`)}
                           >
                             <div className="px-1 py-1 w-full flex justify-between items-center">
                               <span className="text-base font-bold text-main">
@@ -370,12 +370,6 @@ const MainPage = () => {
                       autoComplete="current-password"
                     />
                   </div>
-
-                  {loginError && (
-                    <p className="text-sm text-main-red" role="alert">
-                      {loginError}
-                    </p>
-                  )}
 
                   <div className="flex justify-between items-center gap-4">
                     <Button

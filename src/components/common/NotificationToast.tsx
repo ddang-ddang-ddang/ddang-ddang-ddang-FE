@@ -60,7 +60,7 @@ const NotificationToast: React.FC = () => {
   };
 
   return (
-    <div 
+    <div
       className="fixed top-20 left-1/2 transform -translate-x-1/2 z-[9999] animate-slide-down pointer-events-none"
     >
       <div
@@ -83,7 +83,7 @@ const NotificationToast: React.FC = () => {
           <p className="font-semibold">{currentToast.message}</p>
           <p className="text-xs mt-1 opacity-80">클릭하여 확인하기</p>
         </div>
-        
+
         <button
           onClick={(e) => {
             e.stopPropagation();

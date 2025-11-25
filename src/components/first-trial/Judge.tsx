@@ -4,6 +4,7 @@ import Button from "@/components/common/Button";
 import { useFirstTrialStore } from "@/stores/firstTrialStore";
 import { useNavigate } from "react-router-dom";
 import { PATHS, PATH_BUILDERS } from "@/constants";
+import { useToast } from "@/hooks/useToast";
 
 import {
   useFirstCaseDetailQuery,
@@ -14,6 +15,7 @@ import {
 export default function Judge() {
   const { reset, caseId } = useFirstTrialStore();
   const navigate = useNavigate();
+  const { showError } = useToast();
 
   /* 서버 데이터 */
   const { data: detail } = useFirstCaseDetailQuery(caseId ?? undefined);
@@ -153,7 +155,7 @@ export default function Judge() {
           className="w-full md:w-[380px] h-[80px] md:h-[123px]"
           onClick={() => {
             if (!caseId) {
-              alert("케이스 ID가 없습니다.");
+              showError("케이스 ID가 없습니다.");
               return;
             }
             // caseId를 localStorage에 저장

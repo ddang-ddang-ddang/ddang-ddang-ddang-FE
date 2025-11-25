@@ -5,6 +5,7 @@ import Button from "@/components/common/Button";
 import { PATHS } from "@/constants";
 import { useStartSecondTrialMutation } from "@/hooks/secondTrial/useSecondTrial";
 import { useFirstCaseDetailQuery } from "@/hooks/firstTrial/useFirstTrial";
+import { useToast } from "@/hooks/useToast";
 
 const SecondTrialRegister: React.FC = () => {
   const [duration, setDuration] = useState<string>("");
@@ -12,6 +13,7 @@ const SecondTrialRegister: React.FC = () => {
   const { caseId: caseIdParam } = useParams<{ caseId: string }>();
   const caseId = caseIdParam ? Number(caseIdParam) : undefined;
   const startSecond = useStartSecondTrialMutation();
+  const { showError, showWarning } = useToast();
 
   // 1차 재판 상세 정보 조회 (title, argumentA, argumentB)
   const { data: caseDetailRes, isLoading: isCaseDetailLoading } = useFirstCaseDetailQuery(caseId);
@@ -19,12 +21,12 @@ const SecondTrialRegister: React.FC = () => {
 
   const handleStartClick = async () => {
     if (!caseId) {
-      alert("케이스 ID가 없습니다. 1차 재판에서 넘어온 caseId를 확인해 주세요.");
+      showError("케이스 ID가 없습니다. 1차 재판에서 넘어온 caseId를 확인해 주세요.");
       return;
     }
 
     if (!duration) {
-      alert("변호 종료 시간을 선택해 주세요.");
+      showWarning("변호 종료 시간을 선택해 주세요.");
       return;
     }
 
@@ -40,7 +42,7 @@ const SecondTrialRegister: React.FC = () => {
       navigate(`${PATHS.SECOND_TRIAL_ROUND_ONE}/${caseId}`);
     } catch (err) {
       console.error("2차 재판 시작 실패:", err);
-      alert("2차 재판 시작에 실패했습니다. 다시 시도해 주세요.");
+      showError("2차 재판 시작에 실패했습니다. 다시 시도해 주세요.");
     }
   };
 

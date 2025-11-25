@@ -18,6 +18,7 @@ import TrialArchive from "@/pages/TrialArchive";
 import OngoingTrialList from "@/pages/OngoingTrialList";
 import { useSSE } from "@/hooks/notification/useSSE";
 import NotificationToast from "@/components/common/NotificationToast";
+import Toast from "@/components/common/Toast";
 import UserOngoingList from "@/pages/UserOngoingList";
 import { useAuthStore } from "@/stores/useAuthStore";
 import { userApi } from "@/apis/user/userApi";
@@ -92,8 +93,11 @@ function App() {
         </Routes>
       </div>
 
-      {/* 알림 토스트 */}
+      {/* SSE 알림 토스트 */}
       <NotificationToast />
+
+      {/* 일반 토스트 */}
+      <Toast />
     </>
   );
 }

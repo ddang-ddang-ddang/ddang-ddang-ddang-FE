@@ -1,12 +1,13 @@
 // src/components/common/ReportModal.tsx
 import React, { useState } from "react";
 import type { ReportReason, ReportContentType } from "@/types/apis/report";
+import { useToast } from "@/hooks/useToast";
 import { usePostReportMutation } from "@/hooks/report/useReport";
 
 interface ReportModalProps {
   contentId: number;
   contentType: ReportContentType;
-  content?: string; // 신고 대상 콘텐츠 내용 추가
+  content?: string;
   onClose: () => void;
   onSuccess?: () => void;
 }
@@ -22,37 +23,38 @@ const REPORT_REASONS: { value: ReportReason; label: string }[] = [
 const ReportModal: React.FC<ReportModalProps> = ({
   contentId,
   contentType,
-  content, // 추가
+  content,
   onClose,
   onSuccess,
 }) => {
   const [selectedReason, setSelectedReason] = useState<ReportReason>("PROFANITY");
   const [customReason, setCustomReason] = useState("");
-  
+  const { showWarning, showError } = useToast();
+
   const reportMutation = usePostReportMutation();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!selectedReason) {
-      alert("신고 사유를 선택해주세요.");
+      showWarning("신고 사유를 선택해주세요.");
       return;
     }
 
+    const reportData = {
+      contentId,
+      contentType,
+      reason: selectedReason,
+      customReason: customReason.trim() || undefined,
+    };
+
     try {
-      await reportMutation.mutateAsync({
-        contentId,
-        contentType,
-        reason: selectedReason,
-        customReason: customReason.trim() || undefined,
-        content, // 신고 대상 내용 포함
-      });
-      
+      await reportMutation.mutateAsync(reportData);
       onSuccess?.();
       onClose();
     } catch (err) {
       console.error("신고 제출 실패:", err);
-      alert("신고 제출에 실패했습니다. 다시 시도해 주세요.");
+      showError("신고 제출에 실패했습니다. 다시 시도해 주세요.");
     }
   };
 
@@ -70,7 +72,6 @@ const ReportModal: React.FC<ReportModalProps> = ({
       <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4 border-2 border-main-medium shadow-lg">
         <h2 className="text-xl font-bold text-main mb-4">신고하기</h2>
         
-        {/* 신고 대상 내용 미리보기 (선택사항) */}
         {content && (
           <div className="mb-4 p-3 bg-gray-50 rounded-md border border-gray-200">
             <p className="text-xs text-gray-500 mb-1">신고 대상 내용:</p>
