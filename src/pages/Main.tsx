@@ -70,6 +70,10 @@ const MainPage = () => {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const viewportRef = useRef<HTMLDivElement | null>(null);
 
+  // 버튼 쿨타임
+  const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+  const buttonCooldownRef = useRef<NodeJS.Timeout | null>(null);
+
   const { showError } = useToast();
 
   useEffect(() => {
@@ -144,43 +148,48 @@ const MainPage = () => {
   };
 
   // HOT 재판 리스트 (API → 카드용 데이터)
-  const hotList =
-  hotQ.data?.data?.result?.map((c) => ({
-    id: c.caseId,
-    title:
-      c.mainArguments && c.mainArguments.length >= 2
-        ? `${c.mainArguments[0]} VS ${c.mainArguments[1]}`
-        : c.title,
-    originalTitle: c.title,
-    mainArguments: c.mainArguments,
-    participateCnt: c.participateCnt ?? 0,
-  })) ?? [];
+  const apiHotList =
+    hotQ.data?.data?.result?.map((c) => ({
+      id: c.caseId,
+      title:
+        c.mainArguments && c.mainArguments.length >= 2
+          ? `${c.mainArguments[0]} VS ${c.mainArguments[1]}`
+          : c.title,
+      originalTitle: c.title,
+      mainArguments: c.mainArguments,
+      participateCnt: c.participateCnt ?? 0,
+    })) ?? [];
 
-  const lastUpdated = hotQ.data?.lastUpdated 
+  // 빈 배열이면 fallback 데이터 사용
+  const hotList = apiHotList.length > 0 ? apiHotList : hotDebatesFallback;
+
+  const lastUpdated = hotQ.data?.lastUpdated
     ? formatUpdateTime(hotQ.data.lastUpdated)
     : '';
 
   const totalSlides = hotList.length;
   const shouldLoop = totalSlides > visibleCount;
-  const carouselItems = useMemo(
-    () =>
-      shouldLoop ? [...hotList, ...hotList.slice(0, visibleCount)] : hotList,
-    [hotList, shouldLoop, visibleCount]
-  );
+
+  // 무한 루프를 위해 앞뒤로 복제 (간단하게)
+  const carouselItems = useMemo(() => {
+    if (!shouldLoop || totalSlides === 0) return hotList;
+    // 앞에 원본 전체, 중간에 원본, 뒤에 원본 전체 (3배)
+    return [...hotList, ...hotList, ...hotList];
+  }, [hotList, shouldLoop, totalSlides]);
+
   const finiteMaxIndex = useMemo(
     () => Math.max(totalSlides - visibleCount, 0),
     [totalSlides, visibleCount]
   );
 
+  // 초기 위치: 중간 세트로 시작
   useEffect(() => {
-    setStartIndex((prev) => {
-      if (shouldLoop) {
-        if (totalSlides === 0) return 0;
-        return prev % totalSlides;
-      }
-      return Math.min(prev, finiteMaxIndex);
-    });
-  }, [shouldLoop, finiteMaxIndex, totalSlides]);
+    if (shouldLoop && totalSlides > 0) {
+      setStartIndex(totalSlides); // 중간 세트의 첫 번째
+    } else {
+      setStartIndex(0);
+    }
+  }, [shouldLoop, totalSlides]);
 
   useEffect(() => {
     const updateCardWidth = () => {
@@ -205,35 +214,53 @@ const MainPage = () => {
     return () => window.removeEventListener("resize", updateCardWidth);
   }, [visibleCount]);
 
+  // 쿨타임 적용 함수
+  const applyCooldown = useCallback(() => {
+    setIsButtonDisabled(true);
+    if (buttonCooldownRef.current) {
+      clearTimeout(buttonCooldownRef.current);
+    }
+    buttonCooldownRef.current = setTimeout(() => {
+      setIsButtonDisabled(false);
+    }, 1000); // 1초 쿨타임
+  }, []);
+
+  // cleanup
+  useEffect(() => {
+    return () => {
+      if (buttonCooldownRef.current) {
+        clearTimeout(buttonCooldownRef.current);
+      }
+    };
+  }, []);
+
   // 이전 화살표
   const handlePrevSingle = useCallback(() => {
+    if (isButtonDisabled) return;
     console.log("이전 슬라이드 클릭");
-    if (shouldLoop) {
-      if (startIndex === 0) {
-        if (totalSlides === 0) return;
-        setIsTransitionEnabled(false);
-        requestAnimationFrame(() => {
-          setStartIndex(totalSlides - 1);
-          requestAnimationFrame(() => setIsTransitionEnabled(true));
-        });
-        return;
-      }
-      setStartIndex((prevIndex) => Math.max(prevIndex - 1, 0));
-      return;
-    }
 
-    setStartIndex((prevIndex) => Math.max(prevIndex - 1, 0));
-  }, [shouldLoop, startIndex, totalSlides]);
+    applyCooldown();
+
+    if (shouldLoop) {
+      setStartIndex((prev) => prev - 1);
+    } else {
+      setStartIndex((prevIndex) => Math.max(prevIndex - 1, 0));
+    }
+  }, [shouldLoop, isButtonDisabled, applyCooldown]);
 
   // 다음 화살표
   const handleNextSingle = useCallback(() => {
+    if (isButtonDisabled) return;
+    console.log("다음 슬라이드 클릭");
+
+    applyCooldown();
+
     if (shouldLoop) {
-      setStartIndex((prevIndex) => prevIndex + 1);
+      setStartIndex((prev) => prev + 1);
     } else {
       setStartIndex((prevIndex) => Math.min(prevIndex + 1, finiteMaxIndex));
     }
-    console.log("다음 슬라이드 클릭");
-  }, [shouldLoop, finiteMaxIndex]);
+  }, [shouldLoop, finiteMaxIndex, isButtonDisabled, applyCooldown]);
 
   useEffect(() => {
     if (!shouldLoop) return;
@@ -242,23 +269,36 @@ const MainPage = () => {
     }, AUTO_SLIDE_INTERVAL);
 
     return () => window.clearInterval(timer);
-  }, [shouldLoop, totalSlides, visibleCount]);
+  }, [shouldLoop]);
 
+  // 무한 루프 리셋 로직
   useEffect(() => {
-    if (!shouldLoop) return;
-    if (totalSlides === 0) return;
-    if (startIndex < totalSlides) return;
+    if (!shouldLoop || totalSlides === 0) return;
 
-    const timeoutId = window.setTimeout(() => {
-      setIsTransitionEnabled(false);
-      requestAnimationFrame(() => {
-        setStartIndex(0);
-        requestAnimationFrame(() => setIsTransitionEnabled(true));
-      });
-    }, CAROUSEL_TRANSITION_MS);
+    // 마지막 세트 끝에 도달
+    if (startIndex >= totalSlides * 2) {
+      const timer = setTimeout(() => {
+        setIsTransitionEnabled(false);
+        setStartIndex(totalSlides); // 중간 세트 첫 번째로 리셋
+        requestAnimationFrame(() => {
+          setIsTransitionEnabled(true);
+        });
+      }, CAROUSEL_TRANSITION_MS);
+      return () => clearTimeout(timer);
+    }
 
-    return () => window.clearTimeout(timeoutId);
-  }, [shouldLoop, startIndex, totalSlides]);
+    // 첫 세트 시작에 도달
+    if (startIndex < totalSlides) {
+      const timer = setTimeout(() => {
+        setIsTransitionEnabled(false);
+        setStartIndex(totalSlides * 2 - 1); // 중간 세트 마지막으로 리셋
+        requestAnimationFrame(() => {
+          setIsTransitionEnabled(true);
+        });
+      }, CAROUSEL_TRANSITION_MS);
+      return () => clearTimeout(timer);
+    }
+  }, [startIndex, shouldLoop, totalSlides]);
 
   return (
     <div className="bg-white min-h-screen w-full flex items-center flex-col">
@@ -482,8 +522,8 @@ const MainPage = () => {
             <Button
               onClick={handlePrevSingle}
               variant="white"
-              disabled={!shouldLoop && startIndex === 0}
-              className="hidden md:flex absolute left-[46px] top-1/2 -translate-y-1/2 rounded-full w-13 h-13 z-10 items-center justify-center"
+              disabled={(!shouldLoop && startIndex === 0) || isButtonDisabled}
+              className="hidden md:flex absolute left-[46px] top-1/2 -translate-y-1/2 rounded-full w-13 h-13 z-10 items-center justify-center transition-opacity disabled:opacity-40"
             >
               <Left className="w-6 h-6" title="이전 논쟁" />
             </Button>
@@ -492,29 +532,36 @@ const MainPage = () => {
               <div
                 className="flex"
                 style={{
-                  transform: `translateX(${translateSingleValue}px)`,
                   gap: `${CARD_GAP}px`,
+                  transform: `translateX(${translateSingleValue}px)`,
                   transition: isTransitionEnabled
-                    ? `transform ${CAROUSEL_TRANSITION_MS}ms ease`
-                    : "none",
+                    ? `transform ${CAROUSEL_TRANSITION_MS}ms ease-in-out`
+                    : 'none',
                 }}
               >
-                {carouselItems.map((debate, index) => (
-                  <div
-                    key={`${debate.id}-${index}`}
-                    className="flex-shrink-0"
-                    style={{ width: `${Math.max(cardWidth, 0)}px` }}
-                  >
-                    <HotDebateCard debate={debate} />
-                  </div>
-                ))}
+                {carouselItems.map((debate, index) => {
+                  // 원본에서의 실제 인덱스 계산 (3배 복제이므로 % totalSlides)
+                  const originalIndex = totalSlides > 0 ? index % totalSlides : index;
+                  const isFirstCard = originalIndex === 0;
+
+                  return (
+                    <div
+                      key={`${debate.id}-${index}`}
+                      className="flex-shrink-0"
+                      style={{ width: `${Math.max(cardWidth, 0)}px` }}
+                    >
+                      <HotDebateCard debate={debate} isFirst={isFirstCard} />
+                    </div>
+                  );
+                })}
               </div>
             </div>
             {/* 오른쪽 화살표 (데스크톱만) */}
           <Button
             onClick={handleNextSingle}
             variant="white"
-            className="hidden md:flex absolute right-[46px] top-1/2 -translate-y-1/2 rounded-full w-13 h-13 cursor-pointer z-10 items-center justify-center"
+            disabled={isButtonDisabled}
+            className="hidden md:flex absolute right-[46px] top-1/2 -translate-y-1/2 rounded-full w-13 h-13 cursor-pointer z-10 items-center justify-center transition-opacity disabled:opacity-40 disabled:cursor-not-allowed"
           >
             <Right className="w-6 h-6" title="다음 논쟁" />
           </Button>
