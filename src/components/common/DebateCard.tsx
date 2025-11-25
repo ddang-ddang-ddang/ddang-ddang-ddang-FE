@@ -2,6 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { PATH_BUILDERS } from "@/constants";
 import LawIcon from "@/assets/svgs/law.svg?react";
+import CheckBadge from "@/assets/icons/check-badge.svg?react";
 
 type Debate = {
   id: number;
@@ -46,34 +47,30 @@ const HotDebateCard = ({ debate, isFirst = false }: HotDebateCardProps) => {
     >
       <div
         className={`
-          bg-white
           rounded-[24px]
           w-full
           h-[206px]
           p-[24px]
           relative
           flex flex-col
-          ${isFirst ? 'shadow-lg' : ''}
+          ${isFirst ? 'shadow-lg bg-gradient-to-r from-[#E9F3FF] to-[#FFFFFF]' : 'bg-white'}
         `}
       >
-        {/* 1등 배지 */}
-        {isFirst && (
-          <div className="absolute -top-3 -right-3 bg-gradient-to-br from-yellow-400 to-orange-500 text-white font-bold text-xs px-3 py-1.5 rounded-full shadow-lg flex items-center gap-1 z-10">
-            <span className="text-lg">🔥</span>
-            <span>HOT #1</span>
-          </div>
-        )}
-
         {/* 제목 영역 */}
         <div className="flex flex-col space-y-0.5">
           {titleParts.map((part, index) => (
             <React.Fragment key={index}>
-              <p
-                className="text-left text-main font-bold text-lg leading-snug truncate"
-                title={part.trim()}
-              >
-                {part.trim()}
-              </p>
+              <div className="flex items-center gap-2">
+                {isFirst && index === 0 && (
+                  <CheckBadge className="w-5 h-5 flex-shrink-0" />
+                )}
+                <p
+                  className="text-left text-main font-bold text-lg leading-snug truncate"
+                  title={part.trim()}
+                >
+                  {part.trim()}
+                </p>
+              </div>
 
               {index === 0 && (
                 <p className="text-left font-bold text-sm text-main my-1">VS</p>

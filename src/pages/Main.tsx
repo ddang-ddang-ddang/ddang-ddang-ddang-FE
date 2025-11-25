@@ -69,6 +69,7 @@ const MainPage = () => {
   // 로그인 모달
   const [showLoginModal, setShowLoginModal] = useState(false);
   const viewportRef = useRef<HTMLDivElement | null>(null);
+  const autoSlideTimerRef = useRef<number | null>(null);
 
   // 버튼 쿨타임
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
@@ -169,27 +170,26 @@ const MainPage = () => {
 
   const totalSlides = hotList.length;
   const shouldLoop = totalSlides > visibleCount;
+  const cloneCount = shouldLoop ? visibleCount : 0;
 
-  // 무한 루프를 위해 앞뒤로 복제 (간단하게)
+  // 무한 루프를 위해 앞/뒤로 가시 카드 수만큼만 복제
   const carouselItems = useMemo(() => {
     if (!shouldLoop || totalSlides === 0) return hotList;
-    // 앞에 원본 전체, 중간에 원본, 뒤에 원본 전체 (3배)
-    return [...hotList, ...hotList, ...hotList];
-  }, [hotList, shouldLoop, totalSlides]);
+    const headClones = hotList.slice(-cloneCount);
+    const tailClones = hotList.slice(0, cloneCount);
+    return [...headClones, ...hotList, ...tailClones];
+  }, [hotList, shouldLoop, totalSlides, cloneCount]);
 
   const finiteMaxIndex = useMemo(
     () => Math.max(totalSlides - visibleCount, 0),
     [totalSlides, visibleCount]
   );
 
-  // 초기 위치: 중간 세트로 시작
+  // 초기 위치: 복제영역을 지나 첫 실 카드부터 시작
   useEffect(() => {
-    if (shouldLoop && totalSlides > 0) {
-      setStartIndex(totalSlides); // 중간 세트의 첫 번째
-    } else {
-      setStartIndex(0);
-    }
-  }, [shouldLoop, totalSlides]);
+    const initialIndex = shouldLoop && totalSlides > 0 ? cloneCount : 0;
+    setStartIndex(initialIndex);
+  }, [shouldLoop, totalSlides, cloneCount]);
 
   useEffect(() => {
     const updateCardWidth = () => {
@@ -222,7 +222,7 @@ const MainPage = () => {
     }
     buttonCooldownRef.current = setTimeout(() => {
       setIsButtonDisabled(false);
-    }, 1000); // 1초 쿨타임
+    }, 300); // 1초 쿨타임
   }, []);
 
   // cleanup
@@ -234,52 +234,70 @@ const MainPage = () => {
     };
   }, []);
 
+  const clearAutoSlide = useCallback(() => {
+    if (autoSlideTimerRef.current) {
+      window.clearInterval(autoSlideTimerRef.current);
+      autoSlideTimerRef.current = null;
+    }
+  }, []);
+
+  const startAutoSlide = useCallback(() => {
+    if (!shouldLoop || totalSlides === 0) return;
+    clearAutoSlide();
+    autoSlideTimerRef.current = window.setInterval(() => {
+      setStartIndex((prev) => prev + 1);
+    }, AUTO_SLIDE_INTERVAL);
+  }, [clearAutoSlide, shouldLoop, totalSlides]);
+
+  const restartAutoSlide = useCallback(() => {
+    if (!shouldLoop || totalSlides === 0) return;
+    startAutoSlide();
+  }, [shouldLoop, totalSlides, startAutoSlide]);
+
   // 이전 화살표
   const handlePrevSingle = useCallback(() => {
     if (isButtonDisabled) return;
-    console.log("이전 슬라이드 클릭");
 
     applyCooldown();
 
     if (shouldLoop) {
       setStartIndex((prev) => prev - 1);
+      restartAutoSlide();
     } else {
       setStartIndex((prevIndex) => Math.max(prevIndex - 1, 0));
     }
-  }, [shouldLoop, isButtonDisabled, applyCooldown]);
+  }, [shouldLoop, isButtonDisabled, applyCooldown, restartAutoSlide]);
 
   // 다음 화살표
   const handleNextSingle = useCallback(() => {
     if (isButtonDisabled) return;
-    console.log("다음 슬라이드 클릭");
 
     applyCooldown();
 
     if (shouldLoop) {
       setStartIndex((prev) => prev + 1);
+      restartAutoSlide();
     } else {
       setStartIndex((prevIndex) => Math.min(prevIndex + 1, finiteMaxIndex));
     }
-  }, [shouldLoop, finiteMaxIndex, isButtonDisabled, applyCooldown]);
+  }, [shouldLoop, finiteMaxIndex, isButtonDisabled, applyCooldown, restartAutoSlide]);
 
   useEffect(() => {
-    if (!shouldLoop) return;
-    const timer = window.setInterval(() => {
-      setStartIndex((prev) => prev + 1);
-    }, AUTO_SLIDE_INTERVAL);
+    startAutoSlide();
+    return () => clearAutoSlide();
+  }, [startAutoSlide, clearAutoSlide]);
 
-    return () => window.clearInterval(timer);
-  }, [shouldLoop]);
-
-  // 무한 루프 리셋 로직
+  // 무한 루프 리셋 로직 (복제 영역 진입 시 점프)
   useEffect(() => {
     if (!shouldLoop || totalSlides === 0) return;
 
-    // 마지막 세트 끝에 도달
-    if (startIndex >= totalSlides * 2) {
+    const firstRealIndex = cloneCount;
+    const lastRealIndex = cloneCount + totalSlides - 1;
+
+    if (startIndex > lastRealIndex) {
       const timer = setTimeout(() => {
         setIsTransitionEnabled(false);
-        setStartIndex(totalSlides); // 중간 세트 첫 번째로 리셋
+        setStartIndex(startIndex - totalSlides);
         requestAnimationFrame(() => {
           setIsTransitionEnabled(true);
         });
@@ -287,18 +305,28 @@ const MainPage = () => {
       return () => clearTimeout(timer);
     }
 
-    // 첫 세트 시작에 도달
-    if (startIndex < totalSlides) {
+    if (startIndex < firstRealIndex) {
       const timer = setTimeout(() => {
         setIsTransitionEnabled(false);
-        setStartIndex(totalSlides * 2 - 1); // 중간 세트 마지막으로 리셋
+        setStartIndex(startIndex + totalSlides);
         requestAnimationFrame(() => {
           setIsTransitionEnabled(true);
         });
       }, CAROUSEL_TRANSITION_MS);
       return () => clearTimeout(timer);
     }
-  }, [startIndex, shouldLoop, totalSlides]);
+  }, [startIndex, shouldLoop, totalSlides, cloneCount]);
+
+  const currentSlideIndex =
+    totalSlides === 0
+      ? 0
+      : (((shouldLoop ? startIndex - cloneCount : startIndex) % totalSlides) + totalSlides) %
+        totalSlides;
+
+  const isPrevDisabled =
+    isButtonDisabled || (!shouldLoop && startIndex <= 0);
+  const isNextDisabled =
+    isButtonDisabled || (!shouldLoop && startIndex >= finiteMaxIndex);
 
   return (
     <div className="bg-white min-h-screen w-full flex items-center flex-col">
@@ -484,7 +512,7 @@ const MainPage = () => {
       <section className="bg-main-bright w-full py-4 md:pt-8 md:pb-20">
         {/* 제목 + 전체 재판 보기 버튼 */}
         <div className="flex px-4 md:px-[120px] justify-between items-center p-2 md:pt-10 flex-col md:flex-row gap-4 md:gap-0 text-center md:text-left">
-          <h2 className="text-2xl font-bold text-main">
+          <h2 className="text-3xl font-bold text-main">
             현재 진행중인 가장 핫한 재판에 참여해보세요
           </h2>
           <Button
@@ -522,7 +550,7 @@ const MainPage = () => {
             <Button
               onClick={handlePrevSingle}
               variant="white"
-              disabled={(!shouldLoop && startIndex === 0) || isButtonDisabled}
+              disabled={isPrevDisabled}
               className="hidden md:flex absolute left-[46px] top-1/2 -translate-y-1/2 rounded-full w-13 h-13 z-10 items-center justify-center transition-opacity disabled:opacity-40"
             >
               <Left className="w-6 h-6" title="이전 논쟁" />
@@ -540,8 +568,11 @@ const MainPage = () => {
                 }}
               >
                 {carouselItems.map((debate, index) => {
-                  // 원본에서의 실제 인덱스 계산 (3배 복제이므로 % totalSlides)
-                  const originalIndex = totalSlides > 0 ? index % totalSlides : index;
+                  // 복제 포함 트랙에서 실제 원본 인덱스 계산
+                  const originalIndex =
+                    totalSlides > 0
+                      ? (index - cloneCount + totalSlides) % totalSlides
+                      : index;
                   const isFirstCard = originalIndex === 0;
 
                   return (
@@ -560,7 +591,7 @@ const MainPage = () => {
           <Button
             onClick={handleNextSingle}
             variant="white"
-            disabled={isButtonDisabled}
+            disabled={isNextDisabled}
             className="hidden md:flex absolute right-[46px] top-1/2 -translate-y-1/2 rounded-full w-13 h-13 cursor-pointer z-10 items-center justify-center transition-opacity disabled:opacity-40 disabled:cursor-not-allowed"
           >
             <Right className="w-6 h-6" title="다음 논쟁" />
@@ -572,9 +603,12 @@ const MainPage = () => {
             {Array.from({ length: totalSlides }).map((_, index) => (
               <button
                 key={index}
-                onClick={() => setStartIndex(index)}
+                onClick={() => {
+                  setStartIndex(shouldLoop ? index + cloneCount : index);
+                  restartAutoSlide();
+                }}
                 className={`transition-all duration-300 rounded-full
-                  ${startIndex % totalSlides === index
+                  ${currentSlideIndex === index
                     ? 'w-8 h-2 bg-main'
                     : 'w-2 h-2 bg-main-medium'
                   }`}
