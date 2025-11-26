@@ -244,7 +244,7 @@ const MyPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-white py-6 md:py-12">
+    <div className="min-h-[calc(100vh-98px)] bg-white py-6 md:py-12">
       <div className="max-w-6xl mx-auto px-4 md:px-6 lg:px-4 flex flex-col">
         <div className="w-full">
           <h2 className="text-2xl md:text-[38px] font-bold text-main mb-3 md:mb-4 pb-2">

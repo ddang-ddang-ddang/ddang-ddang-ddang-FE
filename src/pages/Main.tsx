@@ -339,7 +339,7 @@ const MainPage = () => {
     isButtonDisabled || (!shouldLoop && startIndex >= finiteMaxIndex);
 
   return (
-    <div className="bg-white min-h-screen w-full flex items-center flex-col">
+    <div className="bg-white min-h-[calc(100vh-98px)] w-full flex items-center flex-col">
       {/* 상단 영역 */}
       <section className="flex flex-col md:flex-row items-center w-full max-w-7xl p-4 justify-center gap-[30px] my-10">
         {/* 왼쪽: 슬로건 + 로그인 박스 (UI 데코) */}

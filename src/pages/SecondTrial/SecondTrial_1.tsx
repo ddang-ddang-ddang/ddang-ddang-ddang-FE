@@ -127,7 +127,7 @@ const SecondTrial_1 = () => {
     }
 
     return (
-        <div className="bg-white min-h-screen pt-6 md:pt-12 pb-12 md:pb-20">
+        <div className="bg-white min-h-[calc(100vh-98px)] pt-6 md:pt-12 pb-12 md:pb-20">
             <div className="max-w-6xl mx-auto px-4 md:px-6 lg:px-4">
                 
                 {/* 1. 헤더 및 타이머 */}
