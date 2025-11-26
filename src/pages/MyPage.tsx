@@ -23,7 +23,7 @@ import { useToast } from "@/hooks/useToast";
 const MyPage = () => {
   const authStore = useAuthStore();
   const isAuthenticated = !!authStore.accessToken;
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const { showSuccess, showError, showWarning } = useToast();
 
   const {
@@ -110,6 +110,48 @@ const MyPage = () => {
       defenseSortType
     );
 
+  // ✅ 정렬 기준 통일: createdAt / updatedAt / participatedAt / defendedAt / joinedAt 중 있는 값 사용
+  const getTimeValue = (item: any) => {
+    const dateString =
+      item.createdAt ||
+      item.updatedAt ||
+      item.participatedAt ||
+      item.defendedAt ||
+      item.joinedAt;
+
+    if (dateString) {
+      const time = new Date(dateString).getTime();
+      if (!Number.isNaN(time)) return time;
+    }
+
+    if (typeof item.id === "number") return item.id;
+    const parsedId = Number(item.id);
+    if (!Number.isNaN(parsedId)) return parsedId;
+
+    return 0;
+  };
+
+  // 🔹 전체 재판: 최신순(내림차순)
+  const sortedAllItems = useMemo(() => {
+    const copied = [...filteredAllItems];
+    copied.sort((a, b) => getTimeValue(b) - getTimeValue(a));
+    return copied;
+  }, [filteredAllItems]);
+
+  // 🔹 진행중인 재판: 최신순(내림차순)
+  const sortedOngoingTrials = useMemo(() => {
+    const copied = [...filteredOngoingTrials];
+    copied.sort((a, b) => getTimeValue(b) - getTimeValue(a));
+    return copied;
+  }, [filteredOngoingTrials]);
+
+  // 🔹 나의 변호 전적: 최신순(내림차순)
+  const sortedDefenseList = useMemo(() => {
+    const copied = [...filteredDefenseList];
+    copied.sort((a, b) => getTimeValue(b) - getTimeValue(a));
+    return copied;
+  }, [filteredDefenseList]);
+
   const paginatedAchievements = useMemo(() => {
     const achievements = achievementsData?.result ?? [];
     const startIndex = (achievementPage - 1) * ACHIEVEMENTS_PER_PAGE;
@@ -117,33 +159,36 @@ const MyPage = () => {
     return achievements.slice(startIndex, endIndex);
   }, [achievementsData, achievementPage]);
 
+  // ✅ 전체 재판: 최신순 배열에 대해 페이지네이션
   const paginatedAllItems = useMemo(() => {
     const startIndex = (allPage - 1) * ITEMS_PER_PAGE;
     const endIndex = startIndex + ITEMS_PER_PAGE;
-    return filteredAllItems.slice(startIndex, endIndex);
-  }, [filteredAllItems, allPage]);
+    return sortedAllItems.slice(startIndex, endIndex);
+  }, [sortedAllItems, allPage]);
 
+  // ✅ 진행중인 재판: 최신순 배열에 대해 페이지네이션
   const paginatedOngoingTrials = useMemo(() => {
     const startIndex = (ongoingPage - 1) * ITEMS_PER_PAGE;
     const endIndex = startIndex + ITEMS_PER_PAGE;
-    return filteredOngoingTrials.slice(startIndex, endIndex);
-  }, [filteredOngoingTrials, ongoingPage]);
+    return sortedOngoingTrials.slice(startIndex, endIndex);
+  }, [sortedOngoingTrials, ongoingPage]);
 
+  // ✅ 변호 전적: 최신순 배열에 대해 페이지네이션
   const paginatedDefenseList = useMemo(() => {
     const startIndex = (defensePage - 1) * ITEMS_PER_PAGE;
     const endIndex = startIndex + ITEMS_PER_PAGE;
-    return filteredDefenseList.slice(startIndex, endIndex);
-  }, [filteredDefenseList, defensePage]);
+    return sortedDefenseList.slice(startIndex, endIndex);
+  }, [sortedDefenseList, defensePage]);
 
   const achievementTotalPages = Math.ceil(
     (achievementsData?.result?.length ?? 0) / ACHIEVEMENTS_PER_PAGE
   );
-  const allTotalPages = Math.ceil(filteredAllItems.length / ITEMS_PER_PAGE);
+  const allTotalPages = Math.ceil(sortedAllItems.length / ITEMS_PER_PAGE);
   const ongoingTotalPages = Math.ceil(
-    filteredOngoingTrials.length / ITEMS_PER_PAGE
+    sortedOngoingTrials.length / ITEMS_PER_PAGE
   );
   const defenseTotalPages = Math.ceil(
-    filteredDefenseList.length / ITEMS_PER_PAGE
+    sortedDefenseList.length / ITEMS_PER_PAGE
   );
 
   const handleEditMode = () => setIsEditMode(true);
