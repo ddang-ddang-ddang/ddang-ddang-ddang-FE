@@ -39,7 +39,6 @@ const MyPage = () => {
     ongoingTrialsWithType,
     defenseListWithResult,
     allItems,
-    isLargeScreen,
   } = useMyPageData(isAuthenticated);
 
   const updateProfileMutation = useUpdateUserProfileMutation();
@@ -110,7 +109,7 @@ const MyPage = () => {
       defenseSortType
     );
 
-  // ✅ 정렬 기준 통일: createdAt / updatedAt / participatedAt / defendedAt / joinedAt 중 있는 값 사용
+  //정렬 기준 통일: createdAt / updatedAt / participatedAt / defendedAt / joinedAt 중 있는 값 사용
   const getTimeValue = (item: any) => {
     const dateString =
       item.createdAt ||
@@ -131,21 +130,21 @@ const MyPage = () => {
     return 0;
   };
 
-  // 🔹 전체 재판: 최신순(내림차순)
+  // 전체 재판
   const sortedAllItems = useMemo(() => {
     const copied = [...filteredAllItems];
     copied.sort((a, b) => getTimeValue(b) - getTimeValue(a));
     return copied;
   }, [filteredAllItems]);
 
-  // 🔹 진행중인 재판: 최신순(내림차순)
+  // 진행중인 재판
   const sortedOngoingTrials = useMemo(() => {
     const copied = [...filteredOngoingTrials];
     copied.sort((a, b) => getTimeValue(b) - getTimeValue(a));
     return copied;
   }, [filteredOngoingTrials]);
 
-  // 🔹 나의 변호 전적: 최신순(내림차순)
+  // 나의 변호 전적
   const sortedDefenseList = useMemo(() => {
     const copied = [...filteredDefenseList];
     copied.sort((a, b) => getTimeValue(b) - getTimeValue(a));
@@ -159,21 +158,21 @@ const MyPage = () => {
     return achievements.slice(startIndex, endIndex);
   }, [achievementsData, achievementPage]);
 
-  // ✅ 전체 재판: 최신순 배열에 대해 페이지네이션
+  // 전체 재판
   const paginatedAllItems = useMemo(() => {
     const startIndex = (allPage - 1) * ITEMS_PER_PAGE;
     const endIndex = startIndex + ITEMS_PER_PAGE;
     return sortedAllItems.slice(startIndex, endIndex);
   }, [sortedAllItems, allPage]);
 
-  // ✅ 진행중인 재판: 최신순 배열에 대해 페이지네이션
+  // 진행중인 재판
   const paginatedOngoingTrials = useMemo(() => {
     const startIndex = (ongoingPage - 1) * ITEMS_PER_PAGE;
     const endIndex = startIndex + ITEMS_PER_PAGE;
     return sortedOngoingTrials.slice(startIndex, endIndex);
   }, [sortedOngoingTrials, ongoingPage]);
 
-  // ✅ 변호 전적: 최신순 배열에 대해 페이지네이션
+  // 변호 전적
   const paginatedDefenseList = useMemo(() => {
     const startIndex = (defensePage - 1) * ITEMS_PER_PAGE;
     const endIndex = startIndex + ITEMS_PER_PAGE;
