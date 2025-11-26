@@ -1,5 +1,5 @@
 // src/components/mypage/tabs/ParticipateTab.tsx
-import React, { useMemo } from "react";
+import React from "react";
 import { CaseResult } from "@/components/mypage/TrialListItem";
 import TrialListItem from "@/components/mypage/TrialListItem";
 import DefenseListItem from "@/components/mypage/DefenseListItem";
@@ -13,14 +13,17 @@ interface ParticipateTabProps {
   defenseSortType: '정렬' | 'WIN' | 'LOSE' | 'PENDING' | 'LIKE';
   setDefenseSortType: (type: '정렬' | 'WIN' | 'LOSE' | 'PENDING' | 'LIKE') => void;
   allItems: any[];
+  paginatedAllItems: any[];
   allPage: number;
   allTotalPages: number;
   setAllPage: (page: number) => void;
   filteredOngoingTrials: any[];
+  paginatedOngoingTrials: any[];
   ongoingPage: number;
   ongoingTotalPages: number;
   setOngoingPage: (page: number) => void;
   filteredDefenseList: any[];
+  paginatedDefenseList: any[];
   defensePage: number;
   defenseTotalPages: number;
   setDefensePage: (page: number) => void;
@@ -34,45 +37,21 @@ export const ParticipateTab: React.FC<ParticipateTabProps> = ({
   defenseSortType,
   setDefenseSortType,
   allItems,
+  paginatedAllItems,
   allPage,
   allTotalPages,
   setAllPage,
   filteredOngoingTrials,
+  paginatedOngoingTrials,
   ongoingPage,
   ongoingTotalPages,
   setOngoingPage,
   filteredDefenseList,
+  paginatedDefenseList,
   defensePage,
   defenseTotalPages,
   setDefensePage,
 }) => {
-  // 최신순 정렬 (caseId 내림차순, 숫자 변환)
-  const sortedAllItems = useMemo(
-    () => [...allItems].sort((a, b) => Number(b.caseId) - Number(a.caseId)),
-    [allItems]
-  );
-  const sortedOngoingTrials = useMemo(
-    () => [...filteredOngoingTrials].sort((a, b) => Number(b.caseId) - Number(a.caseId)),
-    [filteredOngoingTrials]
-  );
-  const sortedDefenseList = useMemo(
-    () => [...filteredDefenseList].sort((a, b) => Number(b.caseId) - Number(a.caseId)),
-    [filteredDefenseList]
-  );
-
-  // 페이지네이션 적용
-  const paginatedSortedAllItems = useMemo(
-    () => sortedAllItems.slice((allPage - 1) * 10, allPage * 10),
-    [sortedAllItems, allPage]
-  );
-  const paginatedSortedOngoingTrials = useMemo(
-    () => sortedOngoingTrials.slice((ongoingPage - 1) * 10, ongoingPage * 10),
-    [sortedOngoingTrials, ongoingPage]
-  );
-  const paginatedSortedDefenseList = useMemo(
-    () => sortedDefenseList.slice((defensePage - 1) * 10, defensePage * 10),
-    [sortedDefenseList, defensePage]
-  );
 
   return (
     <div className="pt-4">
@@ -159,9 +138,9 @@ export const ParticipateTab: React.FC<ParticipateTabProps> = ({
             <span className="text-base md:text-lg text-main">({allItems.length}개 항목)</span>
           </div>
           <div className="space-y-3 md:space-y-4">
-            {paginatedSortedAllItems.length > 0 ? (
+            {paginatedAllItems.length > 0 ? (
               <>
-                {paginatedSortedAllItems.map((item, idx) => (
+                {paginatedAllItems.map((item, idx) => (
                   <div key={`all-${idx}`}>
                     <p className="text-xs md:text-sm text-main mb-2">
                       {item.type === 'ongoing' 
@@ -199,9 +178,9 @@ export const ParticipateTab: React.FC<ParticipateTabProps> = ({
             <span className="text-base md:text-lg text-main">({filteredOngoingTrials.length}개의 재판)</span>
           </div>
           <div className="space-y-3 md:space-y-4">
-            {paginatedSortedOngoingTrials.length > 0 ? (
+            {paginatedOngoingTrials.length > 0 ? (
               <>
-                {paginatedSortedOngoingTrials.map((trial, idx) => (
+                {paginatedOngoingTrials.map((trial, idx) => (
                   <div key={`ongoing-${idx}`}>
                     <p className="text-xs md:text-sm text-main mb-2">
                       내가 진행중인 재판
@@ -232,9 +211,9 @@ export const ParticipateTab: React.FC<ParticipateTabProps> = ({
             <span className="text-base md:text-lg text-main">({filteredDefenseList.length}개의 변론/반론)</span>
           </div>
           <div className="space-y-3 md:space-y-4">
-            {paginatedSortedDefenseList.length > 0 ? (
+            {paginatedDefenseList.length > 0 ? (
               <>
-                {paginatedSortedDefenseList.map((defense, idx) => (
+                {paginatedDefenseList.map((defense, idx) => (
                   <div key={`defense-${idx}`}>
                     <p className="text-xs md:text-sm text-main mb-2">나의 변호 전적</p>
                     <DefenseListItem defense={defense} />
