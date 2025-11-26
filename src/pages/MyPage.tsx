@@ -288,7 +288,7 @@ const MyPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-white py-6 md:py-12">
+    <div className="min-h-[calc(100vh-98px)] bg-white py-6 md:py-12">
       <div className="max-w-6xl mx-auto px-4 md:px-6 lg:px-4 flex flex-col">
         <div className="w-full">
           <h2 className="text-2xl md:text-[38px] font-bold text-main mb-3 md:mb-4 pb-2">
@@ -410,17 +410,17 @@ const MyPage = () => {
                 defenseSortType={defenseSortType}
                 setDefenseSortType={setDefenseSortType}
                 allItems={allItems}
-                paginatedAllItems={paginatedSortedAllItems}
+                paginatedAllItems={paginatedAllItems}
                 allPage={allPage}
                 allTotalPages={allTotalPages}
                 setAllPage={setAllPage}
                 filteredOngoingTrials={filteredOngoingTrials}
-                paginatedOngoingTrials={paginatedSortedOngoingTrials}
+                paginatedOngoingTrials={paginatedOngoingTrials}
                 ongoingPage={ongoingPage}
                 ongoingTotalPages={ongoingTotalPages}
                 setOngoingPage={setOngoingPage}
                 filteredDefenseList={filteredDefenseList}
-                paginatedDefenseList={paginatedSortedDefenseList}
+                paginatedDefenseList={paginatedDefenseList}
                 defensePage={defensePage}
                 defenseTotalPages={defenseTotalPages}
                 setDefensePage={setDefensePage}
