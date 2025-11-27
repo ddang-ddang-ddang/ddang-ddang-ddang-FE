@@ -4,7 +4,7 @@ import Button from '@/components/common/Button';
 import { PATHS } from '@/constants';
 
 export type CaseStatus = "DONE" | "SECOND" | "THIRD" | "PENDING" | "FIRST";
-export type CaseResult = "WIN" | "LOSE" | "PENDING";
+export type CaseResult = "WIN" | "LOSE" | "PENDING" | "SOLO";
 
 export type TrialData = {
     id: number;
@@ -74,6 +74,14 @@ const TrialListItem = ({ trial }: TrialListItemProps) => {
                     bgClass: "bg-main-red text-white",
                     isOngoing: false,
                     roundText: "최종심 완료"
+                };
+            }
+            if (trial.caseResult === "SOLO") {
+                return { 
+                    text: "완료", 
+                    bgClass: "bg-main-medium text-white",
+                    isOngoing: false,
+                    roundText: "솔로모드 완료"
                 };
             }
             return { 
@@ -174,10 +182,12 @@ const TrialListItem = ({ trial }: TrialListItemProps) => {
                             <span className={`font-bold ${
                                 trial.caseResult === "WIN" ? "text-main-medium" :
                                 trial.caseResult === "LOSE" ? "text-main-red" :
+                                trial.caseResult === "SOLO" ? "text-main-medium" :
                                 "text-gray-600"
                             }`}>
                                 {trial.caseResult === "WIN" ? "승리" :
                                  trial.caseResult === "LOSE" ? "패배" :
+                                 trial.caseResult === "SOLO" ? "완료" :
                                  "진행중"}
                             </span>
                         </div>
