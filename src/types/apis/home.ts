@@ -56,6 +56,9 @@ export type HotCaseItem = {
   title: string;
   mainArguments: string[];
   participateCnt?: number;
+  isAd?: boolean;
+  adLink?: string;
+  adImageUrl?: string;
 };
 
 export type GetHotCasesResponse = {
